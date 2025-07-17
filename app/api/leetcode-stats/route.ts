@@ -10,6 +10,10 @@ interface LeetCodeResponse {
           difficulty: string
           count: number
         }>
+        totalSubmissionNum: Array<{
+          difficulty: string
+          count: number
+        }>
       }
       languageProblemCount: Array<{
         languageName: string
@@ -17,6 +21,8 @@ interface LeetCodeResponse {
       }>
       profile: {
         ranking: number
+        userAvatar: string
+        realName: string
       }
     }
   }
@@ -24,11 +30,17 @@ interface LeetCodeResponse {
 
 export async function GET() {
   try {
+    console.log(`Fetching LeetCode stats for user: ${LEETCODE_USERNAME}`)
+
     const query = `
       query getUserProfile($username: String!) {
         matchedUser(username: $username) {
           submitStats {
             acSubmissionNum {
+              difficulty
+              count
+            }
+            totalSubmissionNum {
               difficulty
               count
             }
@@ -39,6 +51,8 @@ export async function GET() {
           }
           profile {
             ranking
+            userAvatar
+            realName
           }
         }
       }
@@ -63,6 +77,7 @@ export async function GET() {
     }
 
     const data: LeetCodeResponse = await response.json()
+    console.log("LeetCode API Response:", JSON.stringify(data, null, 2))
 
     if (!data.data?.matchedUser) {
       throw new Error("User not found or API response invalid")
@@ -70,14 +85,18 @@ export async function GET() {
 
     const { submitStats, languageProblemCount, profile } = data.data.matchedUser
 
-    // Parse difficulty stats
+    // Parse difficulty stats from acSubmissionNum (accepted submissions)
     let totalSolved = 0
     let easy = 0
     let medium = 0
     let hard = 0
 
+    // Find the "All" difficulty for total solved problems
+    const allDifficulty = submitStats.acSubmissionNum.find((stat) => stat.difficulty === "All")
+    totalSolved = allDifficulty ? allDifficulty.count : 0
+
+    // Get individual difficulty counts
     submitStats.acSubmissionNum.forEach((stat) => {
-      totalSolved += stat.count
       switch (stat.difficulty) {
         case "Easy":
           easy = stat.count
@@ -102,14 +121,17 @@ export async function GET() {
       }))
 
     const stats = {
-      totalSolved,
-      easy,
-      medium,
-      hard,
-      ranking: profile.ranking || 0,
+      totalSolved, // This should now be 192 as per your API response
+      easy, // 64
+      medium, // 106
+      hard, // 18
+      ranking: profile.ranking || 0, // 674288
       languages,
+      userAvatar: profile.userAvatar,
+      realName: profile.realName,
     }
 
+    console.log("LeetCode stats calculated successfully:", stats)
     return NextResponse.json(stats)
   } catch (error) {
     console.error("Error fetching LeetCode stats:", error)

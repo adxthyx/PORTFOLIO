@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { PostCard } from "@/components/post-card"
 import { Sidebar } from "@/components/sidebar"
@@ -12,6 +12,38 @@ import { ProjectsModal } from "@/components/projects-modal"
 import { SettingsModal } from "@/components/settings-modal"
 import { ResumeModal } from "@/components/resume-modal"
 import { ThemeProvider } from "@/components/theme-provider"
+
+interface GitHubStats {
+  totalRepos: number
+  totalCommits: number
+  totalPRs: number
+  totalStars: number
+  totalForks: number
+  followers: number
+  following: number
+  yearsActive: number
+  currentStreak: number
+  profileViews: number
+  topLanguages: Array<{
+    name: string
+    percentage: number
+    color: string
+  }>
+}
+
+interface LeetCodeStats {
+  totalSolved: number
+  easy: number
+  medium: number
+  hard: number
+  ranking: number
+  languages: Array<{
+    name: string
+    solved: number
+  }>
+  userAvatar: string
+  realName: string
+}
 
 const portfolioData = {
   about: {
@@ -461,6 +493,38 @@ export default function Portfolio() {
   const [showResume, setShowResume] = useState(false)
   const [activeFilter, setActiveFilter] = useState("all")
 
+  // Pre-load stats data
+  const [githubStats, setGithubStats] = useState<GitHubStats | null>(null)
+  const [leetcodeStats, setLeetcodeStats] = useState<LeetCodeStats | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+
+  // Load stats data on component mount
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        // Load GitHub stats
+        const githubResponse = await fetch("/api/github-stats")
+        if (githubResponse.ok) {
+          const githubData = await githubResponse.json()
+          setGithubStats(githubData)
+        }
+
+        // Load LeetCode stats
+        const leetcodeResponse = await fetch("/api/leetcode-stats")
+        if (leetcodeResponse.ok) {
+          const leetcodeData = await leetcodeResponse.json()
+          setLeetcodeStats(leetcodeData)
+        }
+      } catch (error) {
+        console.error("Failed to load stats:", error)
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+
+    loadStats()
+  }, [])
+
   const allProjects = [...projectsData.aiml, ...projectsData.webdev]
   const allPosts = [
     portfolioData.about,
@@ -551,7 +615,14 @@ export default function Portfolio() {
         {selectedPost && <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
         {showContact && <ContactModal onClose={() => setShowContact(false)} />}
         {showAchievements && <AchievementsModal onClose={() => setShowAchievements(false)} />}
-        {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+        {showStats && (
+          <StatsModal
+            onClose={() => setShowStats(false)}
+            githubStats={githubStats}
+            leetcodeStats={leetcodeStats}
+            loading={statsLoading}
+          />
+        )}
         {showProjects && <ProjectsModal projects={allProjects} onClose={() => setShowProjects(false)} />}
         {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
         {showResume && <ResumeModal onClose={() => setShowResume(false)} />}

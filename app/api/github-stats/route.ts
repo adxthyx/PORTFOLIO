@@ -68,37 +68,49 @@ export async function GET() {
       "User-Agent": "Portfolio-App",
     }
 
+    console.log(`Fetching GitHub stats for user: ${GITHUB_USERNAME}`)
+
     // Fetch user data
     const userResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, { headers })
     if (!userResponse.ok) {
       throw new Error(`Failed to fetch user data: ${userResponse.status}`)
     }
     const userData: GitHubUser = await userResponse.json()
+    console.log(`User has ${userData.public_repos} public repos`)
 
-    // Fetch all repositories
+    // Fetch ALL repositories with proper pagination
     const allRepos: GitHubRepo[] = []
     let page = 1
     let hasMore = true
 
     while (hasMore) {
+      console.log(`Fetching repositories page ${page}`)
       const reposResponse = await fetch(
-        `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&page=${page}&sort=updated`,
+        `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&page=${page}&sort=updated&type=all`,
         { headers },
       )
 
       if (!reposResponse.ok) {
-        throw new Error(`Failed to fetch repositories: ${reposResponse.status}`)
+        console.error(`Failed to fetch repos page ${page}: ${reposResponse.status}`)
+        break
       }
 
       const repos: GitHubRepo[] = await reposResponse.json()
-      allRepos.push(...repos)
+      console.log(`Page ${page}: Found ${repos.length} repositories`)
 
-      if (repos.length < 100) {
+      if (repos.length === 0) {
         hasMore = false
       } else {
-        page++
+        allRepos.push(...repos)
+        if (repos.length < 100) {
+          hasMore = false
+        } else {
+          page++
+        }
       }
     }
+
+    console.log(`Total repositories fetched: ${allRepos.length}`)
 
     // Calculate basic stats
     let totalStars = 0
@@ -109,7 +121,7 @@ export async function GET() {
       totalStars += repo.stargazers_count || 0
       totalForks += repo.forks_count || 0
 
-      // Fetch languages for each repo
+      // Fetch languages for each repo (with rate limiting consideration)
       try {
         const langResponse = await fetch(repo.languages_url, { headers })
         if (langResponse.ok) {
@@ -118,15 +130,18 @@ export async function GET() {
             languageBytes[lang] = (languageBytes[lang] || 0) + (bytes as number)
           }
         }
+        // Small delay to avoid rate limiting
+        await new Promise((resolve) => setTimeout(resolve, 50))
       } catch (error) {
         console.warn(`Failed to fetch languages for ${repo.name}:`, error)
       }
     }
 
-    // Get total commits across all repos
+    // Get total commits across repos (limit to avoid rate limits)
     let totalCommits = 0
-    for (const repo of allRepos.slice(0, 10)) {
-      // Limit to first 10 repos to avoid rate limits
+    const reposToCheck = allRepos.slice(0, 15) // Check first 15 repos to avoid rate limits
+
+    for (const repo of reposToCheck) {
       try {
         const commitsResponse = await fetch(
           `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/commits?author=${GITHUB_USERNAME}&per_page=100`,
@@ -136,6 +151,8 @@ export async function GET() {
           const commits: GitHubCommit[] = await commitsResponse.json()
           totalCommits += commits.length
         }
+        // Small delay to avoid rate limiting
+        await new Promise((resolve) => setTimeout(resolve, 100))
       } catch (error) {
         console.warn(`Failed to fetch commits for ${repo.name}:`, error)
       }
@@ -175,7 +192,7 @@ export async function GET() {
     const currentStreak = 7 // This would need more complex logic to calculate actual streak
 
     const stats = {
-      totalRepos: userData.public_repos,
+      totalRepos: allRepos.length, // Use actual count from fetched repos
       totalCommits,
       totalPRs,
       totalStars,
@@ -188,6 +205,7 @@ export async function GET() {
       profileViews: 0, // GitHub doesn't provide this via API
     }
 
+    console.log("GitHub stats calculated successfully:", stats)
     return NextResponse.json(stats)
   } catch (error) {
     console.error("Error fetching GitHub stats:", error)

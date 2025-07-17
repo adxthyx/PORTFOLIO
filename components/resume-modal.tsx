@@ -1,99 +1,119 @@
 "use client"
 
-import { X, Download, FileText, ExternalLink } from "lucide-react"
+import { X, Download, ExternalLink, FileText, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
-interface ResumeModalProps {
-  onClose: () => void
-}
+export function ResumeModal({ onClose }: { onClose: () => void }) {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-export function ResumeModal({ onClose }: ResumeModalProps) {
-  const [isDownloading, setIsDownloading] = useState(false)
-
-  const handleDownload = async () => {
-    setIsDownloading(true)
-    try {
-      const response = await fetch("/placeholder/resume.pdf")
-      if (response.ok) {
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement("a")
-        link.href = url
-        link.download = "adxthyx-resume.pdf"
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
-      } else {
-        throw new Error("Resume file not found")
-      }
-    } catch (error) {
-      console.error("Download failed:", error)
-      alert("Resume download failed. Please try again.")
-    } finally {
-      setIsDownloading(false)
-    }
+  const handleDownload = () => {
+    const link = document.createElement("a")
+    link.href = "/placeholder/resume.pdf"
+    link.download = "adxthyx-resume.pdf"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
-  const handleViewInNewTab = () => {
+  const handleOpenInNewTab = () => {
     window.open("/placeholder/resume.pdf", "_blank")
   }
 
+  const handleLoad = () => {
+    setLoading(false)
+    setError(false)
+  }
+
+  const handleError = () => {
+    setLoading(false)
+    setError(true)
+  }
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden transition-colors duration-300">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-              <FileText className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-black dark:text-white">Resume</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Download or view my latest resume</p>
+              <h2 className="text-xl font-bold">Resume</h2>
+              <p className="text-white/80 text-sm">Download or view my latest resume</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={handleViewInNewTab} variant="outline" className="gap-2 bg-transparent">
-              <ExternalLink className="w-4 h-4" />
-              View in New Tab
-            </Button>
             <Button
+              variant="ghost"
+              size="sm"
               onClick={handleDownload}
-              disabled={isDownloading}
-              className="bg-[#FF4500] hover:bg-[#E03E00] text-white gap-2"
+              className="text-white hover:bg-white/20 flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
-              {isDownloading ? "Downloading..." : "Download PDF"}
+              Download
             </Button>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleOpenInNewTab}
+              className="text-white hover:bg-white/20 flex items-center gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              New Tab
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20">
               <X className="w-5 h-5" />
             </Button>
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          {/* PDF Embed */}
-          <div className="w-full h-[600px] border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
-            <iframe src="/placeholder/resume.pdf" className="w-full h-full" title="Resume Preview" />
-          </div>
+        {/* Content */}
+        <div className="relative h-[calc(95vh-100px)] bg-gray-50 dark:bg-gray-950">
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-900">
+              <div className="flex items-center gap-3">
+                <Loader2 className="w-6 h-6 animate-spin text-[#FF4500]" />
+                <span className="text-gray-600 dark:text-gray-400">Loading resume...</span>
+              </div>
+            </div>
+          )}
 
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Having trouble viewing the PDF? Try downloading it or opening in a new tab.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Button onClick={handleViewInNewTab} variant="outline" className="gap-2 bg-transparent">
-                <ExternalLink className="w-4 h-4" />
-                Open in New Tab
-              </Button>
-              <Button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="bg-[#FF4500] hover:bg-[#E03E00] text-white gap-2"
-              >
-                <Download className="w-4 h-4" />
-                {isDownloading ? "Downloading..." : "Download PDF"}
+          {error && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-900">
+              <div className="text-center">
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Resume not found</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Please add your resume.pdf file to the /public/placeholder/ directory
+                </p>
+                <Button onClick={handleDownload} variant="outline">
+                  Try Download Anyway
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <iframe
+            src="/placeholder/resume.pdf"
+            className="w-full h-full border-0"
+            title="Resume PDF"
+            onLoad={handleLoad}
+            onError={handleError}
+            style={{ display: loading || error ? "none" : "block" }}
+          />
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Last updated: {new Date().toLocaleDateString()}</p>
+            <div className="flex gap-2">
+              <Button onClick={handleDownload} size="sm" className="bg-[#FF4500] hover:bg-[#FF4500]/90">
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
               </Button>
             </div>
           </div>
