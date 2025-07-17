@@ -492,6 +492,7 @@ export default function Portfolio() {
   const [showSettings, setShowSettings] = useState(false)
   const [showResume, setShowResume] = useState(false)
   const [activeFilter, setActiveFilter] = useState("all")
+  const [searchQuery, setSearchQuery] = useState("")
 
   // Pre-load stats data
   const [githubStats, setGithubStats] = useState<GitHubStats | null>(null)
@@ -534,17 +535,46 @@ export default function Portfolio() {
     ...allProjects,
   ]
 
+  // Search function
+  const searchPosts = (posts: any[], query: string) => {
+    if (!query.trim()) return posts
+
+    const searchTerm = query.toLowerCase().trim()
+
+    return posts.filter((post) => {
+      // Search in title
+      if (post.title.toLowerCase().includes(searchTerm)) return true
+
+      // Search in content
+      if (post.content.toLowerCase().includes(searchTerm)) return true
+
+      // Search in full content
+      if (post.fullContent.toLowerCase().includes(searchTerm)) return true
+
+      // Search in tags (for projects)
+      if (post.tags && post.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) return true
+
+      return false
+    })
+  }
+
   const getFilteredContent = () => {
+    let posts
     switch (activeFilter) {
       case "aiml":
-        return projectsData.aiml
+        posts = projectsData.aiml
+        break
       case "webdev":
-        return projectsData.webdev
+        posts = projectsData.webdev
+        break
       case "main":
-        return [portfolioData.about, portfolioData.experience, portfolioData.education, portfolioData.skills]
+        posts = [portfolioData.about, portfolioData.experience, portfolioData.education, portfolioData.skills]
+        break
       default:
-        return allPosts
+        posts = allPosts
     }
+
+    return searchPosts(posts, searchQuery)
   }
 
   const handleNavAction = (action: string) => {
@@ -570,13 +600,26 @@ export default function Portfolio() {
       case "contact":
         setShowContact(true)
         break
+      case "home":
+        window.scrollTo({ top: 0, behavior: "smooth" })
+        setActiveFilter("all")
+        setSearchQuery("")
+        break
+    }
+  }
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query)
+    // Reset filter to "all" when searching to search across all content
+    if (query.trim()) {
+      setActiveFilter("all")
     }
   }
 
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-[#dae0e6] dark:bg-gray-900 transition-colors duration-300">
-        <Header onNavAction={handleNavAction} />
+        <Header onNavAction={handleNavAction} onSearch={handleSearch} searchQuery={searchQuery} />
         <div className="max-w-7xl mx-auto flex gap-6 p-4">
           <div className="flex-1 space-y-4">
             {/* Filter Tabs */}
@@ -590,7 +633,10 @@ export default function Portfolio() {
                 ].map((filter) => (
                   <button
                     key={filter.key}
-                    onClick={() => setActiveFilter(filter.key)}
+                    onClick={() => {
+                      setActiveFilter(filter.key)
+                      setSearchQuery("")
+                    }}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                       activeFilter === filter.key
                         ? "bg-[#FF4500] text-white shadow-lg transform scale-105"
@@ -601,12 +647,29 @@ export default function Portfolio() {
                   </button>
                 ))}
               </div>
+              {searchQuery && (
+                <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                  Showing results for: <span className="font-medium text-[#FF4500]">"{searchQuery}"</span>
+                </div>
+              )}
             </div>
 
             {/* Filtered Content */}
-            {getFilteredContent().map((item) => (
-              <PostCard key={item.id} {...item} onClick={() => setSelectedPost(item)} />
-            ))}
+            {getFilteredContent().length > 0 ? (
+              getFilteredContent().map((item) => (
+                <PostCard key={item.id} {...item} onClick={() => setSelectedPost(item)} />
+              ))
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center transition-colors duration-300">
+                <div className="text-gray-400 text-6xl mb-4">🔍</div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No results found</h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {searchQuery
+                    ? `No posts found matching "${searchQuery}". Try different keywords.`
+                    : "No posts available in this category."}
+                </p>
+              </div>
+            )}
           </div>
           <Sidebar />
         </div>
