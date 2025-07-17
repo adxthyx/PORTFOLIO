@@ -16,7 +16,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const portfolioData = {
   about: {
     id: "about",
-    title: "About Me - Full Stack Developer & AI Enthusiast",
+    title: "About Me - Developer & Data Scientist",
     content: "Passionate full-stack developer with expertise in modern web technologies and AI/ML...",
     fullContent: `# About Me
 

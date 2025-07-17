@@ -32,7 +32,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
           <div className="flex items-start gap-4">
             {isAboutPost && (
               <img
-                src="/placeholder.svg?height=80&width=80"
+                src="/a.png"
                 alt="Profile"
                 className="w-20 h-20 rounded-full object-cover border-4 border-white/20"
               />

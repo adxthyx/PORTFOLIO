@@ -11,7 +11,7 @@ export function Sidebar() {
         <div className="flex items-center gap-3 mb-4">
           <div className="relative">
             <img
-              src="/placeholder.svg?height=48&width=48"
+              src="/a.png"
               alt="Profile"
               className="w-12 h-12 rounded-full object-cover border-2 border-[#FF4500]"
             />
@@ -19,7 +19,7 @@ export function Sidebar() {
           </div>
           <div>
             <h3 className="font-bold text-black dark:text-white">u/adxthyx</h3>
-            <p className="text-sm text-gray-500 dark:text-[#71717a]">Full Stack Developer</p>
+            <p className="text-sm text-gray-500 dark:text-[#71717a]">Developer/Data Scientist</p>
           </div>
         </div>
 
