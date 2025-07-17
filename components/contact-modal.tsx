@@ -28,28 +28,25 @@ export function ContactModal({ onClose }: ContactModalProps) {
     setIsSubmitting(true)
 
     try {
-      // Using EmailJS - no server credentials needed
-      const emailjs = (await import("@emailjs/browser")).default
-
-      await emailjs.send(
-        "service_your_service_id", // Replace with your EmailJS service ID
-        "template_your_template_id", // Replace with your EmailJS template ID
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-          to_name: "adxthyx",
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        "your_public_key", // Replace with your EmailJS public key
-      )
+        body: JSON.stringify(formData),
+      })
 
-      setSubmitStatus("success")
-      setFormData({ name: "", email: "", subject: "", message: "" })
-      setTimeout(() => {
-        onClose()
-      }, 2000)
+      if (response.ok) {
+        setSubmitStatus("success")
+        setFormData({ name: "", email: "", subject: "", message: "" })
+        setTimeout(() => {
+          onClose()
+        }, 2000)
+      } else {
+        setSubmitStatus("error")
+      }
     } catch (error) {
+      console.error("Contact form error:", error)
       setSubmitStatus("error")
     } finally {
       setIsSubmitting(false)
