@@ -10,15 +10,15 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
 
   const handleDownload = () => {
     const link = document.createElement("a")
-    link.href = "/placeholder/resume.pdf"
-    link.download = "adxthyx-resume.pdf"
+    link.href = "/resume.pdf"
+    link.download = "Adithya-resume.pdf"
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
   }
 
   const handleOpenInNewTab = () => {
-    window.open("/placeholder/resume.pdf", "_blank")
+    window.open("/resume.pdf", "_blank")
   }
 
   const handleLoad = () => {
@@ -97,7 +97,7 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
           )}
 
           <iframe
-            src="/placeholder/resume.pdf"
+            src="/resume.pdf"
             className="w-full h-full border-0"
             title="Resume PDF"
             onLoad={handleLoad}
