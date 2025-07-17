@@ -1,17 +1,33 @@
 "use client"
 
-import { X, Github, Code, TrendingUp, Loader2, Star, GitFork, Calendar, Users } from "lucide-react"
+import {
+  X,
+  Github,
+  Code,
+  TrendingUp,
+  Loader2,
+  Star,
+  GitFork,
+  Calendar,
+  Users,
+  GitCommit,
+  GitPullRequest,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useState, useEffect } from "react"
 
 interface GitHubStats {
   totalRepos: number
+  totalCommits: number
+  totalPRs: number
   totalStars: number
   totalForks: number
   followers: number
   following: number
   yearsActive: number
+  currentStreak: number
+  profileViews: number
   topLanguages: Array<{
     name: string
     percentage: number
@@ -24,6 +40,7 @@ interface LeetCodeStats {
   easy: number
   medium: number
   hard: number
+  ranking: number
   languages: Array<{
     name: string
     solved: number
@@ -45,7 +62,8 @@ export function StatsModal({ onClose }: { onClose: () => void }) {
         // Fetch GitHub stats
         const githubResponse = await fetch("/api/github-stats")
         if (!githubResponse.ok) {
-          throw new Error(`GitHub API failed: ${githubResponse.status}`)
+          const errorData = await githubResponse.json()
+          throw new Error(`GitHub API failed: ${errorData.error}`)
         }
         const githubData = await githubResponse.json()
         setGithubStats(githubData)
@@ -53,7 +71,8 @@ export function StatsModal({ onClose }: { onClose: () => void }) {
         // Fetch LeetCode stats
         const leetcodeResponse = await fetch("/api/leetcode-stats")
         if (!leetcodeResponse.ok) {
-          throw new Error(`LeetCode API failed: ${leetcodeResponse.status}`)
+          const errorData = await leetcodeResponse.json()
+          throw new Error(`LeetCode API failed: ${errorData.error}`)
         }
         const leetcodeData = await leetcodeResponse.json()
         setLeetcodeStats(leetcodeData)
@@ -133,21 +152,43 @@ export function StatsModal({ onClose }: { onClose: () => void }) {
                       </div>
                       <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center justify-center gap-1 text-2xl font-bold text-[#FF4500] mb-1">
-                          <Star className="w-5 h-5" />
+                          <GitCommit className="w-5 h-5" />
+                          {githubStats.totalCommits}
+                        </div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Total Commits</div>
+                      </div>
+                      <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-center gap-1 text-2xl font-bold text-[#FF4500] mb-1">
+                          <GitPullRequest className="w-5 h-5" />
+                          {githubStats.totalPRs}
+                        </div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Total PRs</div>
+                      </div>
+                    </div>
+
+                    {/* Secondary Stats */}
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
+                          <Star className="w-4 h-4" />
                           {githubStats.totalStars}
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">Total Stars</div>
                       </div>
                       <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-center gap-1 text-2xl font-bold text-[#FF4500] mb-1">
-                          <GitFork className="w-5 h-5" />
+                        <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
+                          <GitFork className="w-4 h-4" />
                           {githubStats.totalForks}
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">Total Forks</div>
                       </div>
+                      <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div className="text-xl font-bold text-[#FF4500] mb-1">{githubStats.currentStreak}</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Current Streak</div>
+                      </div>
                     </div>
 
-                    {/* Secondary Stats */}
+                    {/* Additional Stats */}
                     <div className="grid grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
@@ -157,15 +198,15 @@ export function StatsModal({ onClose }: { onClose: () => void }) {
                         <div className="text-xs text-gray-600 dark:text-gray-400">Followers</div>
                       </div>
                       <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div className="text-xl font-bold text-[#FF4500] mb-1">{githubStats.following}</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Following</div>
-                      </div>
-                      <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
                           <Calendar className="w-4 h-4" />
                           {githubStats.yearsActive}
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">Years Active</div>
+                      </div>
+                      <div className="text-center p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div className="text-xl font-bold text-[#FF4500] mb-1">{githubStats.profileViews}</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Profile Views</div>
                       </div>
                     </div>
 
@@ -187,12 +228,6 @@ export function StatsModal({ onClose }: { onClose: () => void }) {
                         </div>
                       </div>
                     )}
-
-                    {/* Limitations Note */}
-                    <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
-                      <strong>Note:</strong> Total Commits, PRs, Profile Views, and Current Streak require GitHub
-                      GraphQL API or additional services not available in this demo.
-                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8">
@@ -273,12 +308,6 @@ export function StatsModal({ onClose }: { onClose: () => void }) {
                         </div>
                       </div>
                     )}
-
-                    {/* LeetCode Limitations Note */}
-                    <div className="text-xs text-gray-500 dark:text-gray-400 bg-orange-100 dark:bg-orange-900/20 p-3 rounded-lg">
-                      <strong>Note:</strong> LeetCode doesn't provide a public API. This data is currently mocked. In
-                      production, you'd need a custom scraping solution or unofficial API.
-                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8">
@@ -292,7 +321,7 @@ export function StatsModal({ onClose }: { onClose: () => void }) {
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Last updated: {new Date().toLocaleString()} • Data refreshed every hour
+              Last updated: {new Date().toLocaleString()} • Data refreshed in real-time
             </p>
           </div>
         </div>

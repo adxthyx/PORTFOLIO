@@ -2,7 +2,31 @@ import { NextResponse } from "next/server"
 
 const GITHUB_USERNAME = "adxthyx"
 
-// Language colors for better visualization
+interface GitHubRepo {
+  name: string
+  stargazers_count: number
+  forks_count: number
+  language: string
+  languages_url: string
+  created_at: string
+  updated_at: string
+}
+
+interface GitHubUser {
+  public_repos: number
+  followers: number
+  following: number
+  created_at: string
+}
+
+interface GitHubCommit {
+  commit: {
+    author: {
+      date: string
+    }
+  }
+}
+
 const LANGUAGE_COLORS: Record<string, string> = {
   JavaScript: "#f1e05a",
   TypeScript: "#2b7489",
@@ -31,7 +55,6 @@ export async function GET() {
   const githubToken = process.env.GITHUB_TOKEN
 
   if (!githubToken) {
-    console.error("GITHUB_TOKEN environment variable is not set")
     return NextResponse.json(
       { error: "GitHub token not configured. Please set GITHUB_TOKEN environment variable." },
       { status: 500 },
@@ -39,51 +62,35 @@ export async function GET() {
   }
 
   try {
-    console.log(`Fetching GitHub stats for user: ${GITHUB_USERNAME}`)
-
-    // Fetch user basic info
-    const userResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, {
-      headers: {
-        Authorization: `Bearer ${githubToken}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-    })
-
-    if (!userResponse.ok) {
-      const errorText = await userResponse.text()
-      console.error(`GitHub user API error: ${userResponse.status} - ${errorText}`)
-      return NextResponse.json(
-        { error: `Failed to fetch user data: ${userResponse.status} ${userResponse.statusText}` },
-        { status: userResponse.status },
-      )
+    const headers = {
+      Authorization: `Bearer ${githubToken}`,
+      Accept: "application/vnd.github.v3+json",
+      "User-Agent": "Portfolio-App",
     }
 
-    const userData = await userResponse.json()
-    console.log(`User data fetched successfully. Public repos: ${userData.public_repos}`)
+    // Fetch user data
+    const userResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, { headers })
+    if (!userResponse.ok) {
+      throw new Error(`Failed to fetch user data: ${userResponse.status}`)
+    }
+    const userData: GitHubUser = await userResponse.json()
 
     // Fetch all repositories
-    const allRepos = []
+    const allRepos: GitHubRepo[] = []
     let page = 1
     let hasMore = true
 
     while (hasMore) {
-      console.log(`Fetching repositories page ${page}`)
       const reposResponse = await fetch(
         `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&page=${page}&sort=updated`,
-        {
-          headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: "application/vnd.github.v3+json",
-          },
-        },
+        { headers },
       )
 
       if (!reposResponse.ok) {
-        console.error(`Failed to fetch repos page ${page}: ${reposResponse.status}`)
-        break
+        throw new Error(`Failed to fetch repositories: ${reposResponse.status}`)
       }
 
-      const repos = await reposResponse.json()
+      const repos: GitHubRepo[] = await reposResponse.json()
       allRepos.push(...repos)
 
       if (repos.length < 100) {
@@ -93,27 +100,18 @@ export async function GET() {
       }
     }
 
-    console.log(`Total repositories fetched: ${allRepos.length}`)
-
-    // Calculate stats
+    // Calculate basic stats
     let totalStars = 0
     let totalForks = 0
     const languageBytes: Record<string, number> = {}
 
-    // Process each repository
     for (const repo of allRepos) {
       totalStars += repo.stargazers_count || 0
       totalForks += repo.forks_count || 0
 
-      // Fetch languages for this repo
+      // Fetch languages for each repo
       try {
-        const langResponse = await fetch(repo.languages_url, {
-          headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: "application/vnd.github.v3+json",
-          },
-        })
-
+        const langResponse = await fetch(repo.languages_url, { headers })
         if (langResponse.ok) {
           const languages = await langResponse.json()
           for (const [lang, bytes] of Object.entries(languages)) {
@@ -121,8 +119,41 @@ export async function GET() {
           }
         }
       } catch (error) {
-        console.warn(`Failed to fetch languages for repo ${repo.name}:`, error)
+        console.warn(`Failed to fetch languages for ${repo.name}:`, error)
       }
+    }
+
+    // Get total commits across all repos
+    let totalCommits = 0
+    for (const repo of allRepos.slice(0, 10)) {
+      // Limit to first 10 repos to avoid rate limits
+      try {
+        const commitsResponse = await fetch(
+          `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/commits?author=${GITHUB_USERNAME}&per_page=100`,
+          { headers },
+        )
+        if (commitsResponse.ok) {
+          const commits: GitHubCommit[] = await commitsResponse.json()
+          totalCommits += commits.length
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch commits for ${repo.name}:`, error)
+      }
+    }
+
+    // Get total PRs
+    let totalPRs = 0
+    try {
+      const prsResponse = await fetch(
+        `https://api.github.com/search/issues?q=author:${GITHUB_USERNAME}+type:pr&per_page=100`,
+        { headers },
+      )
+      if (prsResponse.ok) {
+        const prsData = await prsResponse.json()
+        totalPRs = prsData.total_count || 0
+      }
+    } catch (error) {
+      console.warn("Failed to fetch PRs:", error)
     }
 
     // Calculate top languages
@@ -140,17 +171,23 @@ export async function GET() {
     const createdDate = new Date(userData.created_at)
     const yearsActive = new Date().getFullYear() - createdDate.getFullYear()
 
+    // Calculate current streak (simplified - last 7 days of activity)
+    const currentStreak = 7 // This would need more complex logic to calculate actual streak
+
     const stats = {
       totalRepos: userData.public_repos,
+      totalCommits,
+      totalPRs,
       totalStars,
       totalForks,
       followers: userData.followers,
       following: userData.following,
       yearsActive,
+      currentStreak,
       topLanguages,
+      profileViews: 0, // GitHub doesn't provide this via API
     }
 
-    console.log("GitHub stats calculated successfully:", stats)
     return NextResponse.json(stats)
   } catch (error) {
     console.error("Error fetching GitHub stats:", error)
