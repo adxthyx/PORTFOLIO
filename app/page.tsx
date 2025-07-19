@@ -101,7 +101,7 @@ Leading a team of 5 developers in building enterprise-scale applications serving
 - 🔧 Implemented CI/CD pipelines that decreased bug reports by 35%
 
 ### Technologies Used:
-React, Node.js, PostgreSQL, AWS, Docker, Kubernetes, TypeScript
+Python, Flask, TypeScript, NextJS, JavaScript, SQL, HTML, CSS
 
 ---
 
@@ -121,8 +121,8 @@ Vue.js, Python, Django, MongoDB, Stripe API, Redis
 
 ---
 
-## Junior Developer @ WebSolutions Inc
-**2019 - 2020 | New York, NY**
+## SDE Intern @ Hewlett Packard Enterprise
+**Feb 2025 - August 2025 | Bengaluru, Karnataka**
 
 Started my professional journey building websites and learning industry best practices.
 
@@ -148,52 +148,51 @@ HTML, CSS, JavaScript, PHP, MySQL, WordPress`,
     content: "Computer Science degree plus continuous learning through certifications...",
     fullContent: `# Education & Certifications
 
-## 🎓 Bachelor of Science in Computer Science
-**University of Technology | 2015 - 2019**
-- **GPA:** 3.8/4.0
+## 🎓 Bachelor of Engineering in Artificial Intelligence and Machine Learning
+**Ramaiah Institute of Technology | 2021 - 2025**
+- **CGPA:** 8.8/10.0
 - **Relevant Coursework:** Data Structures, Algorithms, Database Systems, Software Engineering, Machine Learning
-- **Senior Project:** AI-powered recommendation system for e-commerce platforms
-- **Activities:** President of Computer Science Club, Hackathon organizer
+- **Senior Project:** LLM Powered Solution for Supply and Demand Planners and AI Powered CLI System
 
 ---
 
-## 📜 Professional Certifications
+// ## 📜 Professional Certifications
 
-### AWS Certified Solutions Architect
-**Amazon Web Services | 2023**
-- Cloud architecture and deployment
-- Scalable system design
-- Security best practices
+// ### AWS Certified Solutions Architect
+// **Amazon Web Services | 2023**
+// - Cloud architecture and deployment
+// - Scalable system design
+// - Security best practices
 
-### Google Cloud Professional Developer
-**Google Cloud Platform | 2022**
-- Application development on GCP
-- Containerization and orchestration
-- CI/CD implementation
+// ### Google Cloud Professional Developer
+// **Google Cloud Platform | 2022**
+// - Application development on GCP
+// - Containerization and orchestration
+// - CI/CD implementation
 
-### MongoDB Certified Developer
-**MongoDB University | 2021**
-- Database design and optimization
-- Aggregation framework
-- Performance tuning
+// ### MongoDB Certified Developer
+// **MongoDB University | 2021**
+// - Database design and optimization
+// - Aggregation framework
+// - Performance tuning
 
----
+// ---
 
-## 📚 Continuous Learning
+// ## 📚 Continuous Learning
 
-### Online Courses Completed:
-- **Machine Learning Specialization** - Stanford University (Coursera)
-- **Full Stack Web Development** - The Odin Project
-- **Advanced React Patterns** - Kent C. Dodds
-- **System Design Interview** - Grokking the System Design
+// ### Online Courses Completed:
+// - **Machine Learning Specialization** - Stanford University (Coursera)
+// - **Full Stack Web Development** - The Odin Project
+// - **Advanced React Patterns** - Kent C. Dodds
+// - **System Design Interview** - Grokking the System Design
 
-### Workshops & Conferences:
-- **React Conf 2023** - Speaker on "Building Accessible Components"
-- **AI/ML Summit 2022** - Attendee
-- **DockerCon 2022** - Workshop participant
-- **Local Tech Meetups** - Regular attendee and occasional speaker
+// ### Workshops & Conferences:
+// - **React Conf 2023** - Speaker on "Building Accessible Components"
+// - **AI/ML Summit 2022** - Attendee
+// - **DockerCon 2022** - Workshop participant
+// - **Local Tech Meetups** - Regular attendee and occasional speaker
 
----
+// ---
 
 ## 🏆 Academic Achievements
 - Dean's List for 6 consecutive semesters
@@ -237,9 +236,9 @@ HTML, CSS, JavaScript, PHP, MySQL, WordPress`,
 - **MongoDB** - Document modeling and aggregation pipelines
 
 ### Proficient:
-- **Go** - Concurrent programming and API development
-- **Redis** - Caching strategies and session management
-- **GraphQL** - Schema design and resolver optimization
+- **Python** - Concurrent programming and API development
+- **JavaScript/TypeScript** - Development Projects
+- **SQL** - Schema design and resolver optimization
 - **REST APIs** - Design patterns and best practices
 
 ---
@@ -254,7 +253,6 @@ HTML, CSS, JavaScript, PHP, MySQL, WordPress`,
 ### Specialized Areas:
 - **Natural Language Processing** - Text analysis and chatbots
 - **Computer Vision** - Image recognition and processing
-- **Recommendation Systems** - Collaborative and content-based filtering
 - **Time Series Analysis** - Forecasting and anomaly detection
 
 ---
