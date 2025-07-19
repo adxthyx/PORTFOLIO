@@ -89,8 +89,8 @@ I believe in the power of technology to solve real-world problems. Whether it's 
     content: "From junior developer to senior full-stack engineer, here's my career progression...",
     fullContent: `# Professional Experience
 
-## Senior Full Stack Developer @ TechCorp
-**2022 - Present | San Francisco, CA**
+## Data Scientist @ Hewlett Packard Enterprise
+**Sept 2025 - Present | Bengaluru, Karnataka**
 
 Leading a team of 5 developers in building enterprise-scale applications serving 100K+ users daily.
 
@@ -105,32 +105,16 @@ Python, Flask, TypeScript, NextJS, JavaScript, SQL, HTML, CSS
 
 ---
 
-## Full Stack Developer @ StartupXYZ
-**2020 - 2022 | Remote**
-
-Built the entire frontend and backend infrastructure for a fintech startup from ground up.
-
-### Key Achievements:
-- 💰 Developed payment processing system handling $2M+ in transactions
-- 📱 Created responsive web app with 99.9% uptime
-- 🔐 Implemented OAuth2 authentication system
-- 📈 Optimized database queries, reducing load times by 50%
-
-### Technologies Used:
-Vue.js, Python, Django, MongoDB, Stripe API, Redis
-
----
-
-## SDE Intern @ Hewlett Packard Enterprise
+## Intern @ Hewlett Packard Enterprise
 **Feb 2025 - August 2025 | Bengaluru, Karnataka**
 
-Started my professional journey building websites and learning industry best practices.
-
-### Key Achievements:
-- 🌐 Developed 15+ client websites with 100% client satisfaction
-- 📚 Completed advanced training in React and Node.js
-- 🤝 Collaborated with design team to improve UI/UX workflows
-- 🏆 Won "Rookie of the Year" award
+Started my professional journey building Dashboards and Agentic AI solution and Python Automation
+Loading....
+// ### Key Achievements:
+// - 🌐 Developed 15+ client websites with 100% client satisfaction
+// - 📚 Completed advanced training in React and Node.js
+// - 🤝 Collaborated with design team to improve UI/UX workflows
+// - 🏆 Won "Rookie of the Year" award
 
 ### Technologies Used:
 HTML, CSS, JavaScript, PHP, MySQL, WordPress`,
