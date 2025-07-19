@@ -13,6 +13,7 @@ import { SettingsModal } from "@/components/settings-modal"
 import { ResumeModal } from "@/components/resume-modal"
 import { ThemeProvider } from "@/components/theme-provider"
 
+
 interface GitHubStats {
   totalRepos: number
   totalCommits: number
