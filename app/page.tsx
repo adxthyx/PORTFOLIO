@@ -629,11 +629,11 @@ export default function Portfolio() {
     <ThemeProvider>
       <div className="min-h-screen bg-[#dae0e6] dark:bg-gray-900 transition-colors duration-300">
         <Header onNavAction={handleNavAction} onSearch={handleSearch} searchQuery={searchQuery} />
-        <div className="max-w-7xl mx-auto flex gap-6 p-4">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4">
           <div className="flex-1 space-y-4">
             {/* Filter Tabs */}
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap justify-start sm:justify-start">
                 {[
                   { key: "all", label: "All Posts", icon: "🏠" },
                   { key: "main", label: "About & Skills", icon: "👤" },
@@ -646,18 +646,20 @@ export default function Portfolio() {
                       setActiveFilter(filter.key)
                       setSearchQuery("")
                     }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
                       activeFilter === filter.key
                         ? "bg-[#FF4500] text-white shadow-lg transform scale-105"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-102"
                     }`}
                   >
-                    {filter.icon} {filter.label}
+                    <span className="hidden sm:inline">{filter.icon} </span>
+                    <span className="sm:hidden">{filter.icon}</span>
+                    <span className="hidden sm:inline">{filter.label}</span>
                   </button>
                 ))}
               </div>
               {searchQuery && (
-                <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                <div className="mt-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   Showing results for: <span className="font-medium text-[#FF4500]">"{searchQuery}"</span>
                 </div>
               )}
@@ -670,9 +672,11 @@ export default function Portfolio() {
               ))
             ) : (
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center transition-colors duration-300">
-                <div className="text-gray-400 text-6xl mb-4">🔍</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No results found</h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <div className="text-gray-400 text-4xl sm:text-6xl mb-4">🔍</div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  No results found
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                   {searchQuery
                     ? `No posts found matching "${searchQuery}". Try different keywords.`
                     : "No posts available in this category."}
@@ -680,6 +684,13 @@ export default function Portfolio() {
               </div>
             )}
           </div>
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        </div>
+
+        {/* Mobile Sidebar - visible on mobile, hidden on lg */}
+        <div className="lg:hidden px-4 pb-4">
           <Sidebar />
         </div>
 

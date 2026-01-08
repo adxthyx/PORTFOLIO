@@ -6,15 +6,11 @@ import { Github, Linkedin, Twitter, Mail, ExternalLink, Award, Calendar, Trendin
 
 export function Sidebar() {
   return (
-    <div className="w-80 space-y-4">
+    <div className="w-full lg:w-80 space-y-4">
       <Card className="p-4 bg-white dark:bg-[#161618] border border-gray-200 dark:border-[#27272a] hover:shadow-md transition-shadow duration-200">
         <div className="flex items-center gap-3 mb-4">
           <div className="relative">
-            <img
-              src="/a.png"
-              alt="Profile"
-              className="w-12 h-12 rounded-full object-cover border-2 border-[#FF4500]"
-            />
+            <img src="/a.png" alt="Profile" className="w-12 h-12 rounded-full object-cover border-2 border-[#FF4500]" />
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-[#161618]"></div>
           </div>
           <div>
@@ -53,7 +49,7 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105"
+              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105 text-sm"
               onClick={() => window.open("https://github.com/adxthyx", "_blank")}
             >
               <Github className="w-4 h-4 mr-2" />
@@ -63,7 +59,7 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105"
+              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105 text-sm"
               onClick={() => window.open("https://linkedin.com/in/adxthyx", "_blank")}
             >
               <Linkedin className="w-4 h-4 mr-2" />
@@ -73,7 +69,7 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105"
+              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105 text-sm"
               onClick={() => window.open("https://twitter.com/adxthyx", "_blank")}
             >
               <Twitter className="w-4 h-4 mr-2" />
@@ -83,7 +79,7 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105"
+              className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105 text-sm"
               onClick={() => window.open("mailto:your.email@example.com", "_blank")}
             >
               <Mail className="w-4 h-4 mr-2" />
@@ -98,29 +94,29 @@ export function Sidebar() {
         <h3 className="font-bold text-black dark:text-white mb-3">Tech Communities</h3>
         <div className="space-y-3">
           <div className="flex items-center gap-3 text-sm hover:bg-gray-50 dark:hover:bg-[#1a1a1c] p-2 rounded transition-colors cursor-pointer">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               r/
             </div>
-            <div className="flex-1">
-              <div className="text-black dark:text-white font-medium">webdev</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-black dark:text-white font-medium truncate">webdev</div>
               <div className="text-gray-500 dark:text-[#71717a] text-xs">2.1M members</div>
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm hover:bg-gray-50 dark:hover:bg-[#1a1a1c] p-2 rounded transition-colors cursor-pointer">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               r/
             </div>
-            <div className="flex-1">
-              <div className="text-black dark:text-white font-medium">reactjs</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-black dark:text-white font-medium truncate">reactjs</div>
               <div className="text-gray-500 dark:text-[#71717a] text-xs">1.8M members</div>
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm hover:bg-gray-50 dark:hover:bg-[#1a1a1c] p-2 rounded transition-colors cursor-pointer">
-            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               r/
             </div>
-            <div className="flex-1">
-              <div className="text-black dark:text-white font-medium">MachineLearning</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-black dark:text-white font-medium truncate">MachineLearning</div>
               <div className="text-gray-500 dark:text-[#71717a] text-xs">2.8M members</div>
             </div>
           </div>
