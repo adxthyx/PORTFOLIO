@@ -3,7 +3,8 @@
 import type React from "react"
 
 import { useState } from "react"
-import { ArrowUp, ArrowDown, MessageSquare, Share, Bookmark, Eye, Github } from "lucide-react"
+import { MessageSquare, Share, Bookmark, Eye, Github } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -41,6 +42,7 @@ export function PostCard({
   const [userVote, setUserVote] = useState<"up" | "down" | null>(null)
   const [currentUpvotes, setCurrentUpvotes] = useState(upvotes)
   const [isHovered, setIsHovered] = useState(false)
+  const [hoveredVote, setHoveredVote] = useState<"up" | "down" | null>(null)
 
   const handleVote = (voteType: "up" | "down", e: React.MouseEvent) => {
     e.stopPropagation()
@@ -76,21 +78,31 @@ export function PostCard({
           <Button
             variant="ghost"
             size="sm"
-            className={`p-1 h-auto transition-all duration-200 ${
+            className={`p-2 h-auto rounded-md transition-all duration-200 ${
               userVote === "up"
-                ? "text-[#FF4500] bg-orange-50 dark:bg-orange-900/20 scale-110"
-                : "text-gray-400 hover:text-[#FF4500] hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:scale-110"
+                ? "!bg-orange-500 dark:!bg-orange-600"
+                : hoveredVote === "up"
+                  ? "!bg-orange-500 dark:!bg-orange-600/70"
+                  : "hover:!bg-orange-500 dark:hover:!bg-orange-600/70"
             }`}
             onClick={(e) => handleVote("up", e)}
+            onMouseEnter={() => setHoveredVote("up")}
+            onMouseLeave={() => setHoveredVote(null)}
           >
-            <ArrowUp className="w-5 h-5" />
+            <Image
+              src={userVote === "up" || hoveredVote === "up" ? "/white-upvote.svg" : "/black-upvote.svg"}
+              alt="Upvote"
+              width={28}
+              height={28}
+              className="w-7 h-7"
+            />
           </Button>
           <span
             className={`text-sm font-bold transition-all duration-200 ${
               userVote === "up"
-                ? "text-[#FF4500] scale-110"
+                ? "text-[#FF4500]"
                 : userVote === "down"
-                  ? "text-[#7193FF] scale-110"
+                  ? "text-[#7193FF]"
                   : "text-gray-600 dark:text-gray-400"
             }`}
           >
@@ -99,14 +111,24 @@ export function PostCard({
           <Button
             variant="ghost"
             size="sm"
-            className={`p-1 h-auto transition-all duration-200 ${
+            className={`p-2 h-auto rounded-md transition-all duration-200 ${
               userVote === "down"
-                ? "text-[#7193FF] bg-blue-50 dark:bg-blue-900/20 scale-110"
-                : "text-gray-400 hover:text-[#7193FF] hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:scale-110"
+                ? "!bg-blue-500 dark:!bg-blue-600"
+                : hoveredVote === "down"
+                  ? "!bg-blue-500 dark:!bg-blue-600/70"
+                  : "hover:!bg-blue-500 dark:hover:!bg-blue-600/70"
             }`}
             onClick={(e) => handleVote("down", e)}
+            onMouseEnter={() => setHoveredVote("down")}
+            onMouseLeave={() => setHoveredVote(null)}
           >
-            <ArrowDown className="w-5 h-5" />
+            <Image
+              src={userVote === "down" || hoveredVote === "down" ? "/white-upvote.svg" : "/black-upvote.svg"}
+              alt="Downvote"
+              width={28}
+              height={28}
+              className="w-7 h-7 rotate-180"
+            />
           </Button>
         </div>
 
@@ -115,21 +137,31 @@ export function PostCard({
           <Button
             variant="ghost"
             size="sm"
-            className={`p-1 h-auto transition-all duration-200 ${
+            className={`p-2 h-auto rounded-md transition-all duration-200 ${
               userVote === "up"
-                ? "text-[#FF4500] bg-orange-50 dark:bg-orange-900/20 scale-110"
-                : "text-gray-400 hover:text-[#FF4500] hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:scale-110"
+                ? "!bg-orange-500 dark:!bg-orange-600"
+                : hoveredVote === "up"
+                  ? "!bg-orange-500 dark:!bg-orange-600/70"
+                  : "hover:!bg-orange-500 dark:hover:!bg-orange-600/70"
             }`}
             onClick={(e) => handleVote("up", e)}
+            onMouseEnter={() => setHoveredVote("up")}
+            onMouseLeave={() => setHoveredVote(null)}
           >
-            <ArrowUp className="w-4 h-4" />
+            <Image
+              src={userVote === "up" || hoveredVote === "up" ? "/white-upvote.svg" : "/black-upvote.svg"}
+              alt="Upvote"
+              width={24}
+              height={24}
+              className="w-6 h-6"
+            />
           </Button>
           <span
             className={`text-sm font-bold transition-all duration-200 min-w-[40px] text-center ${
               userVote === "up"
-                ? "text-[#FF4500] scale-110"
+                ? "text-[#FF4500]"
                 : userVote === "down"
-                  ? "text-[#7193FF] scale-110"
+                  ? "text-[#7193FF]"
                   : "text-gray-600 dark:text-gray-400"
             }`}
           >
@@ -138,14 +170,24 @@ export function PostCard({
           <Button
             variant="ghost"
             size="sm"
-            className={`p-1 h-auto transition-all duration-200 ${
+            className={`p-2 h-auto rounded-md transition-all duration-200 ${
               userVote === "down"
-                ? "text-[#7193FF] bg-blue-50 dark:bg-blue-900/20 scale-110"
-                : "text-gray-400 hover:text-[#7193FF] hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:scale-110"
+                ? "!bg-blue-500 dark:!bg-blue-600"
+                : hoveredVote === "down"
+                  ? "!bg-blue-500 dark:!bg-blue-600/70"
+                  : "hover:!bg-blue-500 dark:hover:!bg-blue-600/70"
             }`}
             onClick={(e) => handleVote("down", e)}
+            onMouseEnter={() => setHoveredVote("down")}
+            onMouseLeave={() => setHoveredVote(null)}
           >
-            <ArrowDown className="w-4 h-4" />
+            <Image
+              src={userVote === "down" || hoveredVote === "down" ? "/white-upvote.svg" : "/black-upvote.svg"}
+              alt="Downvote"
+              width={24}
+              height={24}
+              className="w-6 h-6 rotate-180"
+            />
           </Button>
         </div>
 

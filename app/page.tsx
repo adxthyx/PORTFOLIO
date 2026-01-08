@@ -641,7 +641,7 @@ export default function Portfolio() {
           <div className="flex-1 space-y-3 sm:space-y-4">
             {/* Filter Tabs */}
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 transition-colors duration-300">
-              <div className="flex gap-2 flex-wrap justify-start sm:justify-start overflow-x-auto pb-2 sm:pb-0">
+              <div className="grid grid-cols-4 gap-1 sm:gap-2">
                 {[
                   { key: "all", label: "All Posts", icon: "🏠" },
                   { key: "main", label: "About & Skills", icon: "👤" },
@@ -654,15 +654,14 @@ export default function Portfolio() {
                       setActiveFilter(filter.key)
                       setSearchQuery("")
                     }}
-                    className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    className={`flex items-center justify-center gap-0.5 sm:gap-1 md:gap-2 px-1 sm:px-2 md:px-3 py-1.5 sm:py-2 rounded-full text-[10px] xs:text-xs sm:text-sm font-medium transition-all duration-200 ${
                       activeFilter === filter.key
                         ? "bg-[#FF4500] text-white shadow-lg transform scale-105"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-102"
                     }`}
                   >
-                    <span className="hidden sm:inline">{filter.icon} </span>
-                    <span className="sm:hidden">{filter.icon}</span>
-                    <span className="hidden sm:inline">{filter.label}</span>
+                    <span className="text-xs sm:text-sm">{filter.icon}</span>
+                    <span className="truncate leading-tight">{filter.label}</span>
                   </button>
                 ))}
               </div>
