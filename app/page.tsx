@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { PostCard } from "@/components/post-card"
-import { Sidebar } from "@/components/sidebar"
+import { Sidebar, ProfileCard } from "@/components/sidebar"
 import { PostModal } from "@/components/post-modal"
 import { ContactModal } from "@/components/contact-modal"
 import { AchievementsModal } from "@/components/achievements-modal"
@@ -629,11 +629,19 @@ export default function Portfolio() {
     <ThemeProvider>
       <div className="min-h-screen bg-[#dae0e6] dark:bg-gray-900 transition-colors duration-300">
         <Header onNavAction={handleNavAction} onSearch={handleSearch} searchQuery={searchQuery} />
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4">
-          <div className="flex-1 space-y-4">
+        
+        {/* Mobile Profile Card - shown before posts on mobile */}
+        <div className="lg:hidden px-3 sm:px-4 pt-3 sm:pt-4">
+          <div className="max-w-7xl mx-auto">
+            <ProfileCard />
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 p-3 sm:p-4">
+          <div className="flex-1 space-y-3 sm:space-y-4">
             {/* Filter Tabs */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
-              <div className="flex gap-2 flex-wrap justify-start sm:justify-start">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 transition-colors duration-300">
+              <div className="flex gap-2 flex-wrap justify-start sm:justify-start overflow-x-auto pb-2 sm:pb-0">
                 {[
                   { key: "all", label: "All Posts", icon: "🏠" },
                   { key: "main", label: "About & Skills", icon: "👤" },
@@ -689,9 +697,11 @@ export default function Portfolio() {
           </div>
         </div>
 
-        {/* Mobile Sidebar - visible on mobile, hidden on lg */}
-        <div className="lg:hidden px-4 pb-4">
-          <Sidebar />
+        {/* Mobile Sidebar - Tech Communities and Recent Activity at bottom on mobile */}
+        <div className="lg:hidden px-3 sm:px-4 pb-3 sm:pb-4">
+          <div className="max-w-7xl mx-auto">
+            <Sidebar />
+          </div>
         </div>
 
         {/* Modals */}

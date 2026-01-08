@@ -71,6 +71,7 @@ export function PostCard({
       onClick={onClick}
     >
       <div className="flex flex-col sm:flex-row">
+        {/* Desktop Vote Buttons - Vertical */}
         <div className="hidden sm:flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-700 border-r dark:border-gray-600 border-gray-200 min-w-[60px]">
           <Button
             variant="ghost"
@@ -109,8 +110,47 @@ export function PostCard({
           </Button>
         </div>
 
-        <div className="flex-1 p-3 sm:p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2">
+        {/* Mobile Vote Buttons - Horizontal */}
+        <div className="sm:hidden flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 border-gray-200">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`p-1 h-auto transition-all duration-200 ${
+              userVote === "up"
+                ? "text-[#FF4500] bg-orange-50 dark:bg-orange-900/20 scale-110"
+                : "text-gray-400 hover:text-[#FF4500] hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:scale-110"
+            }`}
+            onClick={(e) => handleVote("up", e)}
+          >
+            <ArrowUp className="w-4 h-4" />
+          </Button>
+          <span
+            className={`text-sm font-bold transition-all duration-200 min-w-[40px] text-center ${
+              userVote === "up"
+                ? "text-[#FF4500] scale-110"
+                : userVote === "down"
+                  ? "text-[#7193FF] scale-110"
+                  : "text-gray-600 dark:text-gray-400"
+            }`}
+          >
+            {currentUpvotes}
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`p-1 h-auto transition-all duration-200 ${
+              userVote === "down"
+                ? "text-[#7193FF] bg-blue-50 dark:bg-blue-900/20 scale-110"
+                : "text-gray-400 hover:text-[#7193FF] hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:scale-110"
+            }`}
+            onClick={(e) => handleVote("down", e)}
+          >
+            <ArrowDown className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <div className="flex-1 p-3 sm:p-4 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 flex-wrap">
             <span className="font-medium text-[#FF4500] hover:underline cursor-pointer">{subreddit}</span>
             <span className="hidden sm:inline">•</span>
             <span className="hover:underline cursor-pointer">Posted by {author}</span>

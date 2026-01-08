@@ -106,44 +106,44 @@ export function AchievementsModal({ onClose }: AchievementsModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden transition-colors duration-300">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
-              <Trophy className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-black dark:text-white">Achievements & Certifications</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Professional accomplishments and recognitions</p>
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-bold text-black dark:text-white">Achievements & Certifications</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm hidden sm:block">Professional accomplishments and recognitions</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="grid gap-4">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]">
+          <div className="grid gap-3 sm:gap-4">
             {achievements.map((achievement, index) => (
               <div
                 key={index}
-                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 sm:p-4 hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-[#FF4500] to-[#FF6B35] rounded-full flex items-center justify-center text-white flex-shrink-0">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-[#FF4500] to-[#FF6B35] rounded-full flex items-center justify-center text-white flex-shrink-0">
                     {getIcon(achievement.type)}
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-semibold text-black dark:text-white text-lg">{achievement.title}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 font-medium">{achievement.issuer}</p>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{achievement.description}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-black dark:text-white text-base sm:text-lg break-words">{achievement.title}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 font-medium text-sm sm:text-base">{achievement.issuer}</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">{achievement.description}</p>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <Badge className={getTypeColor(achievement.type)}>{achievement.type}</Badge>
-                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm mt-2">
+                      <div className="text-left sm:text-right flex-shrink-0">
+                        <Badge className={`${getTypeColor(achievement.type)} text-xs`}>{achievement.type}</Badge>
+                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-2">
                           <Calendar className="w-3 h-3" />
                           {achievement.date}
                         </div>

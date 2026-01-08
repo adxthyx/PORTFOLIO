@@ -12,25 +12,25 @@ interface ProjectsModalProps {
 
 export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden transition-colors duration-300">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
-              <FolderOpen className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-black dark:text-white">All Projects</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Complete portfolio of my work</p>
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-bold text-black dark:text-white">All Projects</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm hidden sm:block">Complete portfolio of my work</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {projects.map((project) => (
               <Card
                 key={project.id}

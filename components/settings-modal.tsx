@@ -12,27 +12,27 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full transition-colors duration-300">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
-              <Monitor className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <Monitor className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-black dark:text-white">Settings</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Customize your experience</p>
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-bold text-black dark:text-white">Settings</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm hidden sm:block">Customize your experience</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium text-black dark:text-white mb-3">Theme Preference</h3>
+              <h3 className="font-medium text-black dark:text-white mb-3 text-sm sm:text-base">Theme Preference</h3>
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   variant={theme === "light" ? "default" : "outline"}

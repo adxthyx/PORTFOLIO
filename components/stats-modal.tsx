@@ -72,21 +72,21 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <TrendingUp className="w-5 h-5" />
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold">Coding Statistics Dashboard</h2>
-              <p className="text-white/80 text-sm">Real-time data from GitHub and LeetCode</p>
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-bold truncate">Coding Statistics Dashboard</h2>
+              <p className="text-white/80 text-xs sm:text-sm hidden sm:block">Real-time data from GitHub and LeetCode</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20">
-            <X className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20 flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
 
@@ -94,101 +94,103 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
         <div className="flex border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <button
             onClick={() => setActiveTab("github")}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+            className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors ${
               activeTab === "github"
                 ? "text-[#FF4500] border-b-2 border-[#FF4500] bg-gray-50 dark:bg-gray-800"
                 : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
             }`}
           >
-            <div className="flex items-center justify-center gap-2">
-              <Github className="w-4 h-4" />
-              GitHub Statistics
+            <div className="flex items-center justify-center gap-1 sm:gap-2">
+              <Github className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">GitHub Statistics</span>
+              <span className="sm:hidden">GitHub</span>
             </div>
           </button>
           <button
             onClick={() => setActiveTab("leetcode")}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+            className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors ${
               activeTab === "leetcode"
                 ? "text-[#FF4500] border-b-2 border-[#FF4500] bg-gray-50 dark:bg-gray-800"
                 : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
             }`}
           >
-            <div className="flex items-center justify-center gap-2">
-              <Code className="w-4 h-4" />
-              LeetCode Progress
+            <div className="flex items-center justify-center gap-1 sm:gap-2">
+              <Code className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">LeetCode Progress</span>
+              <span className="sm:hidden">LeetCode</span>
             </div>
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] bg-white dark:bg-gray-950">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-200px)] bg-white dark:bg-gray-950">
           {activeTab === "github" && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {githubStats ? (
                 <>
                   {/* Main Stats Grid */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="text-2xl font-bold text-[#FF4500] mb-1">{githubStats.totalRepos}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Total Repos</div>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-lg sm:text-2xl font-bold text-[#FF4500] mb-1">{githubStats.totalRepos}</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Total Repos</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-center gap-1 text-2xl font-bold text-[#FF4500] mb-1">
-                        <GitCommit className="w-5 h-5" />
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-center gap-1 text-lg sm:text-2xl font-bold text-[#FF4500] mb-1">
+                        <GitCommit className="w-4 h-4 sm:w-5 sm:h-5" />
                         {githubStats.totalCommits}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Total Commits</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Total Commits</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-center gap-1 text-2xl font-bold text-[#FF4500] mb-1">
-                        <GitPullRequest className="w-5 h-5" />
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-center gap-1 text-lg sm:text-2xl font-bold text-[#FF4500] mb-1">
+                        <GitPullRequest className="w-4 h-4 sm:w-5 sm:h-5" />
                         {githubStats.totalPRs}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Total PRs</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Total PRs</div>
                     </div>
                   </div>
 
                   {/* Secondary Stats */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
-                        <Star className="w-4 h-4" />
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-center gap-1 text-base sm:text-xl font-bold text-[#FF4500] mb-1">
+                        <Star className="w-3 h-3 sm:w-4 sm:h-4" />
                         {githubStats.totalStars}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Total Stars</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Total Stars</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
-                        <GitFork className="w-4 h-4" />
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-center gap-1 text-base sm:text-xl font-bold text-[#FF4500] mb-1">
+                        <GitFork className="w-3 h-3 sm:w-4 sm:h-4" />
                         {githubStats.totalForks}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Total Forks</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Total Forks</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="text-xl font-bold text-[#FF4500] mb-1">{githubStats.currentStreak}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Current Streak</div>
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-base sm:text-xl font-bold text-[#FF4500] mb-1">{githubStats.currentStreak}</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Current Streak</div>
                     </div>
                   </div>
 
                   {/* Additional Stats */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
-                        <Users className="w-4 h-4" />
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-center gap-1 text-base sm:text-xl font-bold text-[#FF4500] mb-1">
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                         {githubStats.followers}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Followers</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Followers</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-center gap-1 text-xl font-bold text-[#FF4500] mb-1">
-                        <Calendar className="w-4 h-4" />
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-center gap-1 text-base sm:text-xl font-bold text-[#FF4500] mb-1">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                         {githubStats.yearsActive}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Years Active</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Years Active</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="text-xl font-bold text-[#FF4500] mb-1">{githubStats.following}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Following</div>
+                    <div className="text-center p-2 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-base sm:text-xl font-bold text-[#FF4500] mb-1">{githubStats.following}</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Following</div>
                     </div>
                   </div>
 
@@ -224,9 +226,9 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
               {leetcodeStats ? (
                 <>
                   {/* Total Problems Solved */}
-                  <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="text-4xl font-bold text-[#FF4500] mb-2">{leetcodeStats.totalSolved}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Total Problems Solved</div>
+                  <div className="text-center p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="text-3xl sm:text-4xl font-bold text-[#FF4500] mb-2">{leetcodeStats.totalSolved}</div>
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Problems Solved</div>
                   </div>
 
                   {/* Difficulty Breakdown */}
@@ -264,11 +266,11 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
                   </div>
 
                   {/* Ranking */}
-                  <div className="text-center p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="text-2xl font-bold text-[#FF4500] mb-1">
+                  <div className="text-center p-3 sm:p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="text-xl sm:text-2xl font-bold text-[#FF4500] mb-1">
                       #{leetcodeStats.ranking.toLocaleString()}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Global Ranking</div>
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Global Ranking</div>
                   </div>
 
                   {/* Languages Used */}

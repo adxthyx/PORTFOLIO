@@ -14,20 +14,20 @@ interface HeaderProps {
 export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
   return (
     <header className="bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#27272a] sticky top-0 z-50 shadow-sm transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+      <div className="w-full px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
         <button
           onClick={() => onNavAction("home")}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
         >
-          <div className="w-8 h-8 bg-gradient-to-r from-[#FF4500] to-[#FF6B35] rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-sm">A</span>
+          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-[#FF4500] to-[#FF6B35] rounded-full flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-xs sm:text-sm">A</span>
           </div>
-          <span className="font-bold text-black dark:text-white text-lg sm:text-xl bg-gradient-to-r from-[#FF4500] to-[#FF6B35] bg-clip-text text-transparent">
+          <span className="font-bold text-black dark:text-white text-base sm:text-lg md:text-xl bg-gradient-to-r from-[#FF4500] to-[#FF6B35] bg-clip-text text-transparent">
             adxthyx
           </span>
         </button>
 
-        <div className="flex-1 w-full sm:max-w-2xl sm:mx-4">
+        <div className="flex-1 w-full sm:max-w-2xl sm:mx-4 order-3 sm:order-2">
           <div className="relative group">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#FF4500] transition-colors" />
             <Input
@@ -40,16 +40,16 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
         </div>
 
         <TooltipProvider>
-          <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          <div className="flex items-center justify-evenly sm:justify-end gap-1 sm:gap-2 overflow-x-auto w-full sm:flex-1 pb-1 sm:pb-0 order-2 sm:order-3 scrollbar-hide">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0"
+                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("achievements")}
                 >
-                  <Trophy className="w-5 h-5" />
+                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -62,10 +62,10 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0"
+                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("stats")}
                 >
-                  <BarChart3 className="w-5 h-5" />
+                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -78,10 +78,10 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0"
+                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("projects")}
                 >
-                  <FolderOpen className="w-5 h-5" />
+                  <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -94,10 +94,10 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0"
+                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("contact")}
                 >
-                  <MessageSquare className="w-5 h-5" />
+                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -110,10 +110,10 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0"
+                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("settings")}
                 >
-                  <Settings className="w-5 h-5" />
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -126,10 +126,10 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0"
+                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("resume")}
                 >
-                  <Download className="w-5 h-5" />
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -142,10 +142,10 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0"
+                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("profile")}
                 >
-                  <User className="w-5 h-5" />
+                  <User className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
