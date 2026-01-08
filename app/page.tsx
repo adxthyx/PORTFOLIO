@@ -48,33 +48,75 @@ interface LeetCodeStats {
 const portfolioData = {
   about: {
     id: "about",
-    title: "About Me - Developer & Data Scientist",
+    title: "About Me - Developer & Software Engineer",
     content: "Passionate full-stack developer with expertise in modern web technologies and AI/ML...",
     fullContent: `# About Me
 
-Hey there! 👋 I'm a passionate full-stack developer with a deep love for creating innovative solutions that make a real impact. My journey in tech started 5 years ago, and since then, I've been on an exciting adventure exploring everything from web development to artificial intelligence.
+🎓 **The Academic Chapter**
+Just graduated from Ramaiah Institute of Technology, Bengaluru with a degree in AI & Machine Learning (Class of 2025). The journey was wild - late night debugging sessions, project deadlines that made me question my life choices, and somehow managing to build some cool stuff along the way.
+Spent Feb-Aug 2025 as a Software Engineering Intern at HPE India, and now I've transitioned to a full-time role there. Still feels surreal that I'm getting paid to write code.
 
-## What Drives Me
-I believe in the power of technology to solve real-world problems. Whether it's building a seamless user interface or training a machine learning model, I approach every project with curiosity and dedication.
+💻 **What I Actually Do**
+I'm all about AI, Gen AI, and Forecasting. There's something addictive about building models that can predict stuff or generate content. LLMs are my current obsession - especially building practical applications with them.
+My comfort zone: Python, NextJS, FastAPI, Flask, JS, Streamlit (and honestly, too many more to list without sounding like I'm padding my resume 😅).
 
-## My Philosophy
-- **Clean Code**: I write code that's not just functional, but maintainable and elegant
-- **User-Centric**: Every line of code I write has the end user in mind
-- **Continuous Learning**: The tech world evolves fast, and so do I
-- **Collaboration**: The best solutions come from diverse perspectives working together
+**Tech Stack Preference:**
+**Frontend:** NextJS/ReactJS (I'm a frontend guy at heart)
+**Backend:** FastAPI (Python gang rise up)
+**Databases:** SQL and MongoDB (currently deepening my DBMS knowledge)
+**AI Stuff:** LangChain for LLM applications
 
-## When I'm Not Coding
-- 🎮 Gaming and exploring virtual worlds
-- 📚 Reading about emerging technologies
-- 🏃‍♂️ Running and staying active
-- 🎵 Listening to podcasts about tech and entrepreneurship
-- 🌱 Contributing to open-source projects
+If I had to pick my favorite tech combo: NextJS + FastAPI. Fast, modern, scalable. Chef's kiss.
+Coolest project? Built an LLM-powered code reviewer. It's like having a senior dev review your code 24/7 without the judgment (mostly).
 
-## Fun Facts
-- I've contributed to 15+ open-source projects
-- I can solve a Rubik's cube in under 2 minutes
-- I once built a chatbot that became my rubber duck debugging partner
-- I'm fluent in 3 programming languages and 2 human languages`,
+🏍️ **When I'm Not Coding**
+
+**The Active Stuff:**
+Bike riding - Nothing beats the feeling of wind in your face on a Bangalore highway
+Trekking/Hiking - Weekends are for nearby hill stations. Recently got into this and I'm hooked
+Sports - Football, badminton, cricket. Down to play anything, honestly
+Traveling - Sometimes. When the bank account allows it
+
+**The Indoor Stuff:**
+Gaming - BIG into story mode games. GTA 5, RDR2, Uncharted series, Spider-Man series, God of War series. If it has a good story, I'm playing it. Also FC25 (FIFA) when I want to rage quit
+Movies - Movie nights with friends are sacred
+Reading - Just started getting into books. Currently on self-help (I know, typical tech bro). Planning to dive into fantasy if I can build the habit
+
+**Music While Coding:**
+It's chaotic, honestly. Sometimes Kannada songs, otherwise English pop. Completely random - depends on the vibe and the bug I'm trying to fix.
+🌍 **Where I'm From**
+Originally from Belthangady (near Mangalore), currently based in Bangalore.
+Languages: Kannada, Tulu, Hindi (fluently) + can understand Tamil (thanks, Bangalore).
+
+☕ **Hot Takes & Random Facts**
+Coffee > Tea (Tea is a big NO. Both the drink and the gossip kind)
+Dark mode supremacy. Light mode users, why do you hate your eyes?
+Tabs > Spaces (fight me)
+I'm a vegetarian - one of the few things I'm picky about
+Got 2 Dachshund dogs (yes, the sausage dogs - they're adorable)
+Setup: MacBook for personal projects, Windows for office work. Trying to be a minimalist but failing slowly
+I'm extremely random. Down to try anything except food experiments (see: vegetarian)
+Social paradox: Sometimes love being alone, but get irritated if I'm alone too long 🤷‍♂️
+
+🎯 **What I'm About**
+Just started my career journey
+Amateur at everything, expert at nothing (yet)
+Active on social media but never post.
+Want to contribute to open source but haven't taken the plunge yet
+
+**The Goal:**
+I want to be the person everyone admires and seeks help from. That guy who knows his stuff and can actually help when someone's stuck. Building that reputation one project at a time.
+🚀 **What I'm Learning**
+Right now focusing on:
+
+ReactJS (getting really good at this)
+DBMS - SQL and MongoDB depth
+LangChain - for building better LLM applications
+Generally trying to go from "it works" to "it works well"
+
+📫 **Let's Connect**
+I'm active on GitHub, LinkedIn, and here on Reddit. Always down to discuss tech, swap project ideas, or debate why RDR2 has the best story in gaming history.
+If you're working on something cool or need help with AI/web dev stuff, hit me up. Still learning, but happy to figure things out together.`,
     upvotes: 342,
     comments: 67,
     subreddit: "r/webdev",
@@ -89,34 +131,19 @@ I believe in the power of technology to solve real-world problems. Whether it's 
     content: "From junior developer to senior full-stack engineer, here's my career progression...",
     fullContent: `# Professional Experience
 
-## Data Scientist @ Hewlett Packard Enterprise
-**Sept 2025 - Present | Bengaluru, Karnataka**
+SWE-1 @ Hewlett Packard Enterprise
+Sept 2025 - Present | Bengaluru, Karnataka**
 
-Leading a team of 5 developers in building enterprise-scale applications serving 100K+ users daily.
+Working as a Software Enginner focusing on AI/ML solutions and web applications using Python and NextJS.
 
-### Key Achievements:
-- 🚀 Increased application performance by 40% through code optimization
-- 👥 Mentored 8 junior developers, with 6 receiving promotions
-- 📊 Led migration to microservices architecture, reducing deployment time by 60%
-- 🔧 Implemented CI/CD pipelines that decreased bug reports by 35%
 
-### Technologies Used:
-Python, Flask, TypeScript, NextJS, JavaScript, SQL, HTML, CSS
-
----
-
-## Intern @ Hewlett Packard Enterprise
-**Feb 2025 - August 2025 | Bengaluru, Karnataka**
+Intern @ Hewlett Packard Enterprise
+Feb 2025 - August 2025 | Bengaluru, Karnataka**
 
 Started my professional journey building Dashboards and Agentic AI solution and Python Automation
-Loading....
-// ### Key Achievements:
-// - 🌐 Developed 15+ client websites with 100% client satisfaction
-// - 📚 Completed advanced training in React and Node.js
-// - 🤝 Collaborated with design team to improve UI/UX workflows
-// - 🏆 Won "Rookie of the Year" award
 
-### Technologies Used:
+
+echnologies Used:
 HTML, CSS, JavaScript, PHP, MySQL, WordPress`,
     upvotes: 189,
     comments: 34,

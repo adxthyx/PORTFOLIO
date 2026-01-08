@@ -15,6 +15,31 @@ export function PostModal({ post, onClose }: PostModalProps) {
 
   const isAboutPost = post.type === "about"
 
+  // Minimal markdown -> HTML converter for bold and headings
+  const convertMarkdownLite = (markdown: string): string => {
+    if (!markdown) return ""
+    // Escape HTML first
+    let escaped = markdown
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+
+    // Bold **text**
+    escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+
+    // Headings #, ##, ### at start of line - increased font sizes
+    const lines = escaped.split("\n")
+    const htmlLines = lines.map((line) => {
+      if (line.startsWith("### ")) return `<h1 class="text-2xl font-bold mb-3">${line.slice(4)}</h1>`
+      if (line.startsWith("## ")) return `<h1 class="text-3xl font-bold mb-4">${line.slice(3)}</h1>`
+      if (line.startsWith("# ")) return `<h1 class="text-4xl font-bold mb-5">${line.slice(2)}</h1>`
+      return line
+    })
+
+    // Preserve line breaks between regular lines
+    return htmlLines.join("<br/>")
+  }
+
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-[#0a0a0a] rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-[#27272a]">
@@ -94,9 +119,10 @@ export function PostModal({ post, onClose }: PostModalProps) {
               )}
 
               <div className="prose prose-lg max-w-none dark:prose-invert">
-                <div className="text-gray-700 dark:text-[#d4d4d8] leading-relaxed whitespace-pre-wrap">
-                  {post.fullContent || post.content}
-                </div>
+                <div
+                  className="text-gray-700 dark:text-[#d4d4d8] leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: convertMarkdownLite(post.fullContent || post.content) }}
+                />
               </div>
             </div>
           )}
