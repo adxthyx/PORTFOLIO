@@ -4,6 +4,8 @@ import { X, FolderOpen, Github, Eye, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
+import { CommentSection } from "@/components/comment-section"
+import { useEffect } from "react"
 
 interface ProjectsModalProps {
   projects: any[]
@@ -11,10 +13,31 @@ interface ProjectsModalProps {
 }
 
 export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
+  // Create context string from all projects
+  const projectsContext = projects.map((project, index) => 
+    `${index + 1}. ${project.title}: ${project.content}${project.tags ? ` (Tech: ${project.tags.join(', ')})` : ''}`
+  ).join('\n\n')
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = "unset"
+    }
+  }, [])
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300">
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
+      onClick={onClose}
+      onWheel={(e) => e.stopPropagation()}
+    >
+      <div 
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300 flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
               <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -29,7 +52,13 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
           </Button>
         </div>
 
-        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]">
+        {/* Content - Scrollable (75% of space) */}
+        <div 
+          className="flex-[3] min-h-0 overflow-y-auto"
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+        >
+          <div className="p-4 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {projects.map((project) => (
               <Card
@@ -93,6 +122,16 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
               </Card>
             ))}
           </div>
+          </div>
+        </div>
+
+        {/* Comment Section - Fixed at Bottom (25% of space) */}
+        <div className="flex-[1] min-h-0 max-h-[220px] border-t border-gray-200 dark:border-gray-700 overflow-hidden flex-shrink-0 flex flex-col">
+          <CommentSection
+            postTitle="All Projects"
+            context={projectsContext || "This is my portfolio of projects. Ask me anything about them!"}
+            postType="project"
+          />
         </div>
       </div>
     </div>

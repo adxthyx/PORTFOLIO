@@ -3,7 +3,8 @@
 import { X, Github, Eye, ExternalLink, Star, Calendar, User, Code, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useState } from "react"
+import { CommentSection } from "@/components/comment-section"
+import { useState, useEffect } from "react"
 
 interface PostModalProps {
   post: any
@@ -14,6 +15,14 @@ export function PostModal({ post, onClose }: PostModalProps) {
   const [activeTab, setActiveTab] = useState("overview")
 
   const isAboutPost = post.type === "about"
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = "unset"
+    }
+  }, [])
 
   // Minimal markdown -> HTML converter for bold and headings
   const convertMarkdownLite = (markdown: string): string => {
@@ -41,10 +50,18 @@ export function PostModal({ post, onClose }: PostModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white dark:bg-[#0a0a0a] rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-[#27272a]">
+    <div 
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
+      onClick={onClose}
+      onWheel={(e) => e.stopPropagation()}
+    >
+      <div 
+        className="bg-white dark:bg-[#0a0a0a] rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-[#27272a] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="relative bg-gradient-to-r from-[#FF4500] to-[#FF6B35] p-4 sm:p-6 text-white">
+        <div className="relative bg-gradient-to-r from-[#FF4500] to-[#FF6B35] p-4 sm:p-6 text-white flex-shrink-0">
           <Button
             variant="ghost"
             size="icon"
@@ -83,7 +100,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="border-b border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#161618]">
+        <div className="border-b border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#161618] flex-shrink-0">
           <div className="flex gap-1 p-1 overflow-x-auto">
             {["overview", "details", "links"].map((tab) => (
               <button
@@ -101,8 +118,13 @@ export function PostModal({ post, onClose }: PostModalProps) {
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-200px)] bg-white dark:bg-[#161618]">
+        {/* Content - Scrollable (75% of space) */}
+        <div 
+          className="flex-[3] min-h-0 overflow-y-auto bg-white dark:bg-[#161618]"
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+        >
+          <div className="p-4 sm:p-6">
           {activeTab === "overview" && (
             <div className="space-y-6">
               {post.tags && post.tags.length > 0 && (
@@ -222,6 +244,16 @@ export function PostModal({ post, onClose }: PostModalProps) {
               )}
             </div>
           )}
+          </div>
+        </div>
+
+        {/* Comment Section - Fixed at Bottom (25% of space) */}
+        <div className="flex-[1] min-h-0 max-h-[220px] border-t border-gray-200 dark:border-[#27272a] overflow-hidden flex-shrink-0 flex flex-col">
+          <CommentSection
+            postTitle={post.title}
+            context={post.fullContent || post.content || ""}
+            postType="post"
+          />
         </div>
       </div>
     </div>
