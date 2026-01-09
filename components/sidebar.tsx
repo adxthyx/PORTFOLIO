@@ -14,7 +14,7 @@ export function ProfileCard() {
           </div>
           <div className="min-w-0">
             <h3 className="font-bold text-sm sm:text-base text-black dark:text-white truncate">u/adxthyx</h3>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-[#71717a] truncate">Developer/Data Scientist</p>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-[#71717a] truncate">Developer/Software Engineer</p>
           </div>
         </div>
 

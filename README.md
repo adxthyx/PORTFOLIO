@@ -1,30 +1,70 @@
-# Reddit portfolio website
+# Reddit Portfolio
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+A modern, highly interactive portfolio website inspired by Reddit's UI/UX. Built with Next.js 14, TypeScript, Tailwind CSS, and Radix UI.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/adxthyxs-projects/v0-reddit-portfolio-website)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/9kbdJaJBRle)
+## 🚀 Features
 
-## Overview
+- **Reddit-style UI**: Post cards, sidebar communities, and header navigation mimicking the familiar Reddit interface.
+- **Interactive Modals**: Seamless navigation through About, Experience, Education, Skills, and Projects using modal windows.
+- **Live GitHub Stats**: Dynamically fetched repository counts, commit activity, stars, and top languages using the GitHub API.
+- **Live LeetCode Stats**: Real-time coding statistics, including problems solved by difficulty and global ranking.
+- **Category Filtering**: Quickly filter content by AI/ML projects, Web Development, or general "About" information.
+- **Search Functionality**: Real-time search across all posts and project tags.
+- **Dark Mode Support**: Beautifully crafted dark and light themes with smooth transitions.
+- **Responsive Design**: Optimized for desktop, tablet, and mobile viewing.
+- **Contact System**: Integrated contact form with EmailJS/Resend support.
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## 🛠️ Tech Stack
 
-## Deployment
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/) / [Shadcn UI](https://ui.shadcn.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Data Fetching**: GitHub API, LeetCode GraphQL API
+- **Theming**: [Next-Themes](https://github.com/pacocoursey/next-themes)
 
-Your project is live at:
+## 📦 Getting Started
 
-**[https://vercel.com/adxthyxs-projects/v0-reddit-portfolio-website](https://vercel.com/adxthyxs-projects/v0-reddit-portfolio-website)**
+### Prerequisites
 
-## Build your app
+- Node.js 18.x or later
+- pnpm / npm / yarn
 
-Continue building your app on:
+### Installation
 
-**[https://v0.dev/chat/projects/9kbdJaJBRle](https://v0.dev/chat/projects/9kbdJaJBRle)**
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/adxthyx/reddit-portfolio.git
+   cd reddit-portfolio
+   ```
 
-## How It Works
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory and add:
+   ```env
+   GITHUB_TOKEN=your_github_personal_access_token
+   # Optional: RESEND_API_KEY=your_resend_api_key
+   ```
+
+4. Run the development server:
+   ```bash
+   pnpm dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 📂 Project Structure
+
+- `app/`: Next.js App Router and API routes.
+- `components/`: Reusable UI components (Modals, Cards, Layout).
+- `public/`: Static assets (images, PDFs).
+- `styles/`: Global CSS and Tailwind configurations.
+- `lib/`: Utility functions.
+
+---
+Built with ❤️ by [adxthyx](https://github.com/adxthyx)
