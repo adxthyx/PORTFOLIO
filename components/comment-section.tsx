@@ -215,4 +215,3 @@ export function CommentSection({ postTitle, context, postType = "post" }: Commen
     </div>
   )
 }
-

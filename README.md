@@ -34,27 +34,27 @@ A modern, highly interactive portfolio website inspired by Reddit's UI/UX. Built
 ### Installation
 
 1. Clone the repository:
-   ```bash
+   \`\`\`bash
    git clone https://github.com/adxthyx/reddit-portfolio.git
    cd reddit-portfolio
-   ```
+   \`\`\`
 
 2. Install dependencies:
-   ```bash
+   \`\`\`bash
    pnpm install
-   ```
+   \`\`\`
 
 3. Set up environment variables:
    Create a `.env.local` file in the root directory and add:
-   ```env
+   \`\`\`env
    GITHUB_TOKEN=your_github_personal_access_token
    # Optional: RESEND_API_KEY=your_resend_api_key
-   ```
+   \`\`\`
 
 4. Run the development server:
-   ```bash
+   \`\`\`bash
    pnpm dev
-   ```
+   \`\`\`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
