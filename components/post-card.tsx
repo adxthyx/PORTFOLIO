@@ -82,8 +82,8 @@ export function PostCard({
               userVote === "up"
                 ? "!bg-orange-500 dark:!bg-orange-600"
                 : hoveredVote === "up"
-                  ? "!bg-orange-500 dark:!bg-orange-600/70"
-                  : "hover:!bg-orange-500 dark:hover:!bg-orange-600/70"
+                  ? "!bg-orange-500/30 dark:!bg-orange-600/30"
+                  : "hover:!bg-orange-500/30 dark:hover:!bg-orange-600/30"
             }`}
             onClick={(e) => handleVote("up", e)}
             onMouseEnter={() => setHoveredVote("up")}
@@ -115,8 +115,8 @@ export function PostCard({
               userVote === "down"
                 ? "!bg-blue-500 dark:!bg-blue-600"
                 : hoveredVote === "down"
-                  ? "!bg-blue-500 dark:!bg-blue-600/70"
-                  : "hover:!bg-blue-500 dark:hover:!bg-blue-600/70"
+                  ? "!bg-blue-500/30 dark:!bg-blue-600/30"
+                  : "hover:!bg-blue-500/30 dark:hover:!bg-blue-600/30"
             }`}
             onClick={(e) => handleVote("down", e)}
             onMouseEnter={() => setHoveredVote("down")}
@@ -141,8 +141,8 @@ export function PostCard({
               userVote === "up"
                 ? "!bg-orange-500 dark:!bg-orange-600"
                 : hoveredVote === "up"
-                  ? "!bg-orange-500 dark:!bg-orange-600/70"
-                  : "hover:!bg-orange-500 dark:hover:!bg-orange-600/70"
+                  ? "!bg-orange-500/30 dark:!bg-orange-600/30"
+                  : "hover:!bg-orange-500/30 dark:hover:!bg-orange-600/30"
             }`}
             onClick={(e) => handleVote("up", e)}
             onMouseEnter={() => setHoveredVote("up")}
@@ -174,8 +174,8 @@ export function PostCard({
               userVote === "down"
                 ? "!bg-blue-500 dark:!bg-blue-600"
                 : hoveredVote === "down"
-                  ? "!bg-blue-500 dark:!bg-blue-600/70"
-                  : "hover:!bg-blue-500 dark:hover:!bg-blue-600/70"
+                  ? "!bg-blue-500/30 dark:!bg-blue-600/30"
+                  : "hover:!bg-blue-500/30 dark:hover:!bg-blue-600/30"
             }`}
             onClick={(e) => handleVote("down", e)}
             onMouseEnter={() => setHoveredVote("down")}
