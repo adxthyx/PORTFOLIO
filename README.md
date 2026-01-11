@@ -3,7 +3,6 @@
 A modern, highly interactive portfolio website inspired by Reddit's UI/UX. Built with Next.js 14, TypeScript, Tailwind CSS, and Radix UI.
 
 ## 🚀 Features
-
 - **Reddit-style UI**: Post cards, sidebar communities, and header navigation mimicking the familiar Reddit interface.
 - **Interactive Modals**: Seamless navigation through About, Experience, Education, Skills, and Projects using modal windows.
 - **Live GitHub Stats**: Dynamically fetched repository counts, commit activity, stars, and top languages using the GitHub API.
