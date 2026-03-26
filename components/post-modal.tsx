@@ -51,12 +51,12 @@ export function PostModal({ post, onClose }: PostModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
       onClick={onClose}
       onWheel={(e) => e.stopPropagation()}
     >
       <div 
-        className="bg-white dark:bg-[#0a0a0a] rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-[#27272a] flex flex-col"
+        className="bg-white dark:bg-[#0a0a0a] rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] my-2 sm:my-0 overflow-hidden shadow-2xl border border-gray-200 dark:border-[#27272a] flex flex-col"
         onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >

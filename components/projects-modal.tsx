@@ -28,12 +28,12 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
       onClick={onClose}
       onWheel={(e) => e.stopPropagation()}
     >
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300 flex flex-col"
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] my-2 sm:my-0 overflow-hidden transition-colors duration-300 flex flex-col"
         onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >
