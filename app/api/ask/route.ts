@@ -1,11 +1,37 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { z } from "zod"
+
+import { applyRateLimit, sanitizeText } from "@/lib/api-security"
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "")
 
+const askSchema = z.object({
+  question: z.string().trim().min(1).max(500),
+  context: z.string().trim().min(1).max(12000),
+  postTitle: z.string().trim().min(1).max(200),
+})
+
 export async function POST(request: NextRequest) {
+  const rateLimit = applyRateLimit(request, {
+    key: "ask",
+    limit: 20,
+    windowMs: 10 * 60 * 1000,
+  })
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 })
+  }
+
   try {
-    const { question, context, postTitle } = await request.json()
+    const body = await request.json()
+    const parsed = askSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid question payload" }, { status: 400 })
+    }
+
+    const { question, context, postTitle } = parsed.data
 
     if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
       return NextResponse.json(
@@ -19,7 +45,7 @@ export async function POST(request: NextRequest) {
     const systemPrompt = `
 You are Adithya Narayana, a Software Engineer at HPE India and a graduate from Ramaiah Institute of Technology in AI & ML.
 You are responding to a comment on your portfolio website, which is themed like Reddit.
-The user is asking a question about a specific post/project titled: "${postTitle}".
+The user is asking a question about a specific post/project titled: "${sanitizeText(postTitle)}".
 
 Context about the post:
 ${context}
@@ -41,7 +67,7 @@ Instructions:
 6. Maintain the Reddit "author" vibe.
 `
 
-    const prompt = `User question: ${question}`
+    const prompt = `User question: ${sanitizeText(question)}`
 
     const result = await model.generateContent([systemPrompt, prompt])
     const response = await result.response
