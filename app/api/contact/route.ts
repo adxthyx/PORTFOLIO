@@ -1,16 +1,47 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 import { Resend } from "resend"
+
+import { applyRateLimit, sanitizeText } from "@/lib/api-security"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+const contactSchema = z.object({
+  name: z.string().trim().min(2).max(80),
+  email: z.string().trim().email().max(254),
+  subject: z.string().trim().min(3).max(120),
+  message: z.string().trim().min(10).max(2000),
+})
+
 export async function POST(request: NextRequest) {
+  const rateLimit = applyRateLimit(request, {
+    key: "contact",
+    limit: 5,
+    windowMs: 10 * 60 * 1000,
+  })
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 })
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: "Email service not configured" }, { status: 500 })
+  }
+
   try {
-    const { name, email, subject, message } = await request.json()
+    const body = await request.json()
+    const parsed = contactSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid contact form submission" }, { status: 400 })
+    }
+
+    const { name, email, subject, message } = parsed.data
 
     const { data, error } = await resend.emails.send({
       from: "onboarding@resend.dev", // Use your verified domain
       to: [process.env.CONTACT_EMAIL || "adithyanarayana02@gmail.com"],
-      subject: `Portfolio Contact: ${subject}`,
+      subject: `Portfolio Contact: ${sanitizeText(subject)}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #FF4500; border-bottom: 2px solid #FF4500; padding-bottom: 10px;">
