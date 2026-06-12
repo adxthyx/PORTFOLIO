@@ -2,160 +2,215 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Github, Linkedin, Twitter, Mail, ExternalLink, Award, Calendar, TrendingUp } from "lucide-react"
+import { Github, Linkedin, Mail, ExternalLink, Calendar, TrendingUp, Users, Code2, Briefcase, Sparkles } from "lucide-react"
+import { format, parseISO } from "date-fns"
+import { profile } from "@/lib/content"
 
-export function ProfileCard() {
+interface ProfileCardProps {
+  karma?: number
+  onJoin?: () => void
+}
+
+export function ProfileCard({ karma = profile.baseKarma, onJoin }: ProfileCardProps) {
   return (
-    <Card className="p-3 sm:p-4 bg-card border border-border hover:shadow-md transition-shadow duration-200">
-        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+    <Card className="overflow-hidden bg-card border border-border hover:shadow-md transition-shadow duration-200">
+      {/* Community banner */}
+      <div className="h-12 sm:h-14 bg-brand-gradient" />
+
+      <div className="p-3 sm:p-4 -mt-7 sm:-mt-8">
+        <div className="flex items-end gap-2 sm:gap-3 mb-3">
           <div className="relative flex-shrink-0">
-            <img src="/a.png" alt="Profile" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-brand" />
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-white dark:border-card"></div>
+            <img
+              src={profile.avatar}
+              alt={`${profile.username} avatar`}
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-4 border-card bg-card"
+            />
+            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-card" />
           </div>
-          <div className="min-w-0">
-            <h3 className="font-bold text-sm sm:text-base text-foreground truncate">u/adxthyx</h3>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">Developer/Software Engineer</p>
+          <div className="min-w-0 pb-0.5">
+            <h3 className="font-bold text-sm sm:text-base text-foreground truncate">{profile.subreddit}</h3>
+            <p className="text-xs text-muted-foreground truncate">
+              {profile.username} · {profile.role}
+            </p>
           </div>
         </div>
 
-        <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-muted-foreground">
+        <p className="text-xs sm:text-sm text-muted-foreground mb-3">
+          The official community for everything I build, break, and occasionally fix.
+        </p>
+
+        <div className="flex items-center gap-4 text-xs sm:text-sm mb-3 pb-3 border-b border-border">
+          <div>
+            <div className="font-bold text-foreground">1</div>
+            <div className="text-muted-foreground flex items-center gap-1">
+              <Users className="w-3 h-3" />
+              Member
+            </div>
+          </div>
+          <div>
+            <div className="font-bold text-foreground flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full inline-block" />1
+            </div>
+            <div className="text-muted-foreground">Online (it's me)</div>
+          </div>
+        </div>
+
+        <div className="space-y-2 text-xs sm:text-sm text-muted-foreground mb-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-brand flex-shrink-0" />
+            <div className="flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-brand flex-shrink-0" />
               <span>Karma</span>
             </div>
-            <span className="font-medium text-foreground">2,847</span>
+            <span className="font-medium text-foreground tabular-nums">{karma.toLocaleString()}</span>
           </div>
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-brand flex-shrink-0" />
-              <span className="truncate">Cake day</span>
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-brand flex-shrink-0" />
+              <span>Cake day</span>
             </div>
-            <span className="font-medium text-foreground text-xs sm:text-sm">Jan 15, 2019</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Award className="w-3 h-3 sm:w-4 sm:h-4 text-brand flex-shrink-0" />
-              <span>Posts</span>
-            </div>
-            <span className="font-medium text-foreground">127</span>
+            <span className="font-medium text-foreground">{format(parseISO(profile.cakeDay), "MMM d, yyyy")}</span>
           </div>
         </div>
 
-        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-border">
-          <h4 className="font-medium text-sm sm:text-base text-foreground mb-2 sm:mb-3">Connect with me</h4>
-          <div className="space-y-1 sm:space-y-2">
+        {onJoin && (
+          <Button
+            onClick={onJoin}
+            className="w-full bg-brand hover:bg-brand-hover text-white rounded-full font-semibold h-8 sm:h-9 text-sm"
+          >
+            Join
+          </Button>
+        )}
+
+        <div className="mt-4 pt-3 border-t border-border">
+          <h4 className="font-medium text-sm sm:text-base text-foreground mb-2">Connect with me</h4>
+          <div className="space-y-1">
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-              onClick={() => window.open("https://github.com/adxthyx", "_blank")}
+              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 text-xs sm:text-sm"
+              onClick={() => window.open(profile.links.github, "_blank")}
             >
-              <Github className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <Github className="w-3.5 h-3.5 mr-2 flex-shrink-0" />
               <span className="truncate">GitHub</span>
               <ExternalLink className="w-3 h-3 ml-auto flex-shrink-0" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-              onClick={() => window.open("https://linkedin.com/in/adxthyx", "_blank")}
+              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 text-xs sm:text-sm"
+              onClick={() => window.open(profile.links.linkedin, "_blank")}
             >
-              <Linkedin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <Linkedin className="w-3.5 h-3.5 mr-2 flex-shrink-0" />
               <span className="truncate">LinkedIn</span>
               <ExternalLink className="w-3 h-3 ml-auto flex-shrink-0" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-              onClick={() => window.open("https://twitter.com/adxthyx", "_blank")}
+              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 text-xs sm:text-sm"
+              onClick={() => window.open(profile.links.leetcode, "_blank")}
             >
-              <Twitter className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
-              <span className="truncate">Twitter</span>
+              <Code2 className="w-3.5 h-3.5 mr-2 flex-shrink-0" />
+              <span className="truncate">LeetCode</span>
               <ExternalLink className="w-3 h-3 ml-auto flex-shrink-0" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-              onClick={() => window.open("mailto:adithyanarayana02@gmail.com", "_blank")}
+              className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 text-xs sm:text-sm"
+              onClick={() => window.open(`mailto:${profile.links.email}`, "_blank")}
             >
-              <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <Mail className="w-3.5 h-3.5 mr-2 flex-shrink-0" />
               <span className="truncate">Email</span>
               <ExternalLink className="w-3 h-3 ml-auto flex-shrink-0" />
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
+    </Card>
   )
 }
 
-export function Sidebar() {
+const communities = [
+  { name: "webdev", members: "3.2M members", color: "bg-blue-500", url: "https://reddit.com/r/webdev" },
+  { name: "reactjs", members: "1.9M members", color: "bg-cyan-500", url: "https://reddit.com/r/reactjs" },
+  { name: "MachineLearning", members: "3.0M members", color: "bg-purple-500", url: "https://reddit.com/r/MachineLearning" },
+]
+
+const highlights = [
+  {
+    icon: Briefcase,
+    label: "Now",
+    title: "SWE-1 at Hewlett Packard Enterprise — AI/ML solutions",
+    meta: "Sept 2025 - Present",
+  },
+  {
+    icon: Sparkles,
+    label: "Flagship project",
+    title: "AI-Powered Code Review Assistant",
+    meta: "Python · FastAPI · GPT-4",
+  },
+  {
+    icon: Code2,
+    label: "Current obsession",
+    title: "LLM apps with LangChain — RAG pipelines and agents",
+    meta: "Always learning",
+  },
+]
+
+interface SidebarProps {
+  karma?: number
+  onJoin?: () => void
+  showProfile?: boolean
+}
+
+export function Sidebar({ karma, onJoin, showProfile = true }: SidebarProps) {
   return (
     <div className="w-full lg:w-80 space-y-3 sm:space-y-4">
       {/* Profile card shown on desktop, hidden on mobile (shown separately before posts) */}
-      <div className="hidden lg:block">
-        <ProfileCard />
-      </div>
+      {showProfile && (
+        <div className="hidden lg:block">
+          <ProfileCard karma={karma} onJoin={onJoin} />
+        </div>
+      )}
 
       <Card className="p-3 sm:p-4 bg-card border border-border hover:shadow-md transition-shadow duration-200">
-        <h3 className="font-bold text-sm sm:text-base text-foreground mb-2 sm:mb-3">Tech Communities</h3>
-        <div className="space-y-2 sm:space-y-3">
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm hover:bg-secondary p-2 rounded transition-colors cursor-pointer">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold flex-shrink-0">
-              r/
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-foreground font-medium truncate text-xs sm:text-sm">webdev</div>
-              <div className="text-muted-foreground text-[10px] sm:text-xs">2.1M members</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm hover:bg-secondary p-2 rounded transition-colors cursor-pointer">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold flex-shrink-0">
-              r/
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-foreground font-medium truncate text-xs sm:text-sm">reactjs</div>
-              <div className="text-muted-foreground text-[10px] sm:text-xs">1.8M members</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm hover:bg-secondary p-2 rounded transition-colors cursor-pointer">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold flex-shrink-0">
-              r/
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-foreground font-medium truncate text-xs sm:text-sm">MachineLearning</div>
-              <div className="text-muted-foreground text-[10px] sm:text-xs">2.8M members</div>
-            </div>
-          </div>
+        <h3 className="font-bold text-sm sm:text-base text-foreground mb-2 sm:mb-3">Communities I Lurk In</h3>
+        <div className="space-y-1.5 sm:space-y-2">
+          {communities.map((community) => (
+            <button
+              key={community.name}
+              onClick={() => window.open(community.url, "_blank")}
+              className="w-full flex items-center gap-2 sm:gap-3 text-xs sm:text-sm hover:bg-secondary p-2 rounded transition-colors cursor-pointer text-left"
+            >
+              <div
+                className={`w-7 h-7 sm:w-8 sm:h-8 ${community.color} rounded-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold flex-shrink-0`}
+              >
+                r/
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-foreground font-medium truncate text-xs sm:text-sm">{community.name}</div>
+                <div className="text-muted-foreground text-[10px] sm:text-xs">{community.members}</div>
+              </div>
+              <ExternalLink className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            </button>
+          ))}
         </div>
       </Card>
 
       <Card className="p-3 sm:p-4 bg-card border border-border hover:shadow-md transition-shadow duration-200">
-        <h3 className="font-bold text-sm sm:text-base text-foreground mb-2 sm:mb-3">Recent Activity</h3>
-        <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm">
-          <div className="hover:bg-secondary p-2 rounded transition-colors cursor-pointer">
-            <div className="text-muted-foreground">Commented on</div>
-            <div className="text-foreground font-medium line-clamp-2">
-              "Best practices for React performance optimization"
+        <h3 className="font-bold text-sm sm:text-base text-foreground mb-2 sm:mb-3">Highlights</h3>
+        <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
+          {highlights.map((item) => (
+            <div key={item.title} className="p-2 rounded hover:bg-secondary transition-colors">
+              <div className="text-muted-foreground flex items-center gap-1.5">
+                <item.icon className="w-3 h-3" />
+                {item.label}
+              </div>
+              <div className="text-foreground font-medium line-clamp-2">{item.title}</div>
+              <div className="text-muted-foreground text-[10px] sm:text-xs mt-0.5">{item.meta}</div>
             </div>
-            <div className="text-muted-foreground text-xs">2h ago • r/reactjs</div>
-          </div>
-          <div className="hover:bg-secondary p-2 rounded transition-colors cursor-pointer">
-            <div className="text-muted-foreground">Posted in r/webdev</div>
-            <div className="text-foreground font-medium line-clamp-2">
-              "My journey from junior to senior developer"
-            </div>
-            <div className="text-muted-foreground text-xs">1d ago • 234 upvotes</div>
-          </div>
-          <div className="hover:bg-secondary p-2 rounded transition-colors cursor-pointer">
-            <div className="text-muted-foreground">Awarded Gold in</div>
-            <div className="text-foreground font-medium line-clamp-2">
-              "AI-powered code review tool showcase"
-            </div>
-            <div className="text-muted-foreground text-xs">3d ago • r/MachineLearning</div>
-          </div>
+          ))}
         </div>
       </Card>
     </div>

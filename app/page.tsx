@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
-import { PostCard } from "@/components/post-card"
+import { Feed, type FilterKey } from "@/components/feed"
 import { Sidebar, ProfileCard } from "@/components/sidebar"
 import { PostModal } from "@/components/post-modal"
 import { ContactModal } from "@/components/contact-modal"
@@ -11,7 +11,8 @@ import { StatsModal } from "@/components/stats-modal"
 import { ProjectsModal } from "@/components/projects-modal"
 import { SettingsModal } from "@/components/settings-modal"
 import { ResumeModal } from "@/components/resume-modal"
-import { allPosts, mainPosts, projects, searchPosts, type Post } from "@/lib/content"
+import { allPosts, projects, profile, type Post } from "@/lib/content"
+import { useVotes } from "@/lib/votes"
 import type { GitHubStats, LeetCodeStats } from "@/lib/stats"
 
 type ModalId = "contact" | "achievements" | "stats" | "projects" | "settings" | "resume"
@@ -19,8 +20,10 @@ type ModalId = "contact" | "achievements" | "stats" | "projects" | "settings" | 
 export default function Portfolio() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
   const [activeModal, setActiveModal] = useState<ModalId | null>(null)
-  const [activeFilter, setActiveFilter] = useState("all")
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const { votes, vote, karmaDelta } = useVotes()
+  const karma = profile.baseKarma + karmaDelta
 
   // Pre-load stats data
   const [githubStats, setGithubStats] = useState<GitHubStats | null>(null)
@@ -50,25 +53,6 @@ export default function Portfolio() {
 
     loadStats()
   }, [])
-
-  const getFilteredContent = () => {
-    let posts: Post[]
-    switch (activeFilter) {
-      case "aiml":
-        posts = projects.filter((p) => p.category === "aiml")
-        break
-      case "webdev":
-        posts = projects.filter((p) => p.category === "webdev")
-        break
-      case "main":
-        posts = mainPosts
-        break
-      default:
-        posts = allPosts
-    }
-
-    return searchPosts(posts, searchQuery)
-  }
 
   const handleNavAction = (action: string) => {
     switch (action) {
@@ -111,73 +95,34 @@ export default function Portfolio() {
       {/* Mobile Profile Card - shown before posts on mobile */}
       <div className="lg:hidden px-3 sm:px-4 pt-3 sm:pt-4">
         <div className="max-w-7xl mx-auto">
-          <ProfileCard />
+          <ProfileCard karma={karma} onJoin={() => setActiveModal("contact")} />
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 p-3 sm:p-4">
-        <main className="flex-1 space-y-3 sm:space-y-4">
-          {/* Filter Tabs */}
-          <div className="bg-card rounded-lg border border-border p-3 sm:p-4 transition-colors duration-300">
-            <div className="grid grid-cols-4 gap-1 sm:gap-2">
-              {[
-                { key: "all", label: "All Posts", icon: "🏠" },
-                { key: "main", label: "About & Skills", icon: "👤" },
-                { key: "aiml", label: "AI/ML Projects", icon: "🤖" },
-                { key: "webdev", label: "Web Development", icon: "💻" },
-              ].map((filter) => (
-                <button
-                  key={filter.key}
-                  onClick={() => {
-                    setActiveFilter(filter.key)
-                    setSearchQuery("")
-                  }}
-                  className={`flex items-center justify-center gap-0.5 sm:gap-1 md:gap-2 px-1 sm:px-2 md:px-3 py-1.5 sm:py-2 rounded-full text-[10px] xs:text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    activeFilter === filter.key
-                      ? "bg-brand text-white shadow-lg transform scale-105"
-                      : "bg-secondary text-foreground/80 hover:bg-border hover:scale-102"
-                  }`}
-                >
-                  <span className="text-xs sm:text-sm">{filter.icon}</span>
-                  <span className="truncate leading-tight">{filter.label}</span>
-                </button>
-              ))}
-            </div>
-            {searchQuery && (
-              <div className="mt-3 text-xs sm:text-sm text-muted-foreground">
-                Showing results for: <span className="font-medium text-brand">"{searchQuery}"</span>
-              </div>
-            )}
-          </div>
-
-          {/* Filtered Content */}
-          {getFilteredContent().length > 0 ? (
-            getFilteredContent().map((item) => (
-              <PostCard key={item.id} {...item} onClick={() => setSelectedPost(item)} />
-            ))
-          ) : (
-            <div className="bg-card rounded-lg border border-border p-8 text-center transition-colors duration-300">
-              <div className="text-gray-400 text-4xl sm:text-6xl mb-4">🔍</div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
-                No results found
-              </h3>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                {searchQuery
-                  ? `No posts found matching "${searchQuery}". Try different keywords.`
-                  : "No posts available in this category."}
-              </p>
-            </div>
-          )}
+        <main className="flex-1">
+          <Feed
+            posts={allPosts}
+            searchQuery={searchQuery}
+            activeFilter={activeFilter}
+            onFilterChange={(filter) => {
+              setActiveFilter(filter)
+              setSearchQuery("")
+            }}
+            votes={votes}
+            onVote={vote}
+            onSelectPost={setSelectedPost}
+          />
         </main>
         <aside className="hidden lg:block" aria-label="Profile and communities">
-          <Sidebar />
+          <Sidebar karma={karma} onJoin={() => setActiveModal("contact")} />
         </aside>
       </div>
 
-      {/* Mobile Sidebar - Tech Communities and Recent Activity at bottom on mobile */}
+      {/* Mobile Sidebar - communities and highlights at bottom on mobile */}
       <div className="lg:hidden px-3 sm:px-4 pb-3 sm:pb-4">
         <div className="max-w-7xl mx-auto">
-          <Sidebar />
+          <Sidebar showProfile={false} />
         </div>
       </div>
 

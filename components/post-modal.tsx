@@ -250,7 +250,8 @@ export function PostModal({ post, open, onOpenChange }: PostModalProps) {
                 key={post.id}
                 postTitle={post.title}
                 context={post.fullContent || post.content || ""}
-                postType="post"
+                postType={post.type === "project" ? "project" : "post"}
+                seed={post.faq}
               />
             </div>
           </>

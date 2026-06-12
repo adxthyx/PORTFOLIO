@@ -13,11 +13,13 @@ export interface Post {
   timeAgo: string
   type: string
   category: "main" | "aiml" | "webdev"
+  flair: string
   pinned?: boolean
   tags?: string[]
   github?: string
   demo?: string
   awards?: string[]
+  faq?: { question: string; answer: string }
 }
 
 export interface Profile {
@@ -65,7 +67,7 @@ function definePost(input: PostInput): Post {
     ...input,
     subreddit: profile.subreddit,
     author: profile.username,
-    timeAgo: input.pinned ? "pinned" : timeAgo(input.postedAt),
+    timeAgo: timeAgo(input.postedAt),
   }
 }
 
@@ -145,7 +147,12 @@ If you're working on something cool or need help with AI/web dev stuff, hit me u
   postedAt: "2026-05-01T10:00:00+05:30",
   type: "about",
   category: "main",
+  flair: "About",
   pinned: true,
+  faq: {
+    question: "Coffee or tea?",
+    answer: "Coffee. Always coffee. Tea is a big NO — both the drink and the gossip kind. ☕",
+  },
 })
 
 const experience = definePost({
@@ -175,6 +182,7 @@ Python, NextJS, FastAPI, Streamlit, SQL, LangChain`,
   postedAt: "2026-06-12T09:00:00+05:30",
   type: "experience",
   category: "main",
+  flair: "Experience",
 })
 
 const education = definePost({
@@ -193,6 +201,7 @@ const education = definePost({
   postedAt: "2026-06-12T07:00:00+05:30",
   type: "education",
   category: "main",
+  flair: "Education",
 })
 
 const skills = definePost({
@@ -248,6 +257,7 @@ const skills = definePost({
   postedAt: "2026-06-11T14:00:00+05:30",
   type: "skills",
   category: "main",
+  flair: "Skills",
 })
 
 const aiml: Post[] = [
@@ -290,6 +300,7 @@ An intelligent code review system that automatically analyzes pull requests, sug
     postedAt: "2026-06-10T11:00:00+05:30",
     type: "project",
     category: "aiml",
+    flair: "AI/ML",
     tags: ["AI", "GPT-4", "Python", "FastAPI", "Code Analysis"],
     github: "https://github.com/adxthyx/ai-code-reviewer",
     demo: "https://ai-code-reviewer.vercel.app",
@@ -334,6 +345,7 @@ An advanced document processing system that can intelligently summarize long doc
     postedAt: "2026-06-08T16:00:00+05:30",
     type: "project",
     category: "aiml",
+    flair: "AI/ML",
     tags: ["NLP", "BERT", "Python", "Django", "Transformers"],
     github: "https://github.com/adxthyx/doc-summarizer",
   }),
@@ -381,6 +393,7 @@ A comprehensive collaboration platform similar to Slack, featuring real-time mes
     postedAt: "2026-06-11T10:00:00+05:30",
     type: "project",
     category: "webdev",
+    flair: "Web Dev",
     tags: ["React", "Node.js", "Socket.io", "WebRTC", "AWS"],
     github: "https://github.com/adxthyx/collab-workspace",
     demo: "https://workspace.adxthyx.dev",
@@ -428,6 +441,7 @@ A modern e-commerce platform featuring AI-powered product recommendations, advan
     postedAt: "2026-06-09T13:00:00+05:30",
     type: "project",
     category: "webdev",
+    flair: "Web Dev",
     tags: ["Next.js", "PostgreSQL", "Stripe", "Elasticsearch", "Analytics"],
     github: "https://github.com/adxthyx/ecommerce-platform",
     demo: "https://shop.adxthyx.dev",
