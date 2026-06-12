@@ -2,16 +2,18 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Github, Linkedin, Mail, ExternalLink, Calendar, TrendingUp, Users, Code2, Briefcase, Sparkles } from "lucide-react"
+import { Github, Linkedin, Mail, ExternalLink, Calendar, TrendingUp, Users, Code2, Briefcase, Sparkles, FileText, MessageSquare } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { profile } from "@/lib/content"
 
 interface ProfileCardProps {
   karma?: number
   onJoin?: () => void
+  onResume?: () => void
+  onAskAI?: () => void
 }
 
-export function ProfileCard({ karma = profile.baseKarma, onJoin }: ProfileCardProps) {
+export function ProfileCard({ karma = profile.baseKarma, onJoin, onResume, onAskAI }: ProfileCardProps) {
   return (
     <Card className="overflow-hidden bg-card border border-border hover:shadow-md transition-shadow duration-200">
       {/* Community banner */}
@@ -81,6 +83,31 @@ export function ProfileCard({ karma = profile.baseKarma, onJoin }: ProfileCardPr
           </Button>
         )}
 
+        {(onResume || onAskAI) && (
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            {onResume && (
+              <Button
+                onClick={onResume}
+                variant="outline"
+                className="w-full rounded-full font-semibold h-8 sm:h-9 text-xs sm:text-sm border-brand text-brand hover:bg-brand hover:text-white transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+                Resume
+              </Button>
+            )}
+            {onAskAI && (
+              <Button
+                onClick={onAskAI}
+                variant="outline"
+                className="w-full rounded-full font-semibold h-8 sm:h-9 text-xs sm:text-sm border-brand text-brand hover:bg-brand hover:text-white transition-colors"
+              >
+                <MessageSquare className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+                Ask AI
+              </Button>
+            )}
+          </div>
+        )}
+
         <div className="mt-4 pt-3 border-t border-border">
           <h4 className="font-medium text-sm sm:text-base text-foreground mb-2">Connect with me</h4>
           <div className="space-y-1">
@@ -147,8 +174,8 @@ const highlights = [
   {
     icon: Sparkles,
     label: "Flagship project",
-    title: "AI-Powered Code Review Assistant",
-    meta: "Python · FastAPI · GPT-4",
+    title: "AskAPS — AI assistant for HPE supply chain planners",
+    meta: "RAG · FastAPI · NL-to-SQL · Teams",
   },
   {
     icon: Code2,
@@ -161,16 +188,18 @@ const highlights = [
 interface SidebarProps {
   karma?: number
   onJoin?: () => void
+  onResume?: () => void
+  onAskAI?: () => void
   showProfile?: boolean
 }
 
-export function Sidebar({ karma, onJoin, showProfile = true }: SidebarProps) {
+export function Sidebar({ karma, onJoin, onResume, onAskAI, showProfile = true }: SidebarProps) {
   return (
     <div className="w-full lg:w-80 space-y-3 sm:space-y-4">
       {/* Profile card shown on desktop, hidden on mobile (shown separately before posts) */}
       {showProfile && (
         <div className="hidden lg:block">
-          <ProfileCard karma={karma} onJoin={onJoin} />
+          <ProfileCard karma={karma} onJoin={onJoin} onResume={onResume} onAskAI={onAskAI} />
         </div>
       )}
 

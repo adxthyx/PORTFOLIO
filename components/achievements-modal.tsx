@@ -35,13 +35,12 @@ const achievements = [
       "Built an LLM-powered solution for supply and demand planners along with an AI-powered CLI system as the capstone project",
   },
   {
-    title: "LLM-Powered Code Reviewer",
-    issuer: "Personal Project",
-    date: "2025",
+    title: "AskAPS — AI Assistant for HPE Supply Chain Planning",
+    issuer: "Hewlett Packard Enterprise",
+    date: "2025 - Present",
     type: "achievement",
     description:
-      "Designed and built an AI code review assistant — like having a senior dev review your code 24/7 without the judgment",
-    link: "https://github.com/adxthyx/ai-code-reviewer",
+      "Built and shipped a multi-module AI assistant on Microsoft Teams for APS supply chain planners — RAG over docs, similarity search over tickets, and natural-language-to-SQL for metrics",
   },
   {
     title: "Active Problem Solver",

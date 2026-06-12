@@ -128,7 +128,12 @@ export default function Portfolio() {
       {/* Mobile Profile Card - shown before posts on mobile */}
       <div className="lg:hidden px-3 sm:px-4 pt-3 sm:pt-4">
         <div className="max-w-7xl mx-auto">
-          <ProfileCard karma={karma} onJoin={() => setActiveModal("contact")} />
+          <ProfileCard
+            karma={karma}
+            onJoin={() => setActiveModal("contact")}
+            onResume={() => setActiveModal("resume")}
+            onAskAI={() => setSelectedPost(allPosts[0])}
+          />
         </div>
       </div>
 
@@ -149,7 +154,12 @@ export default function Portfolio() {
           />
         </main>
         <aside className="hidden lg:block" aria-label="Profile and communities">
-          <Sidebar karma={karma} onJoin={() => setActiveModal("contact")} />
+          <Sidebar
+            karma={karma}
+            onJoin={() => setActiveModal("contact")}
+            onResume={() => setActiveModal("resume")}
+            onAskAI={() => setSelectedPost(allPosts[0])}
+          />
         </aside>
       </div>
 
