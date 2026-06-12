@@ -56,12 +56,12 @@ export function PostModal({ post, onClose }: PostModalProps) {
       onWheel={(e) => e.stopPropagation()}
     >
       <div 
-        className="bg-white dark:bg-[#0a0a0a] rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] my-2 sm:my-0 overflow-hidden shadow-2xl border border-gray-200 dark:border-[#27272a] flex flex-col"
+        className="bg-card rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] my-2 sm:my-0 overflow-hidden shadow-2xl border border-border flex flex-col"
         onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="relative bg-gradient-to-r from-[#FF4500] to-[#FF6B35] p-4 sm:p-6 text-white flex-shrink-0">
+        <div className="relative bg-brand-gradient p-4 sm:p-6 text-white flex-shrink-0">
           <Button
             variant="ghost"
             size="icon"
@@ -100,7 +100,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="border-b border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#161618] flex-shrink-0">
+        <div className="border-b border-border bg-card flex-shrink-0">
           <div className="flex gap-1 p-1 overflow-x-auto">
             {["overview", "details", "links"].map((tab) => (
               <button
@@ -108,8 +108,8 @@ export function PostModal({ post, onClose }: PostModalProps) {
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === tab
-                    ? "bg-[#FF4500] text-white shadow-lg"
-                    : "text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500]"
+                    ? "bg-brand text-white shadow-lg"
+                    : "text-muted-foreground hover:bg-secondary hover:text-brand"
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -120,7 +120,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
 
         {/* Content - Scrollable (75% of space) */}
         <div 
-          className="flex-[3] min-h-0 overflow-y-auto bg-white dark:bg-[#161618]"
+          className="flex-[3] min-h-0 overflow-y-auto bg-card"
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
         >
@@ -142,7 +142,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
 
               <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert">
                 <div
-                  className="text-gray-700 dark:text-[#d4d4d8] leading-relaxed text-sm sm:text-base"
+                  className="text-foreground/80 leading-relaxed text-sm sm:text-base"
                   dangerouslySetInnerHTML={{ __html: convertMarkdownLite(post.fullContent || post.content) }}
                 />
               </div>
@@ -157,13 +157,13 @@ export function PostModal({ post, onClose }: PostModalProps) {
                     <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                       <Code className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="font-semibold text-black dark:text-white">Technical Stack</h3>
+                    <h3 className="font-semibold text-foreground">Technical Stack</h3>
                   </div>
                   <div className="space-y-2">
                     {post.tags?.map((tag: string, index: number) => (
                       <div key={index} className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span className="text-gray-700 dark:text-[#d4d4d8]">{tag}</span>
+                        <span className="text-foreground/80">{tag}</span>
                       </div>
                     ))}
                   </div>
@@ -174,20 +174,20 @@ export function PostModal({ post, onClose }: PostModalProps) {
                     <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                       <Zap className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="font-semibold text-black dark:text-white">Impact</h3>
+                    <h3 className="font-semibold text-foreground">Impact</h3>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-[#a1a1aa]">Upvotes</span>
-                      <span className="font-semibold text-black dark:text-white">{post.upvotes}</span>
+                      <span className="text-muted-foreground">Upvotes</span>
+                      <span className="font-semibold text-foreground">{post.upvotes}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-[#a1a1aa]">Comments</span>
-                      <span className="font-semibold text-black dark:text-white">{post.comments}</span>
+                      <span className="text-muted-foreground">Comments</span>
+                      <span className="font-semibold text-foreground">{post.comments}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-[#a1a1aa]">Community</span>
-                      <span className="font-semibold text-black dark:text-white">{post.subreddit}</span>
+                      <span className="text-muted-foreground">Community</span>
+                      <span className="font-semibold text-foreground">{post.subreddit}</span>
                     </div>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
                 {post.github && (
                   <Button
                     variant="outline"
-                    className="h-auto p-4 sm:p-6 border-2 border-gray-300 dark:border-[#3f3f46] hover:border-[#FF4500] hover:bg-[#FF4500]/5 transition-all duration-200 group bg-transparent"
+                    className="h-auto p-4 sm:p-6 border-2 border-input hover:border-brand hover:bg-brand/5 transition-all duration-200 group bg-transparent"
                     onClick={() => window.open(post.github, "_blank")}
                   >
                     <div className="flex items-center gap-3 sm:gap-4 w-full">
@@ -209,8 +209,8 @@ export function PostModal({ post, onClose }: PostModalProps) {
                         <Github className="w-5 h-5 sm:w-6 sm:h-6 text-white dark:text-black" />
                       </div>
                       <div className="text-left flex-1 min-w-0">
-                        <div className="font-semibold text-sm sm:text-base text-black dark:text-white">View Source Code</div>
-                        <div className="text-xs sm:text-sm text-gray-600 dark:text-[#a1a1aa]">Explore the implementation</div>
+                        <div className="font-semibold text-sm sm:text-base text-foreground">View Source Code</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">Explore the implementation</div>
                       </div>
                       <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0" />
                     </div>
@@ -220,18 +220,18 @@ export function PostModal({ post, onClose }: PostModalProps) {
                 {post.demo && (
                   <Button
                     variant="outline"
-                    className="h-auto p-4 sm:p-6 border-2 border-[#FF4500] bg-gradient-to-r from-[#FF4500]/5 to-[#FF6B35]/5 hover:from-[#FF4500]/10 hover:to-[#FF6B35]/10 transition-all duration-200 group"
+                    className="h-auto p-4 sm:p-6 border-2 border-brand bg-gradient-to-r from-brand/5 to-orange-400/5 hover:from-brand/10 hover:to-orange-400/10 transition-all duration-200 group"
                     onClick={() => window.open(post.demo, "_blank")}
                   >
                     <div className="flex items-center gap-3 sm:gap-4 w-full">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-[#FF4500] to-[#FF6B35] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-gradient rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
                         <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
                       <div className="text-left flex-1 min-w-0">
-                        <div className="font-semibold text-sm sm:text-base text-black dark:text-white">Live Demo</div>
-                        <div className="text-xs sm:text-sm text-gray-600 dark:text-[#a1a1aa]">Try it out yourself</div>
+                        <div className="font-semibold text-sm sm:text-base text-foreground">Live Demo</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">Try it out yourself</div>
                       </div>
-                      <ExternalLink className="w-4 h-4 text-[#FF4500] flex-shrink-0" />
+                      <ExternalLink className="w-4 h-4 text-brand flex-shrink-0" />
                     </div>
                   </Button>
                 )}
@@ -239,7 +239,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
 
               {!post.github && !post.demo && (
                 <div className="text-center py-8">
-                  <div className="text-gray-500 dark:text-[#71717a]">No external links available for this post</div>
+                  <div className="text-muted-foreground">No external links available for this post</div>
                 </div>
               )}
             </div>
@@ -248,7 +248,7 @@ export function PostModal({ post, onClose }: PostModalProps) {
         </div>
 
         {/* Comment Section - Fixed at Bottom (25% of space) */}
-        <div className="flex-[1] min-h-0 max-h-[220px] border-t border-gray-200 dark:border-[#27272a] overflow-hidden flex-shrink-0 flex flex-col">
+        <div className="flex-[1] min-h-0 max-h-[220px] border-t border-border overflow-hidden flex-shrink-0 flex flex-col">
           <CommentSection
             postTitle={post.title}
             context={post.fullContent || post.content || ""}

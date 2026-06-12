@@ -113,7 +113,7 @@ export default function Portfolio() {
   }
 
   return (
-    <div className="min-h-screen bg-[#dae0e6] dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-canvas transition-colors duration-300">
       <Header onNavAction={handleNavAction} onSearch={handleSearch} searchQuery={searchQuery} />
 
       {/* Mobile Profile Card - shown before posts on mobile */}
@@ -126,7 +126,7 @@ export default function Portfolio() {
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 p-3 sm:p-4">
         <main className="flex-1 space-y-3 sm:space-y-4">
           {/* Filter Tabs */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 transition-colors duration-300">
+          <div className="bg-card rounded-lg border border-border p-3 sm:p-4 transition-colors duration-300">
             <div className="grid grid-cols-4 gap-1 sm:gap-2">
               {[
                 { key: "all", label: "All Posts", icon: "🏠" },
@@ -142,8 +142,8 @@ export default function Portfolio() {
                   }}
                   className={`flex items-center justify-center gap-0.5 sm:gap-1 md:gap-2 px-1 sm:px-2 md:px-3 py-1.5 sm:py-2 rounded-full text-[10px] xs:text-xs sm:text-sm font-medium transition-all duration-200 ${
                     activeFilter === filter.key
-                      ? "bg-[#FF4500] text-white shadow-lg transform scale-105"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-102"
+                      ? "bg-brand text-white shadow-lg transform scale-105"
+                      : "bg-secondary text-foreground/80 hover:bg-border hover:scale-102"
                   }`}
                 >
                   <span className="text-xs sm:text-sm">{filter.icon}</span>
@@ -152,8 +152,8 @@ export default function Portfolio() {
               ))}
             </div>
             {searchQuery && (
-              <div className="mt-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Showing results for: <span className="font-medium text-[#FF4500]">"{searchQuery}"</span>
+              <div className="mt-3 text-xs sm:text-sm text-muted-foreground">
+                Showing results for: <span className="font-medium text-brand">"{searchQuery}"</span>
               </div>
             )}
           </div>
@@ -164,12 +164,12 @@ export default function Portfolio() {
               <PostCard key={item.id} {...item} onClick={() => setSelectedPost(item)} />
             ))
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center transition-colors duration-300">
+            <div className="bg-card rounded-lg border border-border p-8 text-center transition-colors duration-300">
               <div className="text-gray-400 text-4xl sm:text-6xl mb-4">🔍</div>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
                 No results found
               </h3>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 {searchQuery
                   ? `No posts found matching "${searchQuery}". Try different keywords.`
                   : "No posts available in this category."}

@@ -99,11 +99,11 @@ export function CommentSection({ postTitle, context, postType = "post" }: Commen
   }
 
   return (
-    <div className="border-t border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#161618] flex flex-col h-full overflow-hidden">
+    <div className="border-t border-border bg-card flex flex-col h-full overflow-hidden">
       {/* Comment Input Area */}
-      <div className="p-2 sm:p-3 border-b border-gray-200 dark:border-[#27272a] flex-shrink-0">
+      <div className="p-2 sm:p-3 border-b border-border flex-shrink-0">
         <div className="flex items-start gap-2">
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#FF4500] flex items-center justify-center flex-shrink-0 mt-1">
+          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-brand flex items-center justify-center flex-shrink-0 mt-1">
             <span className="text-white text-[10px] sm:text-xs font-bold">u</span>
           </div>
           <form onSubmit={handleSubmit} className="flex-1 min-w-0 flex gap-2 items-center">
@@ -112,14 +112,14 @@ export function CommentSection({ postTitle, context, postType = "post" }: Commen
               onChange={(e) => setQuestion(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={`Ask anything about ${postType === "project" ? "this project" : "this post"} or me...`}
-              className="h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] max-h-[32px] sm:max-h-[36px] resize-none bg-gray-50 dark:bg-[#0a0a0a] border-gray-300 dark:border-[#3f3f46] focus:border-[#FF4500] focus:ring-[#FF4500] text-xs sm:text-sm flex-1 py-1.5 px-2"
+              className="h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] max-h-[32px] sm:max-h-[36px] resize-none bg-background border-input focus:border-brand focus:ring-brand text-xs sm:text-sm flex-1 py-1.5 px-2"
               disabled={isLoading}
               rows={1}
             />
             <Button
               type="submit"
               disabled={!question.trim() || isLoading}
-              className="bg-[#FF4500] hover:bg-[#E03E00] text-white px-3 py-1.5 h-8 sm:h-9 text-xs sm:text-sm flex-shrink-0"
+              className="bg-brand hover:bg-brand-hover text-white px-3 py-1.5 h-8 sm:h-9 text-xs sm:text-sm flex-shrink-0"
             >
               {isLoading ? (
                 <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
@@ -148,8 +148,8 @@ export function CommentSection({ postTitle, context, postType = "post" }: Commen
       >
         {comments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-4 text-center">
-            <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-[#71717a] mb-1" />
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-[#a1a1aa]">
+            <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground mb-1" />
+            <p className="text-xs sm:text-sm text-muted-foreground">
               No questions yet. Be the first to ask!
             </p>
           </div>
@@ -158,16 +158,16 @@ export function CommentSection({ postTitle, context, postType = "post" }: Commen
             <div key={comment.id} className="space-y-1.5">
               {/* Question */}
               <div className="flex gap-2">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gray-400 dark:bg-[#71717a] flex items-center justify-center flex-shrink-0">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-muted-foreground flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-[10px] sm:text-xs font-bold">u</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="bg-gray-100 dark:bg-[#1a1a1c] rounded-lg p-1.5 sm:p-2">
-                    <p className="text-xs sm:text-sm text-gray-800 dark:text-[#d4d4d8] break-words">
+                  <div className="bg-secondary rounded-lg p-1.5 sm:p-2">
+                    <p className="text-xs sm:text-sm text-foreground/90 break-words">
                       {comment.question}
                     </p>
                   </div>
-                  <p className="text-[10px] sm:text-xs text-gray-500 dark:text-[#71717a] mt-0.5">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
                     {comment.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -176,16 +176,16 @@ export function CommentSection({ postTitle, context, postType = "post" }: Commen
               {/* Answer */}
               {comment.answer && (
                 <div className="flex gap-2 ml-3 sm:ml-4">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#FF4500] flex items-center justify-center flex-shrink-0">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-brand flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-[10px] sm:text-xs font-bold">A</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="bg-[#FF4500]/10 dark:bg-[#FF4500]/20 border-l-2 border-[#FF4500] rounded-lg p-1.5 sm:p-2">
-                      <p className="text-xs sm:text-sm text-gray-800 dark:text-[#d4d4d8] break-words whitespace-pre-wrap">
+                    <div className="bg-brand/10 dark:bg-brand/20 border-l-2 border-brand rounded-lg p-1.5 sm:p-2">
+                      <p className="text-xs sm:text-sm text-foreground/90 break-words whitespace-pre-wrap">
                         {comment.answer}
                       </p>
                     </div>
-                    <p className="text-[10px] sm:text-xs text-gray-500 dark:text-[#71717a] mt-0.5">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
                       u/adxthyx • {comment.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
@@ -193,14 +193,14 @@ export function CommentSection({ postTitle, context, postType = "post" }: Commen
               )}
               {!comment.answer && (
                 <div className="flex gap-2 ml-3 sm:ml-4">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#FF4500] flex items-center justify-center flex-shrink-0">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-brand flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-[10px] sm:text-xs font-bold">A</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="bg-[#FF4500]/10 dark:bg-[#FF4500]/20 border-l-2 border-[#FF4500] rounded-lg p-1.5 sm:p-2">
+                    <div className="bg-brand/10 dark:bg-brand/20 border-l-2 border-brand rounded-lg p-1.5 sm:p-2">
                       <div className="flex items-center gap-2">
-                        <Loader2 className="w-3 h-3 animate-spin text-[#FF4500]" />
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-[#71717a]">
+                        <Loader2 className="w-3 h-3 animate-spin text-brand" />
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           Thinking...
                         </p>
                       </div>

@@ -63,9 +63,9 @@ export function PostCard({
 
   return (
     <Card
-      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-all duration-300 cursor-pointer ${
+      className={`bg-card border border-border transition-all duration-300 cursor-pointer ${
         isHovered
-          ? "border-[#FF4500] shadow-lg transform translate-y-[-2px] shadow-orange-100"
+          ? "border-brand shadow-lg transform translate-y-[-2px] shadow-orange-100"
           : "hover:border-gray-300 hover:shadow-md"
       }`}
       onMouseEnter={() => setIsHovered(true)}
@@ -74,7 +74,7 @@ export function PostCard({
     >
       <div className="flex flex-col sm:flex-row">
         {/* Desktop Vote Buttons - Vertical */}
-        <div className="hidden sm:flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-700 border-r dark:border-gray-600 border-gray-200 min-w-[60px]">
+        <div className="hidden sm:flex flex-col items-center p-3 bg-secondary border-r border-border min-w-[60px]">
           <Button
             variant="ghost"
             size="sm"
@@ -100,10 +100,10 @@ export function PostCard({
           <span
             className={`text-sm font-bold transition-all duration-200 ${
               userVote === "up"
-                ? "text-[#FF4500]"
+                ? "text-brand"
                 : userVote === "down"
-                  ? "text-[#7193FF]"
-                  : "text-gray-600 dark:text-gray-400"
+                  ? "text-downvote"
+                  : "text-muted-foreground"
             }`}
           >
             {currentUpvotes}
@@ -133,7 +133,7 @@ export function PostCard({
         </div>
 
         {/* Mobile Vote Buttons - Horizontal */}
-        <div className="sm:hidden flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 border-gray-200">
+        <div className="sm:hidden flex items-center gap-2 p-2 bg-secondary border-b border-border">
           <Button
             variant="ghost"
             size="sm"
@@ -159,10 +159,10 @@ export function PostCard({
           <span
             className={`text-sm font-bold transition-all duration-200 min-w-[40px] text-center ${
               userVote === "up"
-                ? "text-[#FF4500]"
+                ? "text-brand"
                 : userVote === "down"
-                  ? "text-[#7193FF]"
-                  : "text-gray-600 dark:text-gray-400"
+                  ? "text-downvote"
+                  : "text-muted-foreground"
             }`}
           >
             {currentUpvotes}
@@ -192,8 +192,8 @@ export function PostCard({
         </div>
 
         <div className="flex-1 p-3 sm:p-4 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 flex-wrap">
-            <span className="font-medium text-[#FF4500] hover:underline cursor-pointer">{subreddit}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground mb-2 flex-wrap">
+            <span className="font-medium text-brand hover:underline cursor-pointer">{subreddit}</span>
             <span className="hidden sm:inline">•</span>
             <span className="hover:underline cursor-pointer">Posted by {author}</span>
             <span className="hidden sm:inline">•</span>
@@ -207,21 +207,21 @@ export function PostCard({
               </Badge>
             )}
             {type && (
-              <Badge variant="outline" className="text-xs border-[#FF4500] text-[#FF4500] w-fit">
+              <Badge variant="outline" className="text-xs border-brand text-brand w-fit">
                 {type.toUpperCase()}
               </Badge>
             )}
           </div>
 
           <h2
-            className={`text-base sm:text-lg font-semibold text-black dark:text-white mb-2 transition-all duration-200 line-clamp-2 sm:line-clamp-none ${
-              isHovered ? "text-[#FF4500]" : "hover:text-[#FF4500]"
+            className={`text-base sm:text-lg font-semibold text-foreground mb-2 transition-all duration-200 line-clamp-2 sm:line-clamp-none ${
+              isHovered ? "text-brand" : "hover:text-brand"
             }`}
           >
             {title}
           </h2>
 
-          <div className="text-gray-700 dark:text-gray-300 mb-3 line-clamp-2 sm:line-clamp-3 text-sm">{content}</div>
+          <div className="text-foreground/80 mb-3 line-clamp-2 sm:line-clamp-3 text-sm">{content}</div>
 
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-3">
@@ -229,7 +229,7 @@ export function PostCard({
                 <Badge
                   key={index}
                   variant="secondary"
-                  className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="text-xs bg-secondary text-muted-foreground hover:bg-border transition-colors"
                 >
                   {tag}
                 </Badge>
@@ -238,11 +238,11 @@ export function PostCard({
           )}
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2 sm:gap-4 text-gray-500 dark:text-gray-400 w-full sm:w-auto flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-4 text-muted-foreground w-full sm:w-auto flex-wrap">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#FF4500] gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
+                className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <MessageSquare className="w-4 h-4" />
@@ -251,7 +251,7 @@ export function PostCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#FF4500] gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
+                className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Share className="w-4 h-4" />
@@ -260,7 +260,7 @@ export function PostCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#FF4500] gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
+                className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Bookmark className="w-4 h-4" />
@@ -274,7 +274,7 @@ export function PostCard({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1 h-auto p-2 border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] transition-all duration-200 bg-transparent text-xs sm:text-sm"
+                    className="gap-1 h-auto p-2 border-input hover:border-brand hover:text-brand transition-all duration-200 bg-transparent text-xs sm:text-sm"
                     onClick={(e) => {
                       e.stopPropagation()
                       window.open(github, "_blank")
@@ -288,7 +288,7 @@ export function PostCard({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1 h-auto p-2 border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] transition-all duration-200 bg-transparent text-xs sm:text-sm"
+                    className="gap-1 h-auto p-2 border-input hover:border-brand hover:text-brand transition-all duration-200 bg-transparent text-xs sm:text-sm"
                     onClick={(e) => {
                       e.stopPropagation()
                       window.open(demo, "_blank")

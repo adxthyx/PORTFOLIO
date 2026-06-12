@@ -101,21 +101,21 @@ export function AchievementsModal({ onClose }: AchievementsModalProps) {
       case "academic":
         return "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+        return "bg-secondary text-secondary-foreground"
     }
   }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300">
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-card rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">
               <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base sm:text-xl font-bold text-black dark:text-white">Achievements & Certifications</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm hidden sm:block">Professional accomplishments and recognitions</p>
+              <h2 className="text-base sm:text-xl font-bold text-foreground">Achievements & Certifications</h2>
+              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Professional accomplishments and recognitions</p>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
@@ -128,22 +128,22 @@ export function AchievementsModal({ onClose }: AchievementsModalProps) {
             {achievements.map((achievement, index) => (
               <div
                 key={index}
-                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 sm:p-4 hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+                className="bg-secondary rounded-lg p-3 sm:p-4 hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
               >
                 <div className="flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-[#FF4500] to-[#FF6B35] rounded-full flex items-center justify-center text-white flex-shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-gradient rounded-full flex items-center justify-center text-white flex-shrink-0">
                     {getIcon(achievement.type)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-black dark:text-white text-base sm:text-lg break-words">{achievement.title}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 font-medium text-sm sm:text-base">{achievement.issuer}</p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">{achievement.description}</p>
+                        <h3 className="font-semibold text-foreground text-base sm:text-lg break-words">{achievement.title}</h3>
+                        <p className="text-muted-foreground font-medium text-sm sm:text-base">{achievement.issuer}</p>
+                        <p className="text-muted-foreground text-xs sm:text-sm mt-1">{achievement.description}</p>
                       </div>
                       <div className="text-left sm:text-right flex-shrink-0">
                         <Badge className={`${getTypeColor(achievement.type)} text-xs`}>{achievement.type}</Badge>
-                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-2">
+                        <div className="flex items-center gap-1 text-muted-foreground text-xs sm:text-sm mt-2">
                           <Calendar className="w-3 h-3" />
                           {achievement.date}
                         </div>
@@ -152,7 +152,7 @@ export function AchievementsModal({ onClose }: AchievementsModalProps) {
 
                     <div className="mt-3 flex flex-wrap gap-2 items-center">
                       {achievement.credentialId && (
-                        <span className="text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded">
+                        <span className="text-xs bg-secondary text-foreground/80 px-2 py-1 rounded">
                           ID: {achievement.credentialId}
                         </span>
                       )}
@@ -170,7 +170,7 @@ export function AchievementsModal({ onClose }: AchievementsModalProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-[#FF4500] hover:text-[#E03E00] h-auto p-1"
+                          className="text-brand hover:text-brand-hover h-auto p-1"
                           onClick={() => window.open(achievement.link, "_blank")}
                         >
                           <ExternalLink className="w-3 h-3 mr-1" />

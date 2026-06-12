@@ -33,18 +33,18 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
       onWheel={(e) => e.stopPropagation()}
     >
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] my-2 sm:my-0 overflow-hidden transition-colors duration-300 flex flex-col"
+        className="bg-card rounded-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] my-2 sm:my-0 overflow-hidden transition-colors duration-300 flex flex-col"
         onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
               <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base sm:text-xl font-bold text-black dark:text-white">All Projects</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm hidden sm:block">Complete portfolio of my work</p>
+              <h2 className="text-base sm:text-xl font-bold text-foreground">All Projects</h2>
+              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Complete portfolio of my work</p>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
@@ -63,14 +63,14 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
             {projects.map((project) => (
               <Card
                 key={project.id}
-                className="p-6 bg-gray-50 dark:bg-gray-700 border-0 hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+                className="p-6 bg-secondary border-0 hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-black dark:text-white text-lg mb-2">{project.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">{project.content}</p>
+                    <h3 className="font-semibold text-foreground text-lg mb-2">{project.title}</h3>
+                    <p className="text-muted-foreground text-sm line-clamp-3">{project.content}</p>
                   </div>
-                  <div className="flex items-center gap-1 text-[#FF4500] ml-4">
+                  <div className="flex items-center gap-1 text-brand ml-4">
                     <Star className="w-4 h-4" />
                     <span className="text-sm font-medium">{project.upvotes}</span>
                   </div>
@@ -82,7 +82,7 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
                       <Badge
                         key={index}
                         variant="secondary"
-                        className="text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
+                        className="text-xs bg-secondary text-foreground/80"
                       >
                         {tag}
                       </Badge>
@@ -91,7 +91,7 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
                 )}
 
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-muted-foreground">
                     {project.subreddit} • {project.timeAgo}
                   </div>
                   <div className="flex gap-2">
@@ -99,7 +99,7 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-1 h-auto p-2 border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] transition-all duration-200 bg-transparent"
+                        className="gap-1 h-auto p-2 border-input hover:border-brand hover:text-brand transition-all duration-200 bg-transparent"
                         onClick={() => window.open(project.github, "_blank")}
                       >
                         <Github className="w-3 h-3" />
@@ -110,7 +110,7 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-1 h-auto p-2 border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] transition-all duration-200 bg-transparent"
+                        className="gap-1 h-auto p-2 border-input hover:border-brand hover:text-brand transition-all duration-200 bg-transparent"
                         onClick={() => window.open(project.demo, "_blank")}
                       >
                         <Eye className="w-3 h-3" />
@@ -126,7 +126,7 @@ export function ProjectsModal({ projects, onClose }: ProjectsModalProps) {
         </div>
 
         {/* Comment Section - Fixed at Bottom (25% of space) */}
-        <div className="flex-[1] min-h-0 max-h-[220px] border-t border-gray-200 dark:border-gray-700 overflow-hidden flex-shrink-0 flex flex-col">
+        <div className="flex-[1] min-h-0 max-h-[220px] border-t border-border overflow-hidden flex-shrink-0 flex flex-col">
           <CommentSection
             postTitle="All Projects"
             context={projectsContext || "This is my portfolio of projects. Ask me anything about them!"}

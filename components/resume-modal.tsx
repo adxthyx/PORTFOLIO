@@ -19,10 +19,10 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-lg max-w-5xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
+      <div className="bg-card rounded-lg max-w-5xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">Resume</h2>
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">Resume</h2>
           <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="outline"

@@ -17,6 +17,13 @@ const config: Config = {
   			mono: ['var(--font-mono)', 'ui-monospace', 'monospace']
   		},
   		colors: {
+  			brand: {
+  				DEFAULT: '#FF4500',
+  				hover: '#E03E00',
+  				subtle: 'rgb(255 69 0 / 0.1)'
+  			},
+  			downvote: '#7193FF',
+  			canvas: 'hsl(var(--canvas))',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

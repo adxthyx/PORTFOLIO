@@ -13,15 +13,15 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full transition-colors duration-300">
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-card rounded-lg max-w-md w-full transition-colors duration-300">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
               <Monitor className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base sm:text-xl font-bold text-black dark:text-white">Settings</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm hidden sm:block">Customize your experience</p>
+              <h2 className="text-base sm:text-xl font-bold text-foreground">Settings</h2>
+              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Customize your experience</p>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
@@ -32,14 +32,14 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
         <div className="p-4 sm:p-6">
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium text-black dark:text-white mb-3 text-sm sm:text-base">Theme Preference</h3>
+              <h3 className="font-medium text-foreground mb-3 text-sm sm:text-base">Theme Preference</h3>
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   variant={theme === "light" ? "default" : "outline"}
                   className={`flex flex-col gap-2 h-auto p-4 ${
                     theme === "light"
-                      ? "bg-[#FF4500] hover:bg-[#E03E00] text-white"
-                      : "border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] bg-transparent"
+                      ? "bg-brand hover:bg-brand-hover text-white"
+                      : "border-input hover:border-brand hover:text-brand bg-transparent"
                   }`}
                   onClick={() => setTheme("light")}
                 >
@@ -50,8 +50,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                   variant={theme === "dark" ? "default" : "outline"}
                   className={`flex flex-col gap-2 h-auto p-4 ${
                     theme === "dark"
-                      ? "bg-[#FF4500] hover:bg-[#E03E00] text-white"
-                      : "border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] bg-transparent"
+                      ? "bg-brand hover:bg-brand-hover text-white"
+                      : "border-input hover:border-brand hover:text-brand bg-transparent"
                   }`}
                   onClick={() => setTheme("dark")}
                 >
@@ -62,8 +62,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                   variant={theme === "system" ? "default" : "outline"}
                   className={`flex flex-col gap-2 h-auto p-4 ${
                     theme === "system"
-                      ? "bg-[#FF4500] hover:bg-[#E03E00] text-white"
-                      : "border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] bg-transparent"
+                      ? "bg-brand hover:bg-brand-hover text-white"
+                      : "border-input hover:border-brand hover:text-brand bg-transparent"
                   }`}
                   onClick={() => setTheme("system")}
                 >
@@ -73,8 +73,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground">
                 Theme changes will be applied immediately and saved for your next visit.
               </p>
             </div>
