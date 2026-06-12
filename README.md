@@ -15,6 +15,7 @@ A portfolio you browse like a subreddit. Vote on posts, sort by Hot/New/Top, hit
 - **Reddit Sans** typography self-hosted via `next/font`, layered Reddit dark palette, dynamic OG image styled as a Reddit post card.
 - **Contact form**: Resend-powered with toast feedback and rate limiting.
 
+
 ## 🛠️ Tech Stack
 
 - **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
