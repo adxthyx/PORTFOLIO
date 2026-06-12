@@ -198,8 +198,8 @@ export function ContactModal({ onClose }: ContactModalProps) {
         <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
           <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
             You can also reach me directly at{" "}
-            <a href="mailto:your.email@example.com" className="text-[#FF4500] hover:underline">
-              your.email@example.com
+            <a href="mailto:adithyanarayana02@gmail.com" className="text-[#FF4500] hover:underline">
+              adithyanarayana02@gmail.com
             </a>
           </p>
         </div>

@@ -79,7 +79,7 @@ export function ProfileCard() {
               variant="ghost"
               size="sm"
               className="w-full justify-start text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-              onClick={() => window.open("mailto:your.email@example.com", "_blank")}
+              onClick={() => window.open("mailto:adithyanarayana02@gmail.com", "_blank")}
             >
               <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
               <span className="truncate">Email</span>
