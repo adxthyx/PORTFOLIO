@@ -1,34 +1,38 @@
-# Reddit Portfolio
+# r/adithya — Reddit Portfolio
 
-A modern, highly interactive portfolio website inspired by Reddit's UI/UX. Built with Next.js 14, TypeScript, Tailwind CSS, and Radix UI.
+A portfolio you browse like a subreddit. Vote on posts, sort by Hot/New/Top, hit ⌘K, and ask u/adithya-bot anything. Built with Next.js 14, TypeScript, Tailwind CSS, Radix UI, and Motion.
 
 ## 🚀 Features
-- **Reddit-style UI**: Post cards, sidebar communities, and header navigation mimicking the familiar Reddit interface.
-- **Interactive Modals**: Seamless navigation through About, Experience, Education, Skills, and Projects using modal windows.
-- **Live GitHub Stats**: Dynamically fetched repository counts, commit activity, stars, and top languages using the GitHub API.
-- **Live LeetCode Stats**: Real-time coding statistics, including problems solved by difficulty and global ranking.
-- **Category Filtering**: Quickly filter content by AI/ML projects, Web Development, or general "About" information.
-- **Search Functionality**: Real-time search across all posts and project tags.
-- **Dark Mode Support**: Beautifully crafted dark and light themes with smooth transitions.
-- **Responsive Design**: Optimized for desktop, tablet, and mobile viewing.
-- **Contact System**: Integrated contact form with EmailJS/Resend support.
+
+- **Reddit, committed to the bit**: flairs, awards, pinned posts, cake day, live karma that updates as you vote, and an "About Community" sidebar for r/adithya.
+- **Working feed mechanics**: Hot/New/Top sorting (hot score decays with post age), category filter chips, real-time search, and votes that persist in localStorage.
+- **AI comment threads**: every post has a comment section where u/adithya-bot (Gemini) answers questions as me.
+- **⌘K command palette**: jump to any post, open any modal, switch theme, or hit external links from anywhere.
+- **Old-Reddit keyboard nav**: `j`/`k` to walk the feed, `Enter` to open.
+- **Live stats**: GitHub (repos, commits, stars, languages) and LeetCode (solved by difficulty, ranking) fetched server-side with animated count-ups and skeleton loading.
+- **Motion**: spring-physics feed entrance, FLIP reordering on sort change, upvote particle burst — all respecting `prefers-reduced-motion`.
+- **Accessible modals**: every dialog is built on Radix (focus trap, Escape, scroll lock, proper aria).
+- **Reddit Sans** typography self-hosted via `next/font`, layered Reddit dark palette, dynamic OG image styled as a Reddit post card.
+- **Contact form**: Resend-powered with toast feedback and rate limiting.
+
 
 ## 🛠️ Tech Stack
 
 - **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [Radix UI](https://www.radix-ui.com/) / [Shadcn UI](https://ui.shadcn.com/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Data Fetching**: GitHub API, LeetCode GraphQL API
-- **Theming**: [Next-Themes](https://github.com/pacocoursey/next-themes)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (strict, errors enforced at build)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with semantic design tokens
+- **UI Primitives**: [Radix UI](https://www.radix-ui.com/) / [shadcn/ui](https://ui.shadcn.com/)
+- **Animation**: [Motion](https://motion.dev/) (LazyMotion + domMax)
+- **Command Palette**: [cmdk](https://cmdk.paco.me/) · **Toasts**: [sonner](https://sonner.emilkowal.ski/)
+- **AI**: Google Gemini · **Email**: [Resend](https://resend.com/)
+- **Data**: GitHub REST API, LeetCode GraphQL API
 
 ## 📦 Getting Started
 
 ### Prerequisites
 
 - Node.js 18.x or later
-- pnpm / npm / yarn
+- pnpm
 
 ### Installation
 
@@ -43,11 +47,11 @@ A modern, highly interactive portfolio website inspired by Reddit's UI/UX. Built
    pnpm install
    \`\`\`
 
-3. Set up environment variables:
-   Create a `.env.local` file in the root directory and add:
+3. Set up environment variables in `.env`:
    \`\`\`env
    GITHUB_TOKEN=your_github_personal_access_token
-   # Optional: RESEND_API_KEY=your_resend_api_key
+   RESEND_API_KEY=your_resend_api_key
+   GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
    \`\`\`
 
 4. Run the development server:
@@ -59,11 +63,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## 📂 Project Structure
 
-- `app/`: Next.js App Router and API routes.
-- `components/`: Reusable UI components (Modals, Cards, Layout).
-- `public/`: Static assets (images, PDFs).
-- `styles/`: Global CSS and Tailwind configurations.
-- `lib/`: Utility functions.
+- `app/` — App Router pages, API routes, fonts/metadata, dynamic OG image.
+- `components/` — feed, post cards, Radix-based modals, command palette, sidebar.
+- `components/ui/` — shadcn/ui primitives (dialog, command, skeleton, ...).
+- `lib/content.ts` — **all portfolio content lives here** (typed posts + profile).
+- `lib/` — votes (localStorage), motion variants, keyboard nav, API security.
+- `public/` — static assets, resume PDF, self-hosted Reddit Sans fonts.
 
 ---
 Built with ❤️ by [adxthyx](https://github.com/adxthyx)

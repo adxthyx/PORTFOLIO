@@ -2,50 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Design tokens.
+  Surfaces use a layered scale (canvas < card < hover surface) in both themes.
+  Brand orange lives in tailwind.config.ts as `brand`; --primary mirrors it
+  so shadcn button/badge defaults pick it up.
+  Radius scale: cards and modals use rounded-lg (var(--radius)) everywhere.
+*/
 @layer base {
   :root {
+    --canvas: 210 17% 88%; /* #dae0e6 reddit light canvas */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 210 11% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 11% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 11% 11%;
+    --primary: 16 100% 50%; /* brand orange */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 17% 95%;
+    --secondary-foreground: 210 11% 15%;
+    --muted: 210 17% 95%;
+    --muted-foreground: 215 9% 42%;
+    --accent: 210 17% 95%;
+    --accent-foreground: 210 11% 15%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 214 15% 89%;
+    --input: 214 15% 89%;
+    --ring: 16 100% 50%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 0 0% 3%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 9%;
-    --muted-foreground: 0 0% 63%;
-    --accent: 0 0% 9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    /* Layered reddit dark: canvas #0b1416 < card #14181c < hover #1b2226 */
+    --canvas: 200 33% 6%;
+    --background: 200 33% 6%;
+    --foreground: 210 17% 91%;
+    --card: 204 17% 9%;
+    --card-foreground: 210 17% 91%;
+    --popover: 204 17% 11%;
+    --popover-foreground: 210 17% 91%;
+    --primary: 16 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 206 14% 13%;
+    --secondary-foreground: 210 17% 91%;
+    --muted: 206 14% 13%;
+    --muted-foreground: 210 8% 62%;
+    --accent: 206 14% 13%;
+    --accent-foreground: 210 17% 91%;
+    --destructive: 0 62.8% 40%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 0 0% 83%;
+    --border: 199 13% 19%;
+    --input: 199 13% 19%;
+    --ring: 16 100% 55%;
   }
 }
 
@@ -54,74 +64,14 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-canvas text-foreground;
   }
 }
 
-/* Custom dark theme colors */
-body {
-  background-color: #dae0e6;
-  transition: all 0.3s ease;
-}
-
-.dark body {
-  background-color: #0a0a0a;
-}
-
-.dark .bg-white {
-  background-color: #161618 !important;
-}
-
-.dark .bg-gray-50 {
-  background-color: #1a1a1c !important;
-}
-
-.dark .bg-gray-100 {
-  background-color: #202022 !important;
-}
-
-.dark .text-black {
-  color: #ffffff !important;
-}
-
-.dark .text-gray-600 {
-  color: #a1a1aa !important;
-}
-
-.dark .text-gray-700 {
-  color: #d4d4d8 !important;
-}
-
-.dark .text-gray-500 {
-  color: #71717a !important;
-}
-
-.dark .border-gray-200 {
-  border-color: #27272a !important;
-}
-
-.dark .border-gray-300 {
-  border-color: #3f3f46 !important;
-}
-
-/* Smooth transitions */
-* {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-/* Line clamp utility */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+@layer utilities {
+  .bg-brand-gradient {
+    background-image: linear-gradient(to right, #ff4500, #ff6b35);
+  }
 }
 
 /* Custom scrollbar for dark theme */
@@ -130,16 +80,16 @@ body {
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #1a1a1c;
+  background: hsl(206 14% 13%);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #3f3f46;
+  background: hsl(199 13% 25%);
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #52525b;
+  background: hsl(199 13% 32%);
 }
 
 /* Hide scrollbar utility */

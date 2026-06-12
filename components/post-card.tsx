@@ -3,70 +3,141 @@
 import type React from "react"
 
 import { useState } from "react"
-import { MessageSquare, Share, Bookmark, Eye, Github } from "lucide-react"
+import { MessageSquare, Share, Bookmark, Eye, Github, Pin, Medal } from "lucide-react"
+import { AnimatePresence, m } from "motion/react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Flair } from "@/components/flair"
+import type { Post } from "@/lib/content"
+import type { VoteDir } from "@/lib/votes"
 
 interface PostCardProps {
-  id?: string
-  title: string
-  content: string
-  upvotes: number
-  comments: number
-  subreddit: string
-  author: string
-  timeAgo: string
-  type?: string
-  tags?: string[]
-  github?: string
-  demo?: string
+  post: Post
+  userVote?: VoteDir
+  onVote: (dir: VoteDir) => void
   onClick?: () => void
 }
 
-export function PostCard({
-  title,
-  content,
-  upvotes,
-  comments,
-  subreddit,
-  author,
-  timeAgo,
-  type,
-  tags = [],
-  github,
-  demo,
-  onClick,
-}: PostCardProps) {
-  const [userVote, setUserVote] = useState<"up" | "down" | null>(null)
-  const [currentUpvotes, setCurrentUpvotes] = useState(upvotes)
-  const [isHovered, setIsHovered] = useState(false)
-  const [hoveredVote, setHoveredVote] = useState<"up" | "down" | null>(null)
+function VoteButton({
+  dir,
+  active,
+  hovered,
+  onHover,
+  onVote,
+  size,
+}: {
+  dir: VoteDir
+  active: boolean
+  hovered: boolean
+  onHover: (h: boolean) => void
+  onVote: (dir: VoteDir, e: React.MouseEvent) => void
+  size: "sm" | "lg"
+}) {
+  const up = dir === 1
+  const [burstId, setBurstId] = useState(0)
+  const activeBg = up ? "!bg-orange-500 dark:!bg-orange-600" : "!bg-blue-500 dark:!bg-blue-600"
+  const hoverBg = up ? "!bg-orange-500/30 dark:!bg-orange-600/30" : "!bg-blue-500/30 dark:!bg-blue-600/30"
+  const idleHover = up
+    ? "hover:!bg-orange-500/30 dark:hover:!bg-orange-600/30"
+    : "hover:!bg-blue-500/30 dark:hover:!bg-blue-600/30"
+  const sizeClass = size === "lg" ? "w-7 h-7" : "w-6 h-6"
 
-  const handleVote = (voteType: "up" | "down", e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (userVote === voteType) {
-      setUserVote(null)
-      setCurrentUpvotes(voteType === "up" ? currentUpvotes - 1 : currentUpvotes + 1)
-    } else {
-      const prevVote = userVote
-      setUserVote(voteType)
-
-      if (prevVote === null) {
-        setCurrentUpvotes(voteType === "up" ? currentUpvotes + 1 : currentUpvotes - 1)
-      } else {
-        setCurrentUpvotes(voteType === "up" ? currentUpvotes + 2 : currentUpvotes - 2)
-      }
-    }
+  const handleClick = (e: React.MouseEvent) => {
+    // Burst only when an upvote is being cast (not removed)
+    if (up && !active) setBurstId((id) => id + 1)
+    onVote(dir, e)
   }
 
   return (
+    <span className="relative inline-flex">
+      <Button
+        variant="ghost"
+        size="sm"
+        aria-label={up ? "Upvote" : "Downvote"}
+        aria-pressed={active}
+        className={`p-2 h-auto rounded-md transition-all duration-200 ${
+          active ? activeBg : hovered ? hoverBg : idleHover
+        }`}
+        onClick={handleClick}
+        onMouseEnter={() => onHover(true)}
+        onMouseLeave={() => onHover(false)}
+      >
+        <m.span
+          whileTap={{ scale: 0.8 }}
+          transition={{ type: "spring", stiffness: 500, damping: 22 }}
+          className="inline-flex"
+        >
+          <Image
+            src={active || hovered ? "/white-upvote.svg" : "/black-upvote.svg"}
+            alt=""
+            width={size === "lg" ? 28 : 24}
+            height={size === "lg" ? 28 : 24}
+            className={up ? sizeClass : `${sizeClass} rotate-180`}
+          />
+        </m.span>
+      </Button>
+
+      {/* Particle burst on upvote */}
+      {up && burstId > 0 && (
+        <span key={burstId} className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
+          {Array.from({ length: 6 }).map((_, i) => {
+            const angle = (i / 6) * Math.PI * 2
+            return (
+              <m.span
+                key={i}
+                className="absolute w-1.5 h-1.5 rounded-full bg-brand"
+                initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                animate={{
+                  x: Math.cos(angle) * 22,
+                  y: Math.sin(angle) * 22,
+                  opacity: 0,
+                  scale: 0.4,
+                }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+              />
+            )
+          })}
+        </span>
+      )}
+    </span>
+  )
+}
+
+export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
+  const {
+    title,
+    content,
+    upvotes,
+    comments,
+    subreddit,
+    author,
+    timeAgo,
+    tags = [],
+    github,
+    demo,
+    flair,
+    pinned,
+    awards,
+  } = post
+  const [isHovered, setIsHovered] = useState(false)
+  const [hoveredVote, setHoveredVote] = useState<VoteDir | null>(null)
+
+  const currentUpvotes = upvotes + (userVote ?? 0)
+
+  const handleVote = (dir: VoteDir, e: React.MouseEvent) => {
+    e.stopPropagation()
+    onVote(dir)
+  }
+
+  const voteCountClass =
+    userVote === 1 ? "text-brand" : userVote === -1 ? "text-downvote" : "text-muted-foreground"
+
+  return (
     <Card
-      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-all duration-300 cursor-pointer ${
-        isHovered
-          ? "border-[#FF4500] shadow-lg transform translate-y-[-2px] shadow-orange-100"
-          : "hover:border-gray-300 hover:shadow-md"
+      className={`bg-card border border-border transition-[border-color,box-shadow] duration-300 cursor-pointer ${
+        isHovered ? "border-brand shadow-lg shadow-orange-100 dark:shadow-none" : "hover:border-input hover:shadow-md"
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -74,154 +145,113 @@ export function PostCard({
     >
       <div className="flex flex-col sm:flex-row">
         {/* Desktop Vote Buttons - Vertical */}
-        <div className="hidden sm:flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-700 border-r dark:border-gray-600 border-gray-200 min-w-[60px]">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`p-2 h-auto rounded-md transition-all duration-200 ${
-              userVote === "up"
-                ? "!bg-orange-500 dark:!bg-orange-600"
-                : hoveredVote === "up"
-                  ? "!bg-orange-500/30 dark:!bg-orange-600/30"
-                  : "hover:!bg-orange-500/30 dark:hover:!bg-orange-600/30"
-            }`}
-            onClick={(e) => handleVote("up", e)}
-            onMouseEnter={() => setHoveredVote("up")}
-            onMouseLeave={() => setHoveredVote(null)}
-          >
-            <Image
-              src={userVote === "up" || hoveredVote === "up" ? "/white-upvote.svg" : "/black-upvote.svg"}
-              alt="Upvote"
-              width={28}
-              height={28}
-              className="w-7 h-7"
-            />
-          </Button>
-          <span
-            className={`text-sm font-bold transition-all duration-200 ${
-              userVote === "up"
-                ? "text-[#FF4500]"
-                : userVote === "down"
-                  ? "text-[#7193FF]"
-                  : "text-gray-600 dark:text-gray-400"
-            }`}
-          >
-            {currentUpvotes}
+        <div className="hidden sm:flex flex-col items-center p-3 bg-secondary border-r border-border min-w-[60px]">
+          <VoteButton
+            dir={1}
+            active={userVote === 1}
+            hovered={hoveredVote === 1}
+            onHover={(h) => setHoveredVote(h ? 1 : null)}
+            onVote={handleVote}
+            size="lg"
+          />
+          <span className={`text-sm font-bold transition-colors duration-200 overflow-hidden ${voteCountClass}`}>
+            <AnimatePresence mode="popLayout" initial={false}>
+              <m.span
+                key={currentUpvotes}
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 10, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="inline-block tabular-nums"
+              >
+                {currentUpvotes}
+              </m.span>
+            </AnimatePresence>
           </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`p-2 h-auto rounded-md transition-all duration-200 ${
-              userVote === "down"
-                ? "!bg-blue-500 dark:!bg-blue-600"
-                : hoveredVote === "down"
-                  ? "!bg-blue-500/30 dark:!bg-blue-600/30"
-                  : "hover:!bg-blue-500/30 dark:hover:!bg-blue-600/30"
-            }`}
-            onClick={(e) => handleVote("down", e)}
-            onMouseEnter={() => setHoveredVote("down")}
-            onMouseLeave={() => setHoveredVote(null)}
-          >
-            <Image
-              src={userVote === "down" || hoveredVote === "down" ? "/white-upvote.svg" : "/black-upvote.svg"}
-              alt="Downvote"
-              width={28}
-              height={28}
-              className="w-7 h-7 rotate-180"
-            />
-          </Button>
+          <VoteButton
+            dir={-1}
+            active={userVote === -1}
+            hovered={hoveredVote === -1}
+            onHover={(h) => setHoveredVote(h ? -1 : null)}
+            onVote={handleVote}
+            size="lg"
+          />
         </div>
 
         {/* Mobile Vote Buttons - Horizontal */}
-        <div className="sm:hidden flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 border-gray-200">
-          <Button
-            variant="ghost"
+        <div className="sm:hidden flex items-center gap-2 p-2 bg-secondary border-b border-border">
+          <VoteButton
+            dir={1}
+            active={userVote === 1}
+            hovered={hoveredVote === 1}
+            onHover={(h) => setHoveredVote(h ? 1 : null)}
+            onVote={handleVote}
             size="sm"
-            className={`p-2 h-auto rounded-md transition-all duration-200 ${
-              userVote === "up"
-                ? "!bg-orange-500 dark:!bg-orange-600"
-                : hoveredVote === "up"
-                  ? "!bg-orange-500/30 dark:!bg-orange-600/30"
-                  : "hover:!bg-orange-500/30 dark:hover:!bg-orange-600/30"
-            }`}
-            onClick={(e) => handleVote("up", e)}
-            onMouseEnter={() => setHoveredVote("up")}
-            onMouseLeave={() => setHoveredVote(null)}
-          >
-            <Image
-              src={userVote === "up" || hoveredVote === "up" ? "/white-upvote.svg" : "/black-upvote.svg"}
-              alt="Upvote"
-              width={24}
-              height={24}
-              className="w-6 h-6"
-            />
-          </Button>
+          />
           <span
-            className={`text-sm font-bold transition-all duration-200 min-w-[40px] text-center ${
-              userVote === "up"
-                ? "text-[#FF4500]"
-                : userVote === "down"
-                  ? "text-[#7193FF]"
-                  : "text-gray-600 dark:text-gray-400"
-            }`}
+            className={`text-sm font-bold transition-colors duration-200 min-w-[40px] text-center overflow-hidden ${voteCountClass}`}
           >
-            {currentUpvotes}
+            <AnimatePresence mode="popLayout" initial={false}>
+              <m.span
+                key={currentUpvotes}
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 10, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="inline-block tabular-nums"
+              >
+                {currentUpvotes}
+              </m.span>
+            </AnimatePresence>
           </span>
-          <Button
-            variant="ghost"
+          <VoteButton
+            dir={-1}
+            active={userVote === -1}
+            hovered={hoveredVote === -1}
+            onHover={(h) => setHoveredVote(h ? -1 : null)}
+            onVote={handleVote}
             size="sm"
-            className={`p-2 h-auto rounded-md transition-all duration-200 ${
-              userVote === "down"
-                ? "!bg-blue-500 dark:!bg-blue-600"
-                : hoveredVote === "down"
-                  ? "!bg-blue-500/30 dark:!bg-blue-600/30"
-                  : "hover:!bg-blue-500/30 dark:hover:!bg-blue-600/30"
-            }`}
-            onClick={(e) => handleVote("down", e)}
-            onMouseEnter={() => setHoveredVote("down")}
-            onMouseLeave={() => setHoveredVote(null)}
-          >
-            <Image
-              src={userVote === "down" || hoveredVote === "down" ? "/white-upvote.svg" : "/black-upvote.svg"}
-              alt="Downvote"
-              width={24}
-              height={24}
-              className="w-6 h-6 rotate-180"
-            />
-          </Button>
+          />
         </div>
 
         <div className="flex-1 p-3 sm:p-4 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 flex-wrap">
-            <span className="font-medium text-[#FF4500] hover:underline cursor-pointer">{subreddit}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground mb-2 flex-wrap">
+            <span className="font-medium text-brand hover:underline cursor-pointer">{subreddit}</span>
             <span className="hidden sm:inline">•</span>
             <span className="hover:underline cursor-pointer">Posted by {author}</span>
             <span className="hidden sm:inline">•</span>
-            <span>{timeAgo}</span>
-            {timeAgo === "pinned" && (
+            <span suppressHydrationWarning>{timeAgo}</span>
+            {pinned && (
               <Badge
                 variant="secondary"
-                className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs w-fit"
+                className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs w-fit gap-1"
               >
-                PINNED
+                <Pin className="w-3 h-3" />
+                PINNED BY MODERATORS
               </Badge>
             )}
-            {type && (
-              <Badge variant="outline" className="text-xs border-[#FF4500] text-[#FF4500] w-fit">
-                {type.toUpperCase()}
-              </Badge>
+            {flair && <Flair name={flair} className="w-fit" />}
+            {awards && awards.length > 0 && (
+              <span
+                className="flex items-center gap-0.5 text-amber-500"
+                title={`${awards.length} award${awards.length > 1 ? "s" : ""}`}
+              >
+                {awards.map((_, i) => (
+                  <Medal key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                ))}
+              </span>
             )}
           </div>
 
           <h2
-            className={`text-base sm:text-lg font-semibold text-black dark:text-white mb-2 transition-all duration-200 line-clamp-2 sm:line-clamp-none ${
-              isHovered ? "text-[#FF4500]" : "hover:text-[#FF4500]"
+            className={`text-base sm:text-lg font-semibold text-foreground mb-2 transition-all duration-200 line-clamp-2 sm:line-clamp-none ${
+              isHovered ? "text-brand" : "hover:text-brand"
             }`}
           >
             {title}
           </h2>
 
-          <div className="text-gray-700 dark:text-gray-300 mb-3 line-clamp-2 sm:line-clamp-3 text-sm">{content}</div>
+          <div className="text-foreground/80 mb-3 line-clamp-2 sm:line-clamp-3 text-sm">{content}</div>
 
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-3">
@@ -229,7 +259,7 @@ export function PostCard({
                 <Badge
                   key={index}
                   variant="secondary"
-                  className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="text-xs bg-secondary text-muted-foreground hover:bg-border transition-colors"
                 >
                   {tag}
                 </Badge>
@@ -238,11 +268,11 @@ export function PostCard({
           )}
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2 sm:gap-4 text-gray-500 dark:text-gray-400 w-full sm:w-auto flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-4 text-muted-foreground w-full sm:w-auto flex-wrap">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#FF4500] gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
+                className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <MessageSquare className="w-4 h-4" />
@@ -251,7 +281,7 @@ export function PostCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#FF4500] gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
+                className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Share className="w-4 h-4" />
@@ -260,7 +290,7 @@ export function PostCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#FF4500] gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
+                className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Bookmark className="w-4 h-4" />
@@ -274,7 +304,7 @@ export function PostCard({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1 h-auto p-2 border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] transition-all duration-200 bg-transparent text-xs sm:text-sm"
+                    className="gap-1 h-auto p-2 border-input hover:border-brand hover:text-brand transition-all duration-200 bg-transparent text-xs sm:text-sm"
                     onClick={(e) => {
                       e.stopPropagation()
                       window.open(github, "_blank")
@@ -288,7 +318,7 @@ export function PostCard({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1 h-auto p-2 border-gray-300 dark:border-gray-600 hover:border-[#FF4500] hover:text-[#FF4500] transition-all duration-200 bg-transparent text-xs sm:text-sm"
+                    className="gap-1 h-auto p-2 border-input hover:border-brand hover:text-brand transition-all duration-200 bg-transparent text-xs sm:text-sm"
                     onClick={(e) => {
                       e.stopPropagation()
                       window.open(demo, "_blank")

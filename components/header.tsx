@@ -9,33 +9,44 @@ interface HeaderProps {
   onNavAction: (action: string) => void
   onSearch: (query: string) => void
   searchQuery: string
+  onOpenPalette?: () => void
 }
 
-export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
+export function Header({ onNavAction, onSearch, searchQuery, onOpenPalette }: HeaderProps) {
   return (
-    <header className="bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#27272a] sticky top-0 z-50 shadow-sm transition-colors duration-300">
+    <header className="bg-card border-b border-border sticky top-0 z-50 shadow-sm transition-colors duration-300">
       <div className="w-full px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
         <button
           onClick={() => onNavAction("home")}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
         >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-[#FF4500] to-[#FF6B35] rounded-full flex items-center justify-center shadow-lg">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-brand-gradient rounded-full flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-xs sm:text-sm">A</span>
           </div>
-          <span className="font-bold text-black dark:text-white text-base sm:text-lg md:text-xl bg-gradient-to-r from-[#FF4500] to-[#FF6B35] bg-clip-text text-transparent">
+          <span className="font-bold text-foreground text-base sm:text-lg md:text-xl bg-brand-gradient bg-clip-text text-transparent">
             adxthyx
           </span>
         </button>
 
         <div className="flex-1 w-full sm:max-w-2xl sm:mx-4 order-3 sm:order-2">
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#FF4500] transition-colors" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-brand transition-colors" />
             <Input
-              placeholder="Search..."
+              placeholder="Search r/adithya..."
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
-              className="pl-10 w-full bg-gray-50 dark:bg-[#161618] border-gray-200 dark:border-[#27272a] text-black dark:text-white placeholder-gray-500 dark:placeholder-[#71717a] focus:border-[#FF4500] focus:ring-[#FF4500] transition-all duration-200 text-sm"
+              className="pl-10 pr-14 w-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-brand focus:ring-brand transition-all duration-200 text-sm"
             />
+            {onOpenPalette && (
+              <button
+                type="button"
+                onClick={onOpenPalette}
+                aria-label="Open command palette"
+                className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground hover:text-brand hover:border-brand transition-colors"
+              >
+                ⌘K
+              </button>
+            )}
           </div>
         </div>
 
@@ -46,7 +57,7 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("achievements")}
                 >
                   <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -62,7 +73,7 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("stats")}
                 >
                   <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -78,7 +89,7 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("projects")}
                 >
                   <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -94,7 +105,7 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("contact")}
                 >
                   <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -110,7 +121,7 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("settings")}
                 >
                   <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -126,7 +137,7 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("resume")}
                 >
                   <Download className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -142,7 +153,7 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-600 dark:text-[#a1a1aa] hover:bg-gray-100 dark:hover:bg-[#1a1a1c] hover:text-[#FF4500] transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
                   onClick={() => onNavAction("profile")}
                 >
                   <User className="w-4 h-4 sm:w-5 sm:h-5" />

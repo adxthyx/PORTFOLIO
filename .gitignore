@@ -6,6 +6,10 @@
 # next.js
 /.next/
 /out/
+# Claude
+CLAUDE.md
+skills-lock.json
+.agents
 
 # production
 /build
@@ -24,4 +28,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
 next-env.d.ts
