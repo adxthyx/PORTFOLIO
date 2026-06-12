@@ -14,14 +14,11 @@ import { ResumeModal } from "@/components/resume-modal"
 import { allPosts, mainPosts, projects, searchPosts, type Post } from "@/lib/content"
 import type { GitHubStats, LeetCodeStats } from "@/lib/stats"
 
+type ModalId = "contact" | "achievements" | "stats" | "projects" | "settings" | "resume"
+
 export default function Portfolio() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
-  const [showContact, setShowContact] = useState(false)
-  const [showAchievements, setShowAchievements] = useState(false)
-  const [showStats, setShowStats] = useState(false)
-  const [showProjects, setShowProjects] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const [showResume, setShowResume] = useState(false)
+  const [activeModal, setActiveModal] = useState<ModalId | null>(null)
   const [activeFilter, setActiveFilter] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -75,34 +72,29 @@ export default function Portfolio() {
 
   const handleNavAction = (action: string) => {
     switch (action) {
-      case "achievements":
-        setShowAchievements(true)
-        break
-      case "stats":
-        setShowStats(true)
-        break
-      case "projects":
-        setShowProjects(true)
-        break
-      case "settings":
-        setShowSettings(true)
-        break
       case "profile":
         setSelectedPost(allPosts[0])
-        break
-      case "resume":
-        setShowResume(true)
-        break
-      case "contact":
-        setShowContact(true)
         break
       case "home":
         window.scrollTo({ top: 0, behavior: "smooth" })
         setActiveFilter("all")
         setSearchQuery("")
         break
+      case "achievements":
+      case "stats":
+      case "projects":
+      case "settings":
+      case "resume":
+      case "contact":
+        setActiveModal(action)
+        break
     }
   }
+
+  const modalProps = (id: ModalId) => ({
+    open: activeModal === id,
+    onOpenChange: (open: boolean) => setActiveModal(open ? id : null),
+  })
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -189,21 +181,23 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Modals */}
-      {selectedPost && <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
-      {showContact && <ContactModal onClose={() => setShowContact(false)} />}
-      {showAchievements && <AchievementsModal onClose={() => setShowAchievements(false)} />}
-      {showStats && (
-        <StatsModal
-          onClose={() => setShowStats(false)}
-          githubStats={githubStats}
-          leetcodeStats={leetcodeStats}
-          loading={statsLoading}
-        />
-      )}
-      {showProjects && <ProjectsModal projects={projects} onClose={() => setShowProjects(false)} />}
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
-      {showResume && <ResumeModal onClose={() => setShowResume(false)} />}
+      {/* Modals — always mounted so Radix can animate open/close */}
+      <PostModal
+        post={selectedPost}
+        open={!!selectedPost}
+        onOpenChange={(open) => !open && setSelectedPost(null)}
+      />
+      <ContactModal {...modalProps("contact")} />
+      <AchievementsModal {...modalProps("achievements")} />
+      <StatsModal
+        {...modalProps("stats")}
+        githubStats={githubStats}
+        leetcodeStats={leetcodeStats}
+        loading={statsLoading}
+      />
+      <ProjectsModal projects={projects} {...modalProps("projects")} />
+      <SettingsModal {...modalProps("settings")} />
+      <ResumeModal {...modalProps("resume")} />
     </div>
   )
 }

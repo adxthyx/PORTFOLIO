@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
 
 interface ContactModalProps {
-  onClose: () => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function ContactModal({ onClose }: ContactModalProps) {
+export function ContactModal({ open, onOpenChange }: ContactModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,7 +42,7 @@ export function ContactModal({ onClose }: ContactModalProps) {
         setSubmitStatus("success")
         setFormData({ name: "", email: "", subject: "", message: "" })
         setTimeout(() => {
-          onClose()
+          onOpenChange(false)
         }, 2000)
       } else {
         setSubmitStatus("error")
@@ -61,21 +63,28 @@ export function ContactModal({ onClose }: ContactModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-card rounded-lg max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden transition-colors duration-300">
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-h-[95vh] sm:max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-brand-gradient rounded-full flex items-center justify-center flex-shrink-0">
               <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base sm:text-xl font-bold text-foreground">Contact Me</h2>
-              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Let's discuss your next project</p>
+              <DialogTitle asChild>
+                <h2 className="text-base sm:text-xl font-bold text-foreground">Contact Me</h2>
+              </DialogTitle>
+              <DialogDescription asChild>
+                <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Let's discuss your next project</p>
+              </DialogDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
-          </Button>
+          <DialogClose asChild>
+            <Button variant="ghost" size="icon" className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogClose>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]">
@@ -171,14 +180,11 @@ export function ContactModal({ onClose }: ContactModalProps) {
           )}
 
           <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1 border-input hover:bg-secondary bg-transparent"
-            >
-              Cancel
-            </Button>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" className="flex-1 border-input hover:bg-secondary bg-transparent">
+                Cancel
+              </Button>
+            </DialogClose>
             <Button type="submit" disabled={isSubmitting} className="flex-1 bg-brand hover:bg-brand-hover text-white">
               {isSubmitting ? (
                 <>
@@ -203,7 +209,7 @@ export function ContactModal({ onClose }: ContactModalProps) {
             </a>
           </p>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

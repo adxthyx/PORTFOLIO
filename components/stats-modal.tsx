@@ -14,90 +14,59 @@ import {
   GitPullRequest,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
 import { useState } from "react"
-
-interface GitHubStats {
-  totalRepos: number
-  totalCommits: number
-  totalPRs: number
-  totalStars: number
-  totalForks: number
-  followers: number
-  following: number
-  yearsActive: number
-  currentStreak: number
-  profileViews: number
-  topLanguages: Array<{
-    name: string
-    percentage: number
-    color: string
-  }>
-}
-
-interface LeetCodeStats {
-  totalSolved: number
-  easy: number
-  medium: number
-  hard: number
-  ranking: number
-  languages: Array<{
-    name: string
-    solved: number
-  }>
-  userAvatar: string
-  realName: string
-}
+import type { GitHubStats, LeetCodeStats } from "@/lib/stats"
 
 interface StatsModalProps {
-  onClose: () => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
   githubStats: GitHubStats | null
   leetcodeStats: LeetCodeStats | null
   loading: boolean
 }
 
-export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: StatsModalProps) {
+export function StatsModal({ open, onOpenChange, githubStats, leetcodeStats, loading }: StatsModalProps) {
   const [activeTab, setActiveTab] = useState<"github" | "leetcode">("github")
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-card rounded-2xl p-8 border border-border">
-          <div className="flex items-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin text-brand" />
-            <span className="text-foreground">Loading coding statistics...</span>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-card rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-border">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-5xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-h-[95vh] sm:max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-white flex-shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base sm:text-xl font-bold truncate">Coding Statistics Dashboard</h2>
-              <p className="text-white/80 text-xs sm:text-sm hidden sm:block">Real-time data from GitHub and LeetCode</p>
+              <DialogTitle asChild>
+                <h2 className="text-base sm:text-xl font-bold truncate">Coding Statistics Dashboard</h2>
+              </DialogTitle>
+              <DialogDescription asChild>
+                <p className="text-white/80 text-xs sm:text-sm hidden sm:block">Real-time data from GitHub and LeetCode</p>
+              </DialogDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20 flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
-          </Button>
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/20 flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogClose>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-border bg-card">
+        <div className="flex border-b border-border bg-card flex-shrink-0">
           <button
             onClick={() => setActiveTab("github")}
             className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors ${
               activeTab === "github"
                 ? "text-brand border-b-2 border-brand bg-secondary"
-                : "text-muted-foreground hover:text-gray-900 dark:hover:text-gray-200"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <div className="flex items-center justify-center gap-1 sm:gap-2">
@@ -111,7 +80,7 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
             className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors ${
               activeTab === "leetcode"
                 ? "text-brand border-b-2 border-brand bg-secondary"
-                : "text-muted-foreground hover:text-gray-900 dark:hover:text-gray-200"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <div className="flex items-center justify-center gap-1 sm:gap-2">
@@ -123,8 +92,15 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-200px)] bg-card">
-          {activeTab === "github" && (
+        <div className="p-4 sm:p-6 overflow-y-auto min-h-0 bg-card">
+          {loading && (
+            <div className="flex items-center justify-center gap-3 py-16">
+              <Loader2 className="w-6 h-6 animate-spin text-brand" />
+              <span className="text-foreground">Loading coding statistics...</span>
+            </div>
+          )}
+
+          {!loading && activeTab === "github" && (
             <div className="space-y-4 sm:space-y-6">
               {githubStats ? (
                 <>
@@ -221,7 +197,7 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
             </div>
           )}
 
-          {activeTab === "leetcode" && (
+          {!loading && activeTab === "leetcode" && (
             <div className="space-y-6">
               {leetcodeStats ? (
                 <>
@@ -281,9 +257,7 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
                         {leetcodeStats.languages.map((lang, index) => (
                           <div key={index} className="flex items-center justify-between">
                             <span className="text-sm text-foreground/80">{lang.name}</span>
-                            <span className="text-sm font-medium text-foreground">
-                              {lang.solved} problems
-                            </span>
+                            <span className="text-sm font-medium text-foreground">{lang.solved} problems</span>
                           </div>
                         ))}
                       </div>
@@ -299,13 +273,13 @@ export function StatsModal({ onClose, githubStats, leetcodeStats, loading }: Sta
           )}
 
           {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              Last updated: {new Date().toLocaleString()} • Data refreshed in real-time
-            </p>
-          </div>
+          {!loading && (
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground">Live data, fetched on page load</p>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

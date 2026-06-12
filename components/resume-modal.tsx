@@ -2,8 +2,14 @@
 
 import { X, Download, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
 
-export function ResumeModal({ onClose }: { onClose: () => void }) {
+interface ResumeModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function ResumeModal({ open, onOpenChange }: ResumeModalProps) {
   const handleDownload = () => {
     const link = document.createElement("a")
     link.href = "/resume.pdf"
@@ -18,11 +24,14 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-card rounded-lg max-w-5xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-5xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-h-[95vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border">
-          <h2 className="text-base sm:text-lg font-semibold text-foreground">Resume</h2>
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border flex-shrink-0">
+          <DialogTitle asChild>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">Resume</h2>
+          </DialogTitle>
+          <DialogDescription className="sr-only">View, download, or open my resume PDF</DialogDescription>
           <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="outline"
@@ -42,17 +51,20 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
               <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">New Tab</span>
             </Button>
-            <Button variant="ghost" size="icon" onClick={onClose} className="w-8 h-8 sm:w-10 sm:h-10">
-              <X className="w-4 h-4 sm:w-5 sm:h-5" />
-            </Button>
+            <DialogClose asChild>
+              <Button variant="ghost" size="icon" className="w-8 h-8 sm:w-10 sm:h-10">
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="sr-only">Close</span>
+              </Button>
+            </DialogClose>
           </div>
         </div>
 
-        {/* PDF Viewer */}
+        {/* PDF Viewer — only load the PDF once the dialog is actually open */}
         <div className="h-[calc(95vh-70px)] sm:h-[calc(95vh-80px)]">
-          <iframe src="/resume.pdf" className="w-full h-full border-0" title="Resume PDF" />
+          {open && <iframe src="/resume.pdf" className="w-full h-full border-0" title="Resume PDF" />}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

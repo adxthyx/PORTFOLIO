@@ -2,31 +2,40 @@
 
 import { X, Sun, Moon, Monitor } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
 import { useTheme } from "@/components/theme-provider"
 
 interface SettingsModalProps {
-  onClose: () => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function SettingsModal({ onClose }: SettingsModalProps) {
+export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-card rounded-lg max-w-md w-full transition-colors duration-300">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)]">
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 pr-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
               <Monitor className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base sm:text-xl font-bold text-foreground">Settings</h2>
-              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Customize your experience</p>
+              <DialogTitle asChild>
+                <h2 className="text-base sm:text-xl font-bold text-foreground">Settings</h2>
+              </DialogTitle>
+              <DialogDescription asChild>
+                <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Customize your experience</p>
+              </DialogDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
-          </Button>
+          <DialogClose asChild>
+            <Button variant="ghost" size="icon" className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogClose>
         </div>
 
         <div className="p-4 sm:p-6">
@@ -80,7 +89,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
