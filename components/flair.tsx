@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 
 const FLAIR_COLORS: Record<string, string> = {
+  AMA: "bg-rose-600",
   About: "bg-emerald-600",
   Experience: "bg-blue-600",
   Education: "bg-purple-600",

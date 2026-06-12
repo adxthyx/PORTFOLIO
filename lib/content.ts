@@ -46,7 +46,7 @@ export const profile: Profile = {
   subreddit: "r/adithya",
   cakeDay: "2025-09-01",
   baseKarma: 2847,
-  avatar: "/a.png",
+  avatar: "/a.jpeg",
   resumePath: "/resume.pdf",
   links: {
     github: "https://github.com/adxthyx",
@@ -73,9 +73,12 @@ function definePost(input: PostInput): Post {
 
 const about = definePost({
   id: "about",
-  title: "About Me - Developer & Software Engineer",
-  content: "Passionate full-stack developer with expertise in modern web technologies and AI/ML...",
-  fullContent: `# About Me
+  title: "I'm Adithya — AI/ML Software Engineer @ HPE. Ask Me Anything.",
+  content:
+    "Fresh AI & ML grad, now building Gen AI / LLM things full-time at HPE. AMA about my work, my projects, or why tea is a war crime. (There's a u/adithya-bot in the comments that answers as me — go poke it.)",
+  fullContent: `# Ask Me Anything
+
+> Drop a question in the comments — **u/adithya-bot** answers as me, trained on everything below.
 
 🎓 **The Academic Chapter**
 Just graduated from Ramaiah Institute of Technology, Bengaluru with a degree in AI & Machine Learning (Class of 2025). The journey was wild - late night debugging sessions, project deadlines that made me question my life choices, and somehow managing to build some cool stuff along the way.
@@ -92,7 +95,7 @@ My comfort zone: Python, NextJS, FastAPI, Flask, JS, Streamlit (and honestly, to
 **AI Stuff:** LangChain for LLM applications
 
 If I had to pick my favorite tech combo: NextJS + FastAPI. Fast, modern, scalable. Chef's kiss.
-Coolest project? Built an LLM-powered code reviewer. It's like having a senior dev review your code 24/7 without the judgment (mostly).
+Coolest project? AskAPS — a multi-module AI assistant I built for HPE's supply chain planners that lives right inside Microsoft Teams. RAG over docs, similarity search over tickets, and natural-language-to-SQL for metrics, all from one chat box.
 
 🏍️ **When I'm Not Coding**
 
@@ -147,7 +150,7 @@ If you're working on something cool or need help with AI/web dev stuff, hit me u
   postedAt: "2026-05-01T10:00:00+05:30",
   type: "about",
   category: "main",
-  flair: "About",
+  flair: "AMA",
   pinned: true,
   faq: {
     question: "Coffee or tea?",
@@ -262,189 +265,200 @@ const skills = definePost({
 
 const aiml: Post[] = [
   definePost({
-    id: "ai-1",
-    title: "AI-Powered Code Review Assistant",
-    content: "Built an intelligent code review system using GPT-4 and static analysis...",
-    fullContent: `# AI-Powered Code Review Assistant
+    id: "ai-askaps",
+    title: "AskAPS — AI Assistant for HPE Supply Chain Planning",
+    content:
+      "My main project at HPE. A multi-module AI assistant that lives inside Microsoft Teams and lets supply chain planners query docs, tickets, and metrics in natural language — without leaving their workflow.",
+    fullContent: `# AskAPS — AI Assistant for HPE Supply Chain Planning
 
-## 🎯 Project Overview
-An intelligent code review system that automatically analyzes pull requests, suggests improvements, and identifies potential bugs using advanced AI models and static analysis tools.
+## 🎯 What it is
+A production, multi-module AI assistant built for HPE's Advanced Planning & Scheduling (APS) supply chain team. Deployed on Microsoft Teams, it lets planners query documents, tickets, and metrics in natural language without leaving their workflow.
 
-## 🚀 Key Features
-- **Automated Code Analysis**: Scans code for bugs, security vulnerabilities, and performance issues
-- **AI-Powered Suggestions**: Uses GPT-4 to provide contextual improvement recommendations
-- **Multi-Language Support**: Works with JavaScript, Python, Go, and Java
-- **Integration Ready**: Seamlessly integrates with GitHub, GitLab, and Bitbucket
-- **Learning System**: Improves suggestions based on team preferences and feedback
+## 🧩 Modules
 
-## 🛠️ Technical Implementation
-- **Backend**: Python with FastAPI for high-performance API
-- **AI Models**: OpenAI GPT-4 for natural language suggestions
-- **Static Analysis**: ESLint, Pylint, and custom rule engines
-- **Database**: PostgreSQL for storing analysis results and user feedback
-- **Queue System**: Redis with Celery for processing large codebases
-- **Frontend**: React dashboard for reviewing suggestions
+### KnowledgeAI
+RAG pipeline over SharePoint documents. A COT/DOE service auto-tags documents based on folder and file structure using an LLM — so tagging is automated, not manual. Planners ask questions and get answers grounded in actual internal documentation.
 
-## 📊 Impact & Results
-- **50% reduction** in code review time
-- **30% fewer bugs** reaching production
-- **Adopted by 5 teams** with 100+ developers
-- **95% accuracy** in identifying critical issues
+### TicketingAI
+Similarity search against Monday.com tickets. Routes queries through \`hippo_search\` with domain identifiers — \`sp\` for supply planning, \`dp\` for demand planning. The same query interface serves two different planning domains with separate ticket corpora.
 
-## 🔗 Links
-- [GitHub Repository](https://github.com/adxthyx/ai-code-reviewer)
-- [Live Demo](https://ai-code-reviewer.vercel.app)
-- [Documentation](https://docs.ai-code-reviewer.com)`,
-    upvotes: 456,
-    comments: 89,
+### MetricsAI / BOA
+Natural language to SQL. A planner types a question about supply chain metrics; it generates and runs SQL, then streams the result back via SSE. No need to know the schema or write queries by hand.
+
+## 🛠️ Architecture
+- **FastAPI backend** — a single app handling both Teams Bot Framework requests and AskAPS module logic
+- **No separate HTTP hop** between the bot layer and the AI logic — direct function calls within the same app
+- **Adaptive Cards** for responses — ColumnSet tables for structured data, monospace blocks for SQL, accent colors per module
+- **SSE streaming** for MetricsAI / BOA responses
+- **Auth** via Bearer token through HPE's One AI ITG API Hub
+- **Deployed on Kubernetes**
+- **Secrets** managed via Vault
+
+## 💡 Why it matters
+Supply chain planners normally context-switch between SharePoint, Monday.com, and BI dashboards to answer a single question. AskAPS collapses that into one Teams message. The three modules cover the three most common query types — "what does this doc say", "has this been raised before", and "show me the numbers" — all from one interface, in natural language.
+
+*Internal HPE project — no public repository.*`,
+    upvotes: 512,
+    comments: 94,
     postedAt: "2026-06-10T11:00:00+05:30",
     type: "project",
     category: "aiml",
     flair: "AI/ML",
-    tags: ["AI", "GPT-4", "Python", "FastAPI", "Code Analysis"],
-    github: "https://github.com/adxthyx/ai-code-reviewer",
-    demo: "https://ai-code-reviewer.vercel.app",
-    awards: ["gold", "helpful"],
+    tags: ["RAG", "FastAPI", "LLM", "NL-to-SQL", "Kubernetes", "Teams"],
   }),
   definePost({
-    id: "ai-2",
-    title: "Smart Document Summarizer with NLP",
-    content: "Advanced document processing system using transformer models for intelligent summarization...",
-    fullContent: `# Smart Document Summarizer
+    id: "ai-vlm",
+    title: "Assistive Device for the Blind using a Vision-Language Model",
+    content:
+      "Finetuned MoonDream and BLIP vision-language models and wired them into a wearable setup (webcam + earphone) to describe surroundings to blind users in realtime.",
+    fullContent: `# Assistive Device for the Blind using a VLM
 
 ## 🎯 Project Overview
-An advanced document processing system that can intelligently summarize long documents, extract key insights, and generate actionable reports using state-of-the-art NLP models.
+A wearable assistive system that helps blind users understand their surroundings in realtime by describing what a camera sees, out loud.
 
-## 🚀 Key Features
-- **Multi-Format Support**: PDF, DOCX, TXT, and web articles
-- **Intelligent Summarization**: Extractive and abstractive summarization
-- **Key Insight Extraction**: Identifies important facts, figures, and conclusions
-- **Sentiment Analysis**: Analyzes document tone and sentiment
-- **Multi-Language**: Supports 15+ languages
-- **API Integration**: RESTful API for easy integration
+## 🚀 What it does
+- Captures the scene from a head/body-mounted **webcam**
+- Runs it through a **vision-language model** to generate a natural description
+- Speaks the description back through an **earphone** — all in realtime
 
 ## 🛠️ Technical Implementation
-- **NLP Models**: BERT, T5, and custom transformer models
-- **Backend**: Python with Django and Celery for async processing
-- **Document Processing**: PyPDF2, python-docx, BeautifulSoup
-- **ML Pipeline**: Hugging Face Transformers and custom training
-- **Database**: MongoDB for document storage and metadata
-- **Caching**: Redis for frequently accessed summaries
+- **Models**: Finetuned **MoonDream** and **BLIP** for scene description and visual question answering
+- **Hardware loop**: Webcam input → VLM inference → text-to-speech → earphone output
+- **Target**: A mobile-friendly architecture so the whole pipeline can run close to the user
 
-## 📊 Performance Metrics
-- **Processing Speed**: 1000+ pages per minute
-- **Accuracy**: 92% summary quality score
-- **Languages Supported**: 15 languages
-- **Documents Processed**: 50,000+ successfully
-
-## 🔗 Links
-- [GitHub Repository](https://github.com/adxthyx/doc-summarizer)
-- [API Documentation](https://api.doc-summarizer.com/docs)`,
-    upvotes: 298,
-    comments: 67,
+## 💡 Why it matters
+Off-the-shelf VLMs are heavy and verbose. Finetuning smaller models like MoonDream made realtime, on-the-go description practical for an assistive wearable instead of a lab demo.`,
+    upvotes: 387,
+    comments: 58,
     postedAt: "2026-06-08T16:00:00+05:30",
     type: "project",
     category: "aiml",
     flair: "AI/ML",
-    tags: ["NLP", "BERT", "Python", "Django", "Transformers"],
-    github: "https://github.com/adxthyx/doc-summarizer",
+    tags: ["VLM", "MoonDream", "BLIP", "Computer Vision", "Accessibility"],
+  }),
+  definePost({
+    id: "ai-kannada",
+    title: "Regional Language (Kannada) Handwritten Character Recognition",
+    content:
+      "Built a model to recognize handwritten Kannada characters, then wrapped it in a gamified website that teaches children the language.",
+    fullContent: `# Kannada Handwritten Character Recognition
+
+## 🎯 Project Overview
+A team project to recognize handwritten **Kannada** characters and turn it into an interactive, gamified way for children to learn the language.
+
+## 🚀 What it does
+- Recognizes handwritten Kannada characters from user input
+- Powers an **interactive learning website** where children trace and write characters
+- **Gamified experience** — learning the script feels like play, not drills
+
+## 🛠️ Technical Implementation
+- **Model**: Trained a character-recognition model on handwritten Kannada samples
+- **Frontend**: Interactive web app for drawing and immediate feedback
+- **Collaboration**: Built with classmates, coordinating the model and the learning experience
+
+## 💡 Why it matters
+Regional Indian scripts are underrepresented in handwriting datasets and tooling. Pairing recognition with a kids' learning game makes the tech useful for language preservation, not just a benchmark.`,
+    upvotes: 264,
+    comments: 41,
+    postedAt: "2026-06-06T12:00:00+05:30",
+    type: "project",
+    category: "aiml",
+    flair: "AI/ML",
+    tags: ["Deep Learning", "OCR", "Computer Vision", "EdTech"],
+  }),
+  definePost({
+    id: "ai-attendance",
+    title: "Attendance Tracker via Face Recognition",
+    content:
+      "Built a face-recognition ML model (VGGFace + HaarCascade) that detects every person in a classroom photo and marks attendance automatically.",
+    fullContent: `# Attendance Tracker / Face Recognition
+
+## 🎯 Project Overview
+An automated attendance system that recognizes every student in a single classroom image and updates the register dynamically.
+
+## 🚀 What it does
+- Takes one photo of the class
+- **Detects** every face in the frame
+- **Recognizes** each person and marks them present — no roll call
+
+## 🛠️ Technical Implementation
+- **Face detection**: HaarCascade to locate every face in the image
+- **Face recognition**: VGGFace embeddings to identify each detected person
+- **Attendance**: Matches recognized faces against the class roster and updates records dynamically
+
+## 💡 Why it matters
+Manual attendance for a full class is slow and error-prone. One photo and a detection + recognition pipeline turns it into a few seconds of work.`,
+    upvotes: 231,
+    comments: 37,
+    postedAt: "2026-06-04T10:00:00+05:30",
+    type: "project",
+    category: "aiml",
+    flair: "AI/ML",
+    tags: ["VGGFace", "HaarCascade", "Computer Vision", "Python"],
   }),
 ]
 
 const webdev: Post[] = [
   definePost({
-    id: "web-1",
-    title: "Real-time Collaborative Workspace Platform",
-    content: "Built a Slack-like collaboration platform with real-time messaging, file sharing, and video calls...",
-    fullContent: `# Real-time Collaborative Workspace
-
-## 🎯 Project Overview
-A comprehensive collaboration platform similar to Slack, featuring real-time messaging, file conferencing, and project management tools for remote teams.
-
-## 🚀 Key Features
-- **Real-time Messaging**: Instant messaging with typing indicators and read receipts
-- **Video Conferencing**: Built-in video calls with screen sharing
-- **File Sharing**: Drag-and-drop file uploads with preview support
-- **Channel Management**: Public/private channels with role-based permissions
-- **Search Functionality**: Full-text search across messages and files
-- **Mobile Responsive**: Works seamlessly on all devices
-
-## 🛠️ Technical Implementation
-- **Frontend**: React with TypeScript and Tailwind CSS
-- **Real-time**: Socket.io for instant messaging and notifications
-- **Backend**: Node.js with Express and MongoDB
-- **Video Calls**: WebRTC with PeerJS for peer-to-peer connections
-- **File Storage**: AWS S3 with CloudFront CDN
-- **Authentication**: JWT with refresh token rotation
-- **Deployment**: Docker containers on AWS ECS
-
-## 📊 Scale & Performance
-- **Concurrent Users**: Supports 10,000+ simultaneous users
-- **Message Throughput**: 100,000+ messages per minute
-- **Uptime**: 99.9% availability
-- **Global CDN**: Sub-100ms file loading worldwide
-
-## 🔗 Links
-- [GitHub Repository](https://github.com/adxthyx/collab-workspace)
-- [Live Demo](https://workspace.adxthyx.dev)
-- [Case Study](https://adxthyx.dev/case-studies/workspace)`,
-    upvotes: 567,
-    comments: 123,
-    postedAt: "2026-06-11T10:00:00+05:30",
-    type: "project",
-    category: "webdev",
-    flair: "Web Dev",
-    tags: ["React", "Node.js", "Socket.io", "WebRTC", "AWS"],
-    github: "https://github.com/adxthyx/collab-workspace",
-    demo: "https://workspace.adxthyx.dev",
-    awards: ["gold"],
-  }),
-  definePost({
-    id: "web-2",
-    title: "E-commerce Platform with Advanced Analytics",
+    id: "web-ngo",
+    title: "SaaS Platform for NGOs — Investor Matching + AI Pitch Decks",
     content:
-      "Full-stack e-commerce solution with AI-powered recommendations and comprehensive analytics dashboard...",
-    fullContent: `# E-commerce Platform with Analytics
+      "Full-stack Next.js platform that helps NGOs find investors via semantic search, and auto-generates pitch presentations using OpenAI and python-pptx.",
+    fullContent: `# SaaS Platform for NGOs
 
 ## 🎯 Project Overview
-A modern e-commerce platform featuring AI-powered product recommendations, advanced analytics, inventory management, and a comprehensive admin dashboard.
+A full-stack Next.js platform that connects NGOs with potential investors and helps them pitch — using semantic search to find the right matches and AI to build the deck.
 
 ## 🚀 Key Features
-- **Product Catalog**: Advanced filtering, search, and categorization
-- **AI Recommendations**: Machine learning-powered product suggestions
-- **Payment Processing**: Stripe integration with multiple payment methods
-- **Inventory Management**: Real-time stock tracking and automated reordering
-- **Analytics Dashboard**: Sales metrics, user behavior, and performance insights
-- **Multi-vendor Support**: Marketplace functionality for multiple sellers
+- **Semantic investor search** — NGOs describe their mission and get matched to relevant investors by meaning, not just keywords
+- **AI pitch presentations** — generates dynamic pitch decks using **OpenAI** for content and **python-pptx** to assemble the slides
+- **Activity dashboard** — tracks NGO activity and manages connections between NGOs and investors
 
 ## 🛠️ Technical Implementation
-- **Frontend**: Next.js with TypeScript and Chakra UI
-- **Backend**: Node.js with Express and PostgreSQL
-- **Payments**: Stripe API with webhook handling
-- **Recommendations**: Python microservice with scikit-learn
-- **Analytics**: Custom dashboard with Chart.js and D3.js
-- **Search**: Elasticsearch for fast product discovery
-- **Caching**: Redis for session management and caching
+- **Frontend & app**: Full-stack **Next.js**
+- **Matching**: Semantic search over investor/NGO profiles
+- **Pitch generation**: OpenAI for slide content + **python-pptx** for the actual \`.pptx\` output
+- **Dashboard**: Tracks activities and surfaces NGO ↔ investor connections
 
-## 📊 Business Impact
-- **Conversion Rate**: 15% increase with AI recommendations
-- **Page Load Speed**: Under 2 seconds average load time
-- **Mobile Traffic**: 70% of users on mobile devices
-- **Revenue Growth**: 40% increase in average order value
-
-## 🔗 Links
-- [GitHub Repository](https://github.com/adxthyx/ecommerce-platform)
-- [Live Demo](https://shop.adxthyx.dev)
-- [Admin Dashboard](https://admin.shop.adxthyx.dev)`,
-    upvotes: 423,
-    comments: 87,
+## 💡 Why it matters
+Small NGOs rarely have the time or design skills to court investors. This collapses "find the right investor" and "make a convincing pitch" into a single tool.`,
+    upvotes: 298,
+    comments: 52,
     postedAt: "2026-06-09T13:00:00+05:30",
     type: "project",
     category: "webdev",
     flair: "Web Dev",
-    tags: ["Next.js", "PostgreSQL", "Stripe", "Elasticsearch", "Analytics"],
-    github: "https://github.com/adxthyx/ecommerce-platform",
-    demo: "https://shop.adxthyx.dev",
+    tags: ["Next.js", "OpenAI", "python-pptx", "Semantic Search", "SaaS"],
+  }),
+  definePost({
+    id: "web-rit",
+    title: "Minimalist Student Portal for RIT — with Chatbot",
+    content:
+      "A clean student portal for RIT students with an integrated chatbot. Scrapes data with BeautifulSoup, auto-logs-in via Selenium, and answers questions about grades, attendance, events, and timetables.",
+    fullContent: `# Minimalist Student Portal for RIT (with Chatbot)
+
+## 🎯 Project Overview
+A minimalist portal for Ramaiah Institute of Technology students that pulls together everything scattered across the official systems — grades, attendance, events, timetables — behind one clean interface and a chatbot.
+
+## 🚀 Key Features
+- **Minimalist dashboard** for the data students actually check
+- **Integrated chatbot** that answers questions about grades, attendance, events, and timetables
+- **Auto-login** so students don't re-enter credentials every time
+
+## 🛠️ Technical Implementation
+- **Data extraction**: **BeautifulSoup** to scrape data from the institute's systems
+- **Automation**: **Selenium** for automated logins
+- **Chatbot**: Connected to a database so it can answer queries about grades, attendance, events, and timetables on demand
+
+## 💡 Why it matters
+The official portals are clunky and split across pages. This puts the day-to-day info one question away, in a UI that doesn't fight you.`,
+    upvotes: 276,
+    comments: 48,
+    postedAt: "2026-06-07T15:00:00+05:30",
+    type: "project",
+    category: "webdev",
+    flair: "Web Dev",
+    tags: ["Python", "BeautifulSoup", "Selenium", "Chatbot", "Web Scraping"],
   }),
 ]
 

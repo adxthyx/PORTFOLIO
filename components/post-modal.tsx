@@ -72,7 +72,7 @@ export function PostModal({ post, open, onOpenChange }: PostModalProps) {
               <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 pr-10 sm:pr-0">
                 {isAboutPost && (
                   <img
-                    src="/a.png"
+                    src="/a.jpeg"
                     alt="Profile"
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 sm:border-4 border-white/20 flex-shrink-0"
                   />
@@ -107,11 +107,10 @@ export function PostModal({ post, open, onOpenChange }: PostModalProps) {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
-                      activeTab === tab
-                        ? "bg-brand text-white shadow-lg"
-                        : "text-muted-foreground hover:bg-secondary hover:text-brand"
-                    }`}
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${activeTab === tab
+                      ? "bg-brand text-white shadow-lg"
+                      : "text-muted-foreground hover:bg-secondary hover:text-brand"
+                      }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>

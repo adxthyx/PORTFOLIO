@@ -135,16 +135,15 @@ export function Header({ onNavAction, onSearch, searchQuery, onOpenPalette }: He
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
+                  className="bg-brand hover:bg-brand-hover text-white font-semibold transition-all duration-200 hover:scale-105 flex-shrink-0 h-9 sm:h-10 px-2.5 sm:px-4 flex-1 sm:flex-none rounded-full gap-1.5"
                   onClick={() => onNavAction("resume")}
                 >
                   <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-xs sm:text-sm">Resume</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Download Resume</p>
+                <p>View / Download Resume</p>
               </TooltipContent>
             </Tooltip>
 
