@@ -1,20 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { Feed, type FilterKey } from "@/components/feed"
 import { Sidebar, ProfileCard } from "@/components/sidebar"
-import { PostModal } from "@/components/post-modal"
-import { ContactModal } from "@/components/contact-modal"
-import { AchievementsModal } from "@/components/achievements-modal"
-import { StatsModal } from "@/components/stats-modal"
-import { ProjectsModal } from "@/components/projects-modal"
-import { SettingsModal } from "@/components/settings-modal"
-import { ResumeModal } from "@/components/resume-modal"
-import { CommandPalette, type ModalId } from "@/components/command-palette"
+import type { ModalId } from "@/components/command-palette"
 import { allPosts, projects, profile, type Post } from "@/lib/content"
 import { useVotes } from "@/lib/votes"
 import type { GitHubStats, LeetCodeStats } from "@/lib/stats"
+
+// Modals are interaction-only: load each chunk on first open, then keep it
+// mounted so Radix close animations still run.
+const PostModal = dynamic(() => import("@/components/post-modal").then((m) => m.PostModal), { ssr: false })
+const ContactModal = dynamic(() => import("@/components/contact-modal").then((m) => m.ContactModal), { ssr: false })
+const AchievementsModal = dynamic(
+  () => import("@/components/achievements-modal").then((m) => m.AchievementsModal),
+  { ssr: false },
+)
+const StatsModal = dynamic(() => import("@/components/stats-modal").then((m) => m.StatsModal), { ssr: false })
+const ProjectsModal = dynamic(() => import("@/components/projects-modal").then((m) => m.ProjectsModal), { ssr: false })
+const SettingsModal = dynamic(() => import("@/components/settings-modal").then((m) => m.SettingsModal), { ssr: false })
+const ResumeModal = dynamic(() => import("@/components/resume-modal").then((m) => m.ResumeModal), { ssr: false })
+const CommandPalette = dynamic(() => import("@/components/command-palette").then((m) => m.CommandPalette), {
+  ssr: false,
+})
 
 export default function Portfolio() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
@@ -24,6 +34,24 @@ export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState("")
   const { votes, vote, karmaDelta } = useVotes()
   const karma = profile.baseKarma + karmaDelta
+
+  // Defer each modal's chunk until first open, then keep it mounted for exit animations
+  const opened = useRef(new Set<string>())
+  if (selectedPost) opened.current.add("post")
+  if (activeModal) opened.current.add(activeModal)
+  if (paletteOpen) opened.current.add("palette")
+
+  // Global ⌘K / Ctrl+K — lives here, not in the lazily-loaded palette
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setPaletteOpen((o) => !o)
+      }
+    }
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
 
   // Pre-load stats data
   const [githubStats, setGithubStats] = useState<GitHubStats | null>(null)
@@ -132,29 +160,31 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Modals — always mounted so Radix can animate open/close */}
-      <PostModal
-        post={selectedPost}
-        open={!!selectedPost}
-        onOpenChange={(open) => !open && setSelectedPost(null)}
-      />
-      <ContactModal {...modalProps("contact")} />
-      <AchievementsModal {...modalProps("achievements")} />
-      <StatsModal
-        {...modalProps("stats")}
-        githubStats={githubStats}
-        leetcodeStats={leetcodeStats}
-        loading={statsLoading}
-      />
-      <ProjectsModal projects={projects} {...modalProps("projects")} />
-      <SettingsModal {...modalProps("settings")} />
-      <ResumeModal {...modalProps("resume")} />
-      <CommandPalette
-        open={paletteOpen}
-        onOpenChange={setPaletteOpen}
-        onSelectPost={setSelectedPost}
-        onModal={setActiveModal}
-      />
+      {/* Modals — chunk loads on first open, stays mounted after for close animations */}
+      {opened.current.has("post") && (
+        <PostModal post={selectedPost} open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)} />
+      )}
+      {opened.current.has("contact") && <ContactModal {...modalProps("contact")} />}
+      {opened.current.has("achievements") && <AchievementsModal {...modalProps("achievements")} />}
+      {opened.current.has("stats") && (
+        <StatsModal
+          {...modalProps("stats")}
+          githubStats={githubStats}
+          leetcodeStats={leetcodeStats}
+          loading={statsLoading}
+        />
+      )}
+      {opened.current.has("projects") && <ProjectsModal projects={projects} {...modalProps("projects")} />}
+      {opened.current.has("settings") && <SettingsModal {...modalProps("settings")} />}
+      {opened.current.has("resume") && <ResumeModal {...modalProps("resume")} />}
+      {opened.current.has("palette") && (
+        <CommandPalette
+          open={paletteOpen}
+          onOpenChange={setPaletteOpen}
+          onSelectPost={setSelectedPost}
+          onModal={setActiveModal}
+        />
+      )}
     </div>
   )
 }

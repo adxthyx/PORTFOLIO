@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
 import {
   FileText,
   Trophy,
@@ -54,19 +53,10 @@ const LINKS = [
   { label: "Email", icon: Mail, url: `mailto:${profile.links.email}` },
 ]
 
+// The global ⌘K listener lives in app/page.tsx — this component is loaded
+// lazily on first open, so it can't own its open shortcut.
 export function CommandPalette({ open, onOpenChange, onSelectPost, onModal }: CommandPaletteProps) {
   const { setTheme } = useTheme()
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        onOpenChange(!open)
-      }
-    }
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [open, onOpenChange])
 
   const run = (action: () => void) => {
     onOpenChange(false)
