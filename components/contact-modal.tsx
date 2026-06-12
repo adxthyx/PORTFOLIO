@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
+import { toast } from "sonner"
 
 interface ContactModalProps {
   open: boolean
@@ -23,7 +24,6 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
     message: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,17 +39,15 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
       })
 
       if (response.ok) {
-        setSubmitStatus("success")
         setFormData({ name: "", email: "", subject: "", message: "" })
-        setTimeout(() => {
-          onOpenChange(false)
-        }, 2000)
+        onOpenChange(false)
+        toast.success("Message sent — I'll get back to you soon!")
       } else {
-        setSubmitStatus("error")
+        toast.error("Failed to send message. Please try again or email me directly.")
       }
     } catch (error) {
       console.error("Contact form error:", error)
-      setSubmitStatus("error")
+      toast.error("Failed to send message. Please try again or email me directly.")
     } finally {
       setIsSubmitting(false)
     }
@@ -162,22 +160,6 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
               />
             </div>
           </div>
-
-          {submitStatus === "success" && (
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <p className="text-green-800 dark:text-green-400 text-sm">
-                ✅ Message sent successfully! I'll get back to you soon.
-              </p>
-            </div>
-          )}
-
-          {submitStatus === "error" && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-red-800 dark:text-red-400 text-sm">
-                ❌ Failed to send message. Please try again or email me directly.
-              </p>
-            </div>
-          )}
 
           <div className="flex gap-3 pt-4">
             <DialogClose asChild>

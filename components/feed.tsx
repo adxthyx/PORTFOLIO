@@ -6,6 +6,7 @@ import { AnimatePresence, m } from "motion/react"
 import { PostCard } from "@/components/post-card"
 import { searchPosts, type Post } from "@/lib/content"
 import { feedContainer, feedItem } from "@/lib/motion"
+import { useKeyboardNav } from "@/lib/use-keyboard-nav"
 import type { VoteDir } from "@/lib/votes"
 
 export type SortMode = "hot" | "new" | "top"
@@ -19,6 +20,7 @@ interface FeedProps {
   votes: Record<string, VoteDir>
   onVote: (postId: string, dir: VoteDir) => void
   onSelectPost: (post: Post) => void
+  keyboardEnabled?: boolean
 }
 
 const SORT_TABS: Array<{ key: SortMode; label: string; icon: typeof Flame }> = [
@@ -41,7 +43,16 @@ function hotScore(post: Post, voteDelta: number): number {
   return Math.log10(Math.max(votes, 1)) - ageHours / 12
 }
 
-export function Feed({ posts, searchQuery, activeFilter, onFilterChange, votes, onVote, onSelectPost }: FeedProps) {
+export function Feed({
+  posts,
+  searchQuery,
+  activeFilter,
+  onFilterChange,
+  votes,
+  onVote,
+  onSelectPost,
+  keyboardEnabled = true,
+}: FeedProps) {
   const [sortMode, setSortMode] = useState<SortMode>("hot")
 
   const visiblePosts = useMemo(() => {
@@ -73,6 +84,8 @@ export function Feed({ posts, searchQuery, activeFilter, onFilterChange, votes, 
     // Pinned posts always lead the feed, Reddit-style
     return [...sorted.filter((p) => p.pinned), ...sorted.filter((p) => !p.pinned)]
   }, [posts, searchQuery, activeFilter, sortMode, votes])
+
+  const focusedId = useKeyboardNav(visiblePosts, keyboardEnabled, onSelectPost)
 
   return (
     <div className="space-y-3 sm:space-y-4">
@@ -132,7 +145,15 @@ export function Feed({ posts, searchQuery, activeFilter, onFilterChange, votes, 
         >
           <AnimatePresence mode="popLayout" initial={false}>
             {visiblePosts.map((post) => (
-              <m.div key={post.id} layout variants={feedItem} exit="exit" whileHover={{ y: -2 }}>
+              <m.div
+                key={post.id}
+                layout
+                variants={feedItem}
+                exit="exit"
+                whileHover={{ y: -2 }}
+                data-post-id={post.id}
+                className={focusedId === post.id ? "ring-2 ring-brand rounded-lg" : undefined}
+              >
                 <PostCard
                   post={post}
                   userVote={votes[post.id]}

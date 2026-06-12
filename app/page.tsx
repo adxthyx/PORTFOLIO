@@ -11,15 +11,15 @@ import { StatsModal } from "@/components/stats-modal"
 import { ProjectsModal } from "@/components/projects-modal"
 import { SettingsModal } from "@/components/settings-modal"
 import { ResumeModal } from "@/components/resume-modal"
+import { CommandPalette, type ModalId } from "@/components/command-palette"
 import { allPosts, projects, profile, type Post } from "@/lib/content"
 import { useVotes } from "@/lib/votes"
 import type { GitHubStats, LeetCodeStats } from "@/lib/stats"
 
-type ModalId = "contact" | "achievements" | "stats" | "projects" | "settings" | "resume"
-
 export default function Portfolio() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
   const [activeModal, setActiveModal] = useState<ModalId | null>(null)
+  const [paletteOpen, setPaletteOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all")
   const [searchQuery, setSearchQuery] = useState("")
   const { votes, vote, karmaDelta } = useVotes()
@@ -90,7 +90,12 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-canvas transition-colors duration-300">
-      <Header onNavAction={handleNavAction} onSearch={handleSearch} searchQuery={searchQuery} />
+      <Header
+        onNavAction={handleNavAction}
+        onSearch={handleSearch}
+        searchQuery={searchQuery}
+        onOpenPalette={() => setPaletteOpen(true)}
+      />
 
       {/* Mobile Profile Card - shown before posts on mobile */}
       <div className="lg:hidden px-3 sm:px-4 pt-3 sm:pt-4">
@@ -112,6 +117,7 @@ export default function Portfolio() {
             votes={votes}
             onVote={vote}
             onSelectPost={setSelectedPost}
+            keyboardEnabled={!selectedPost && !activeModal && !paletteOpen}
           />
         </main>
         <aside className="hidden lg:block" aria-label="Profile and communities">
@@ -143,6 +149,12 @@ export default function Portfolio() {
       <ProjectsModal projects={projects} {...modalProps("projects")} />
       <SettingsModal {...modalProps("settings")} />
       <ResumeModal {...modalProps("resume")} />
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        onSelectPost={setSelectedPost}
+        onModal={setActiveModal}
+      />
     </div>
   )
 }

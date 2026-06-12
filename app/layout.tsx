@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import localFont from "next/font/local"
 import { ThemeProvider } from "@/components/theme-provider"
 import { MotionProvider } from "@/components/motion-provider"
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
 const redditSans = localFont({
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body className={`${redditSans.variable} ${redditMono.variable} font-sans`}>
         <ThemeProvider>
           <MotionProvider>{children}</MotionProvider>
+          <Toaster richColors position="bottom-right" />
         </ThemeProvider>
       </body>
     </html>

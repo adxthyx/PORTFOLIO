@@ -9,9 +9,10 @@ interface HeaderProps {
   onNavAction: (action: string) => void
   onSearch: (query: string) => void
   searchQuery: string
+  onOpenPalette?: () => void
 }
 
-export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
+export function Header({ onNavAction, onSearch, searchQuery, onOpenPalette }: HeaderProps) {
   return (
     <header className="bg-card border-b border-border sticky top-0 z-50 shadow-sm transition-colors duration-300">
       <div className="w-full px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
@@ -31,11 +32,21 @@ export function Header({ onNavAction, onSearch, searchQuery }: HeaderProps) {
           <div className="relative group">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-brand transition-colors" />
             <Input
-              placeholder="Search..."
+              placeholder="Search r/adithya..."
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
-              className="pl-10 w-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-brand focus:ring-brand transition-all duration-200 text-sm"
+              className="pl-10 pr-14 w-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-brand focus:ring-brand transition-all duration-200 text-sm"
             />
+            {onOpenPalette && (
+              <button
+                type="button"
+                onClick={onOpenPalette}
+                aria-label="Open command palette"
+                className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground hover:text-brand hover:border-brand transition-colors"
+              >
+                ⌘K
+              </button>
+            )}
           </div>
         </div>
 
