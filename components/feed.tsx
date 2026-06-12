@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react"
 import { Flame, Clock, BarChart3, Search } from "lucide-react"
+import { AnimatePresence, m } from "motion/react"
 import { PostCard } from "@/components/post-card"
 import { searchPosts, type Post } from "@/lib/content"
+import { feedContainer, feedItem } from "@/lib/motion"
 import type { VoteDir } from "@/lib/votes"
 
 export type SortMode = "hot" | "new" | "top"
@@ -120,19 +122,33 @@ export function Feed({ posts, searchQuery, activeFilter, onFilterChange, votes, 
         )}
       </div>
 
-      {/* Post list */}
+      {/* Post list — staggered entrance, FLIP reorder on sort change */}
       {visiblePosts.length > 0 ? (
-        visiblePosts.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            userVote={votes[post.id]}
-            onVote={(dir) => onVote(post.id, dir)}
-            onClick={() => onSelectPost(post)}
-          />
-        ))
+        <m.div
+          className="space-y-3 sm:space-y-4"
+          variants={feedContainer}
+          initial="hidden"
+          animate="show"
+        >
+          <AnimatePresence mode="popLayout" initial={false}>
+            {visiblePosts.map((post) => (
+              <m.div key={post.id} layout variants={feedItem} exit="exit" whileHover={{ y: -2 }}>
+                <PostCard
+                  post={post}
+                  userVote={votes[post.id]}
+                  onVote={(dir) => onVote(post.id, dir)}
+                  onClick={() => onSelectPost(post)}
+                />
+              </m.div>
+            ))}
+          </AnimatePresence>
+        </m.div>
       ) : (
-        <div className="bg-card rounded-lg border border-border p-8 text-center">
+        <m.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-card rounded-lg border border-border p-8 text-center"
+        >
           <Search className="w-10 h-10 sm:w-14 sm:h-14 text-muted-foreground/50 mx-auto mb-4" />
           <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">No results found</h3>
           <p className="text-sm sm:text-base text-muted-foreground">
@@ -140,7 +156,7 @@ export function Feed({ posts, searchQuery, activeFilter, onFilterChange, votes, 
               ? `No posts found matching "${searchQuery}". Try different keywords.`
               : "No posts available in this category."}
           </p>
-        </div>
+        </m.div>
       )}
     </div>
   )

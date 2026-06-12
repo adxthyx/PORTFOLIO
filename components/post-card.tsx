@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { MessageSquare, Share, Bookmark, Eye, Github, Pin, Medal } from "lucide-react"
+import { AnimatePresence, m } from "motion/react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -35,6 +36,7 @@ function VoteButton({
   size: "sm" | "lg"
 }) {
   const up = dir === 1
+  const [burstId, setBurstId] = useState(0)
   const activeBg = up ? "!bg-orange-500 dark:!bg-orange-600" : "!bg-blue-500 dark:!bg-blue-600"
   const hoverBg = up ? "!bg-orange-500/30 dark:!bg-orange-600/30" : "!bg-blue-500/30 dark:!bg-blue-600/30"
   const idleHover = up
@@ -42,27 +44,64 @@ function VoteButton({
     : "hover:!bg-blue-500/30 dark:hover:!bg-blue-600/30"
   const sizeClass = size === "lg" ? "w-7 h-7" : "w-6 h-6"
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Burst only when an upvote is being cast (not removed)
+    if (up && !active) setBurstId((id) => id + 1)
+    onVote(dir, e)
+  }
+
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      aria-label={up ? "Upvote" : "Downvote"}
-      aria-pressed={active}
-      className={`p-2 h-auto rounded-md transition-all duration-200 ${
-        active ? activeBg : hovered ? hoverBg : idleHover
-      }`}
-      onClick={(e) => onVote(dir, e)}
-      onMouseEnter={() => onHover(true)}
-      onMouseLeave={() => onHover(false)}
-    >
-      <Image
-        src={active || hovered ? "/white-upvote.svg" : "/black-upvote.svg"}
-        alt=""
-        width={size === "lg" ? 28 : 24}
-        height={size === "lg" ? 28 : 24}
-        className={up ? sizeClass : `${sizeClass} rotate-180`}
-      />
-    </Button>
+    <span className="relative inline-flex">
+      <Button
+        variant="ghost"
+        size="sm"
+        aria-label={up ? "Upvote" : "Downvote"}
+        aria-pressed={active}
+        className={`p-2 h-auto rounded-md transition-all duration-200 ${
+          active ? activeBg : hovered ? hoverBg : idleHover
+        }`}
+        onClick={handleClick}
+        onMouseEnter={() => onHover(true)}
+        onMouseLeave={() => onHover(false)}
+      >
+        <m.span
+          whileTap={{ scale: 0.8 }}
+          transition={{ type: "spring", stiffness: 500, damping: 22 }}
+          className="inline-flex"
+        >
+          <Image
+            src={active || hovered ? "/white-upvote.svg" : "/black-upvote.svg"}
+            alt=""
+            width={size === "lg" ? 28 : 24}
+            height={size === "lg" ? 28 : 24}
+            className={up ? sizeClass : `${sizeClass} rotate-180`}
+          />
+        </m.span>
+      </Button>
+
+      {/* Particle burst on upvote */}
+      {up && burstId > 0 && (
+        <span key={burstId} className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
+          {Array.from({ length: 6 }).map((_, i) => {
+            const angle = (i / 6) * Math.PI * 2
+            return (
+              <m.span
+                key={i}
+                className="absolute w-1.5 h-1.5 rounded-full bg-brand"
+                initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                animate={{
+                  x: Math.cos(angle) * 22,
+                  y: Math.sin(angle) * 22,
+                  opacity: 0,
+                  scale: 0.4,
+                }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+              />
+            )
+          })}
+        </span>
+      )}
+    </span>
   )
 }
 
@@ -97,10 +136,8 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
 
   return (
     <Card
-      className={`bg-card border border-border transition-all duration-300 cursor-pointer ${
-        isHovered
-          ? "border-brand shadow-lg transform translate-y-[-2px] shadow-orange-100 dark:shadow-none"
-          : "hover:border-input hover:shadow-md"
+      className={`bg-card border border-border transition-[border-color,box-shadow] duration-300 cursor-pointer ${
+        isHovered ? "border-brand shadow-lg shadow-orange-100 dark:shadow-none" : "hover:border-input hover:shadow-md"
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -117,7 +154,20 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
             onVote={handleVote}
             size="lg"
           />
-          <span className={`text-sm font-bold transition-all duration-200 ${voteCountClass}`}>{currentUpvotes}</span>
+          <span className={`text-sm font-bold transition-colors duration-200 overflow-hidden ${voteCountClass}`}>
+            <AnimatePresence mode="popLayout" initial={false}>
+              <m.span
+                key={currentUpvotes}
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 10, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="inline-block tabular-nums"
+              >
+                {currentUpvotes}
+              </m.span>
+            </AnimatePresence>
+          </span>
           <VoteButton
             dir={-1}
             active={userVote === -1}
@@ -138,8 +188,21 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
             onVote={handleVote}
             size="sm"
           />
-          <span className={`text-sm font-bold transition-all duration-200 min-w-[40px] text-center ${voteCountClass}`}>
-            {currentUpvotes}
+          <span
+            className={`text-sm font-bold transition-colors duration-200 min-w-[40px] text-center overflow-hidden ${voteCountClass}`}
+          >
+            <AnimatePresence mode="popLayout" initial={false}>
+              <m.span
+                key={currentUpvotes}
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 10, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="inline-block tabular-nums"
+              >
+                {currentUpvotes}
+              </m.span>
+            </AnimatePresence>
           </span>
           <VoteButton
             dir={-1}

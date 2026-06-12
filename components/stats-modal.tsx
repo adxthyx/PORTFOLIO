@@ -5,7 +5,6 @@ import {
   Github,
   Code,
   TrendingUp,
-  Loader2,
   Star,
   GitFork,
   Calendar,
@@ -15,6 +14,8 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
+import { CountUp } from "@/components/count-up"
 import { useState } from "react"
 import type { GitHubStats, LeetCodeStats } from "@/lib/stats"
 
@@ -94,9 +95,23 @@ export function StatsModal({ open, onOpenChange, githubStats, leetcodeStats, loa
         {/* Content */}
         <div className="p-4 sm:p-6 overflow-y-auto min-h-0 bg-card">
           {loading && (
-            <div className="flex items-center justify-center gap-3 py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-brand" />
-              <span className="text-foreground">Loading coding statistics...</span>
+            <div className="space-y-4 sm:space-y-6" aria-busy="true" aria-label="Loading statistics">
+              {[0, 1, 2].map((row) => (
+                <div key={row} className="grid grid-cols-3 gap-2 sm:gap-4">
+                  {[0, 1, 2].map((col) => (
+                    <div key={col} className="text-center p-2 sm:p-4 bg-secondary rounded-lg border border-border">
+                      <Skeleton className="h-6 sm:h-8 w-12 mx-auto mb-2" />
+                      <Skeleton className="h-3 w-16 mx-auto" />
+                    </div>
+                  ))}
+                </div>
+              ))}
+              <div className="bg-secondary rounded-lg p-4 border border-border space-y-3">
+                <Skeleton className="h-4 w-32" />
+                {[0, 1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-3 w-full" />
+                ))}
+              </div>
             </div>
           )}
 
@@ -107,20 +122,20 @@ export function StatsModal({ open, onOpenChange, githubStats, leetcodeStats, loa
                   {/* Main Stats Grid */}
                   <div className="grid grid-cols-3 gap-2 sm:gap-4">
                     <div className="text-center p-2 sm:p-4 bg-secondary rounded-lg border border-border">
-                      <div className="text-lg sm:text-2xl font-bold text-brand mb-1">{githubStats.totalRepos}</div>
+                      <div className="text-lg sm:text-2xl font-bold text-brand mb-1"><CountUp value={githubStats.totalRepos} /></div>
                       <div className="text-[10px] sm:text-xs text-muted-foreground">Total Repos</div>
                     </div>
                     <div className="text-center p-2 sm:p-4 bg-secondary rounded-lg border border-border">
                       <div className="flex items-center justify-center gap-1 text-lg sm:text-2xl font-bold text-brand mb-1">
                         <GitCommit className="w-4 h-4 sm:w-5 sm:h-5" />
-                        {githubStats.totalCommits}
+                        <CountUp value={githubStats.totalCommits} />
                       </div>
                       <div className="text-[10px] sm:text-xs text-muted-foreground">Total Commits</div>
                     </div>
                     <div className="text-center p-2 sm:p-4 bg-secondary rounded-lg border border-border">
                       <div className="flex items-center justify-center gap-1 text-lg sm:text-2xl font-bold text-brand mb-1">
                         <GitPullRequest className="w-4 h-4 sm:w-5 sm:h-5" />
-                        {githubStats.totalPRs}
+                        <CountUp value={githubStats.totalPRs} />
                       </div>
                       <div className="text-[10px] sm:text-xs text-muted-foreground">Total PRs</div>
                     </div>
@@ -131,14 +146,14 @@ export function StatsModal({ open, onOpenChange, githubStats, leetcodeStats, loa
                     <div className="text-center p-2 sm:p-4 bg-secondary rounded-lg border border-border">
                       <div className="flex items-center justify-center gap-1 text-base sm:text-xl font-bold text-brand mb-1">
                         <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {githubStats.totalStars}
+                        <CountUp value={githubStats.totalStars} />
                       </div>
                       <div className="text-[10px] sm:text-xs text-muted-foreground">Total Stars</div>
                     </div>
                     <div className="text-center p-2 sm:p-4 bg-secondary rounded-lg border border-border">
                       <div className="flex items-center justify-center gap-1 text-base sm:text-xl font-bold text-brand mb-1">
                         <GitFork className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {githubStats.totalForks}
+                        <CountUp value={githubStats.totalForks} />
                       </div>
                       <div className="text-[10px] sm:text-xs text-muted-foreground">Total Forks</div>
                     </div>
@@ -153,7 +168,7 @@ export function StatsModal({ open, onOpenChange, githubStats, leetcodeStats, loa
                     <div className="text-center p-2 sm:p-4 bg-secondary rounded-lg border border-border">
                       <div className="flex items-center justify-center gap-1 text-base sm:text-xl font-bold text-brand mb-1">
                         <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {githubStats.followers}
+                        <CountUp value={githubStats.followers} />
                       </div>
                       <div className="text-[10px] sm:text-xs text-muted-foreground">Followers</div>
                     </div>
@@ -203,7 +218,7 @@ export function StatsModal({ open, onOpenChange, githubStats, leetcodeStats, loa
                 <>
                   {/* Total Problems Solved */}
                   <div className="text-center p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg border border-border">
-                    <div className="text-3xl sm:text-4xl font-bold text-brand mb-2">{leetcodeStats.totalSolved}</div>
+                    <div className="text-3xl sm:text-4xl font-bold text-brand mb-2"><CountUp value={leetcodeStats.totalSolved} /></div>
                     <div className="text-xs sm:text-sm text-muted-foreground">Total Problems Solved</div>
                   </div>
 
@@ -244,7 +259,7 @@ export function StatsModal({ open, onOpenChange, githubStats, leetcodeStats, loa
                   {/* Ranking */}
                   <div className="text-center p-3 sm:p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-border">
                     <div className="text-xl sm:text-2xl font-bold text-brand mb-1">
-                      #{leetcodeStats.ranking.toLocaleString()}
+                      #<CountUp value={leetcodeStats.ranking} />
                     </div>
                     <div className="text-xs sm:text-sm text-muted-foreground">Global Ranking</div>
                   </div>

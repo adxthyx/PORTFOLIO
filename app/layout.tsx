@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import localFont from "next/font/local"
 import { ThemeProvider } from "@/components/theme-provider"
+import { MotionProvider } from "@/components/motion-provider"
 import "./globals.css"
 
 const redditSans = localFont({
@@ -56,7 +57,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${redditSans.variable} ${redditMono.variable} font-sans`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <MotionProvider>{children}</MotionProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
