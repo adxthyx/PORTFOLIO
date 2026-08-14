@@ -21,7 +21,10 @@ const redditMono = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://adxthyx.dev"),
+  metadataBase: new URL("https://adithyaholla.com"),
+  alternates: {
+    canonical: "/",
+  },
   title: {
     default: "Adithya N | AI/ML Engineer — r/adithya",
     template: "%s | r/adithya",
@@ -30,6 +33,7 @@ export const metadata: Metadata = {
     "Software Engineer at HPE building AI/ML solutions. Python, Next.js, FastAPI, LangChain. Browse my work like a subreddit — posts, projects, and an AI that answers as me.",
   openGraph: {
     type: "website",
+    url: "/",
     siteName: "r/adithya",
     title: "Adithya N | AI/ML Engineer — r/adithya",
     description:
