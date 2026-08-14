@@ -15,6 +15,7 @@ import {
   Linkedin,
   Code2,
   Mail,
+  Briefcase,
 } from "lucide-react"
 import {
   CommandDialog,
@@ -35,6 +36,7 @@ interface CommandPaletteProps {
   onOpenChange: (open: boolean) => void
   onSelectPost: (post: Post) => void
   onModal: (id: ModalId) => void
+  onToggleRecruiter?: () => void
 }
 
 const MODAL_ACTIONS: Array<{ id: ModalId; label: string; icon: typeof Trophy }> = [
@@ -55,7 +57,7 @@ const LINKS = [
 
 // The global ⌘K listener lives in app/page.tsx — this component is loaded
 // lazily on first open, so it can't own its open shortcut.
-export function CommandPalette({ open, onOpenChange, onSelectPost, onModal }: CommandPaletteProps) {
+export function CommandPalette({ open, onOpenChange, onSelectPost, onModal, onToggleRecruiter }: CommandPaletteProps) {
   const { setTheme } = useTheme()
 
   const run = (action: () => void) => {
@@ -81,6 +83,12 @@ export function CommandPalette({ open, onOpenChange, onSelectPost, onModal }: Co
         <CommandSeparator />
 
         <CommandGroup heading="Actions">
+          {onToggleRecruiter && (
+            <CommandItem onSelect={() => run(onToggleRecruiter)}>
+              <Briefcase className="text-muted-foreground" />
+              Toggle recruiter mode
+            </CommandItem>
+          )}
           {MODAL_ACTIONS.map(({ id, label, icon: Icon }) => (
             <CommandItem key={id} onSelect={() => run(() => onModal(id))}>
               <Icon className="text-muted-foreground" />

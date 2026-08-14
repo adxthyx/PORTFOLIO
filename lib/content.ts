@@ -466,6 +466,83 @@ export const mainPosts: Post[] = [about, experience, education, skills]
 export const projects: Post[] = [...aiml, ...webdev]
 export const allPosts: Post[] = [...mainPosts, ...projects]
 
+// Structured resume data for the recruiter-mode view. Same facts as the
+// posts above, flattened for fast scanning.
+export interface ResumeExperience {
+  role: string
+  company: string
+  period: string
+  location: string
+  points: string[]
+}
+
+export interface ResumeEducation {
+  degree: string
+  school: string
+  period: string
+  detail: string
+}
+
+export interface ResumeSkillGroup {
+  label: string
+  skills: string[]
+}
+
+export interface ResumeData {
+  location: string
+  summary: string
+  experience: ResumeExperience[]
+  education: ResumeEducation[]
+  skillGroups: ResumeSkillGroup[]
+}
+
+export const resume: ResumeData = {
+  location: "Bengaluru, India",
+  summary:
+    "AI/ML software engineer at HPE building Gen AI and LLM applications — RAG pipelines, agentic workflows, and full-stack products with Python, FastAPI, and Next.js.",
+  experience: [
+    {
+      role: "Software Engineer 1",
+      company: "Hewlett Packard Enterprise",
+      period: "Sept 2025 – Present",
+      location: "Bengaluru, India",
+      points: [
+        "Building AI/ML solutions and web applications with Python and Next.js.",
+        "Own AskAPS — a multi-module AI assistant for supply chain planners inside Microsoft Teams: RAG over SharePoint docs, ticket similarity search, and natural-language-to-SQL for metrics.",
+        "FastAPI backend deployed on Kubernetes with SSE streaming, Adaptive Cards responses, and Vault-managed secrets.",
+      ],
+    },
+    {
+      role: "Software Engineering Intern",
+      company: "Hewlett Packard Enterprise",
+      period: "Feb 2025 – Aug 2025",
+      location: "Bengaluru, India",
+      points: [
+        "Built dashboards, agentic AI solutions, and Python automation for the Advanced Planning & Scheduling org.",
+        "Converted to a full-time role at the end of the internship.",
+      ],
+    },
+  ],
+  education: [
+    {
+      degree: "B.E. in Artificial Intelligence & Machine Learning",
+      school: "Ramaiah Institute of Technology, Bengaluru",
+      period: "2021 – 2025",
+      detail: "CGPA 8.8/10 · Senior project: LLM-powered solution for supply & demand planners",
+    },
+  ],
+  skillGroups: [
+    { label: "Languages", skills: ["Python", "TypeScript", "JavaScript", "SQL"] },
+    { label: "Frontend", skills: ["Next.js", "React", "Tailwind CSS", "Streamlit"] },
+    { label: "Backend", skills: ["FastAPI", "Flask", "Node.js", "REST API design"] },
+    {
+      label: "AI/ML",
+      skills: ["LangChain", "RAG", "LLM applications", "Forecasting", "PyTorch", "TensorFlow", "Scikit-learn"],
+    },
+    { label: "Data & Infra", skills: ["MongoDB", "Docker", "Kubernetes", "Vercel", "Git/GitHub"] },
+  ],
+}
+
 export function searchPosts(posts: Post[], query: string): Post[] {
   if (!query.trim()) return posts
 

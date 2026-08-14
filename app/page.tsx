@@ -1,13 +1,16 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useCallback, useState, useEffect, useRef } from "react"
 import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { Feed, type FilterKey } from "@/components/feed"
 import { Sidebar, ProfileCard } from "@/components/sidebar"
+import { RecruiterView } from "@/components/recruiter-view"
 import type { ModalId } from "@/components/command-palette"
 import { allPosts, projects, profile, type Post } from "@/lib/content"
-import { useVotes } from "@/lib/votes"
+import { useVotes, type VoteDir } from "@/lib/votes"
+import { useSaved } from "@/lib/saved"
+import { useAchievements } from "@/lib/achievements"
 import type { GitHubStats, LeetCodeStats } from "@/lib/stats"
 
 // Modals are interaction-only: load each chunk on first open, then keep it
@@ -26,13 +29,18 @@ const CommandPalette = dynamic(() => import("@/components/command-palette").then
   ssr: false,
 })
 
+const OPENED_POSTS_KEY = "r-adithya:openedPosts:v1"
+
 export default function Portfolio() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
   const [activeModal, setActiveModal] = useState<ModalId | null>(null)
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const [recruiterMode, setRecruiterMode] = useState(false)
   const { votes, vote, karmaDelta } = useVotes()
+  const { savedIds, toggleSave } = useSaved()
+  const { unlockedIds, unlock } = useAchievements()
   const karma = profile.baseKarma + karmaDelta
 
   // Defer each modal's chunk until first open, then keep it mounted for exit animations
@@ -46,12 +54,96 @@ export default function Portfolio() {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
+        unlock("shortcut-pro")
         setPaletteOpen((o) => !o)
       }
     }
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
+  }, [unlock])
+
+  // Deep links: ?post=<id> opens that post, ?view=recruiter opens recruiter mode.
+  // Read once on mount; the sync effect below keeps the URL shareable after that.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const postId = params.get("post")
+    if (postId) {
+      const post = allPosts.find((p) => p.id === postId)
+      if (post) setSelectedPost(post)
+    }
+    if (params.get("view") === "recruiter") setRecruiterMode(true)
   }, [])
+
+  const urlSynced = useRef(false)
+  useEffect(() => {
+    // Skip the first run so the deep-link read above isn't wiped before state lands
+    if (!urlSynced.current) {
+      urlSynced.current = true
+      return
+    }
+    const params = new URLSearchParams(window.location.search)
+    if (selectedPost) params.set("post", selectedPost.id)
+    else params.delete("post")
+    if (recruiterMode) params.set("view", "recruiter")
+    else params.delete("view")
+    const qs = params.toString()
+    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname)
+  }, [selectedPost, recruiterMode])
+
+  // Achievement: browsing in the dead of night
+  useEffect(() => {
+    if (new Date().getHours() < 5) unlock("night-owl")
+  }, [unlock])
+
+  // Achievements: opened-posts tracking (explorer / completionist)
+  const openedPosts = useRef(new Set<string>())
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(OPENED_POSTS_KEY)
+      if (raw) openedPosts.current = new Set(JSON.parse(raw))
+    } catch {
+      // ignore corrupt storage
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!selectedPost) return
+    openedPosts.current.add(selectedPost.id)
+    try {
+      localStorage.setItem(OPENED_POSTS_KEY, JSON.stringify([...openedPosts.current]))
+    } catch {
+      // storage full/blocked — tracking still works for the session
+    }
+    if (openedPosts.current.size >= 3) unlock("explorer")
+    if (openedPosts.current.size >= allPosts.length) unlock("completionist")
+  }, [selectedPost, unlock])
+
+  const handleVote = useCallback(
+    (postId: string, dir: VoteDir) => {
+      vote(postId, dir)
+      unlock("first-vote")
+    },
+    [vote, unlock],
+  )
+
+  const handleToggleSave = useCallback(
+    (postId: string) => {
+      if (!savedIds.includes(postId)) unlock("saver")
+      toggleSave(postId)
+    },
+    [savedIds, toggleSave, unlock],
+  )
+
+  const toggleRecruiter = () => {
+    const next = !recruiterMode
+    setRecruiterMode(next)
+    if (next) unlock("recruiter")
+  }
+
+  const openPalette = () => {
+    unlock("shortcut-pro")
+    setPaletteOpen(true)
+  }
 
   // Pre-load stats data
   const [githubStats, setGithubStats] = useState<GitHubStats | null>(null)
@@ -91,6 +183,7 @@ export default function Portfolio() {
         window.scrollTo({ top: 0, behavior: "smooth" })
         setActiveFilter("all")
         setSearchQuery("")
+        setRecruiterMode(false)
         break
       case "achievements":
       case "stats":
@@ -110,9 +203,11 @@ export default function Portfolio() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
-    // Reset filter to "all" when searching to search across all content
+    // Reset filter to "all" when searching to search across all content;
+    // typing a search also drops out of recruiter mode so results are visible
     if (query.trim()) {
       setActiveFilter("all")
+      setRecruiterMode(false)
     }
   }
 
@@ -122,53 +217,71 @@ export default function Portfolio() {
         onNavAction={handleNavAction}
         onSearch={handleSearch}
         searchQuery={searchQuery}
-        onOpenPalette={() => setPaletteOpen(true)}
+        onOpenPalette={openPalette}
+        recruiterMode={recruiterMode}
+        onToggleRecruiter={toggleRecruiter}
       />
 
-      {/* Mobile Profile Card - shown before posts on mobile */}
-      <div className="lg:hidden px-3 sm:px-4 pt-3 sm:pt-4">
-        <div className="max-w-7xl mx-auto">
-          <ProfileCard
-            karma={karma}
-            onJoin={() => setActiveModal("contact")}
+      {recruiterMode ? (
+        <div className="p-3 sm:p-4">
+          <RecruiterView
+            onExit={toggleRecruiter}
+            onContact={() => setActiveModal("contact")}
             onResume={() => setActiveModal("resume")}
-            onAskAI={() => setSelectedPost(allPosts[0])}
-          />
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 p-3 sm:p-4">
-        <main className="flex-1">
-          <Feed
-            posts={allPosts}
-            searchQuery={searchQuery}
-            activeFilter={activeFilter}
-            onFilterChange={(filter) => {
-              setActiveFilter(filter)
-              setSearchQuery("")
-            }}
-            votes={votes}
-            onVote={vote}
             onSelectPost={setSelectedPost}
-            keyboardEnabled={!selectedPost && !activeModal && !paletteOpen}
           />
-        </main>
-        <aside className="hidden lg:block" aria-label="Profile and communities">
-          <Sidebar
-            karma={karma}
-            onJoin={() => setActiveModal("contact")}
-            onResume={() => setActiveModal("resume")}
-            onAskAI={() => setSelectedPost(allPosts[0])}
-          />
-        </aside>
-      </div>
-
-      {/* Mobile Sidebar - communities and highlights at bottom on mobile */}
-      <div className="lg:hidden px-3 sm:px-4 pb-3 sm:pb-4">
-        <div className="max-w-7xl mx-auto">
-          <Sidebar showProfile={false} />
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Mobile Profile Card - shown before posts on mobile */}
+          <div className="lg:hidden px-3 sm:px-4 pt-3 sm:pt-4">
+            <div className="max-w-7xl mx-auto">
+              <ProfileCard
+                karma={karma}
+                onJoin={() => setActiveModal("contact")}
+                onResume={() => setActiveModal("resume")}
+                onAskAI={() => setSelectedPost(allPosts[0])}
+              />
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 p-3 sm:p-4">
+            <main className="flex-1">
+              <Feed
+                posts={allPosts}
+                searchQuery={searchQuery}
+                activeFilter={activeFilter}
+                onFilterChange={(filter) => {
+                  setActiveFilter(filter)
+                  setSearchQuery("")
+                }}
+                votes={votes}
+                onVote={handleVote}
+                onSelectPost={setSelectedPost}
+                savedIds={savedIds}
+                onToggleSave={handleToggleSave}
+                keyboardEnabled={!selectedPost && !activeModal && !paletteOpen}
+              />
+            </main>
+            <aside className="hidden lg:block" aria-label="Profile and communities">
+              <Sidebar
+                karma={karma}
+                onJoin={() => setActiveModal("contact")}
+                onResume={() => setActiveModal("resume")}
+                onAskAI={() => setSelectedPost(allPosts[0])}
+                unlockedAchievements={unlockedIds}
+              />
+            </aside>
+          </div>
+
+          {/* Mobile Sidebar - communities and highlights at bottom on mobile */}
+          <div className="lg:hidden px-3 sm:px-4 pb-3 sm:pb-4">
+            <div className="max-w-7xl mx-auto">
+              <Sidebar showProfile={false} unlockedAchievements={unlockedIds} />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Modals — chunk loads on first open, stays mounted after for close animations */}
       {opened.current.has("post") && (
@@ -193,6 +306,7 @@ export default function Portfolio() {
           onOpenChange={setPaletteOpen}
           onSelectPost={setSelectedPost}
           onModal={setActiveModal}
+          onToggleRecruiter={toggleRecruiter}
         />
       )}
     </div>

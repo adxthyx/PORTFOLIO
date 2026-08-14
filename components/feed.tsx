@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Flame, Clock, BarChart3, Search } from "lucide-react"
+import { Flame, Clock, BarChart3, Search, Bookmark } from "lucide-react"
 import { AnimatePresence, m } from "motion/react"
 import { PostCard } from "@/components/post-card"
 import { searchPosts, type Post } from "@/lib/content"
@@ -10,7 +10,7 @@ import { useKeyboardNav } from "@/lib/use-keyboard-nav"
 import type { VoteDir } from "@/lib/votes"
 
 export type SortMode = "hot" | "new" | "top"
-export type FilterKey = "all" | "main" | "aiml" | "webdev"
+export type FilterKey = "all" | "main" | "aiml" | "webdev" | "saved"
 
 interface FeedProps {
   posts: Post[]
@@ -20,6 +20,8 @@ interface FeedProps {
   votes: Record<string, VoteDir>
   onVote: (postId: string, dir: VoteDir) => void
   onSelectPost: (post: Post) => void
+  savedIds: string[]
+  onToggleSave: (postId: string) => void
   keyboardEnabled?: boolean
 }
 
@@ -51,6 +53,8 @@ export function Feed({
   votes,
   onVote,
   onSelectPost,
+  savedIds,
+  onToggleSave,
   keyboardEnabled = true,
 }: FeedProps) {
   const [sortMode, setSortMode] = useState<SortMode>("hot")
@@ -64,6 +68,9 @@ export function Feed({
         break
       case "main":
         filtered = posts.filter((p) => p.category === "main")
+        break
+      case "saved":
+        filtered = posts.filter((p) => savedIds.includes(p.id))
         break
       default:
         filtered = posts
@@ -83,7 +90,7 @@ export function Feed({
 
     // Pinned posts always lead the feed, Reddit-style
     return [...sorted.filter((p) => p.pinned), ...sorted.filter((p) => !p.pinned)]
-  }, [posts, searchQuery, activeFilter, sortMode, votes])
+  }, [posts, searchQuery, activeFilter, sortMode, votes, savedIds])
 
   const focusedId = useKeyboardNav(visiblePosts, keyboardEnabled, onSelectPost)
 
@@ -125,12 +132,25 @@ export function Feed({
                 {filter.label}
               </button>
             ))}
+            {(savedIds.length > 0 || activeFilter === "saved") && (
+              <button
+                onClick={() => onFilterChange("saved")}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium whitespace-nowrap transition-all duration-200 ${
+                  activeFilter === "saved"
+                    ? "bg-brand text-white"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Bookmark className={`w-3 h-3 ${activeFilter === "saved" ? "fill-current" : ""}`} />
+                Saved{savedIds.length > 0 ? ` (${savedIds.length})` : ""}
+              </button>
+            )}
           </div>
         </div>
 
         {searchQuery && (
           <div className="mt-2 px-1 text-xs sm:text-sm text-muted-foreground">
-            Showing results for: <span className="font-medium text-brand">"{searchQuery}"</span>
+            Showing results for: <span className="font-medium text-brand">&quot;{searchQuery}&quot;</span>
           </div>
         )}
       </div>
@@ -159,6 +179,8 @@ export function Feed({
                   userVote={votes[post.id]}
                   onVote={(dir) => onVote(post.id, dir)}
                   onClick={() => onSelectPost(post)}
+                  saved={savedIds.includes(post.id)}
+                  onToggleSave={() => onToggleSave(post.id)}
                 />
               </m.div>
             ))}
@@ -170,13 +192,25 @@ export function Feed({
           animate={{ opacity: 1, y: 0 }}
           className="bg-card rounded-lg border border-border p-8 text-center"
         >
-          <Search className="w-10 h-10 sm:w-14 sm:h-14 text-muted-foreground/50 mx-auto mb-4" />
-          <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">No results found</h3>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            {searchQuery
-              ? `No posts found matching "${searchQuery}". Try different keywords.`
-              : "No posts available in this category."}
-          </p>
+          {activeFilter === "saved" && !searchQuery ? (
+            <>
+              <Bookmark className="w-10 h-10 sm:w-14 sm:h-14 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Nothing saved yet</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Hit Save on any post to bookmark it here — it sticks around between visits.
+              </p>
+            </>
+          ) : (
+            <>
+              <Search className="w-10 h-10 sm:w-14 sm:h-14 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">No results found</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                {searchQuery
+                  ? `No posts found matching "${searchQuery}". Try different keywords.`
+                  : "No posts available in this category."}
+              </p>
+            </>
+          )}
         </m.div>
       )}
     </div>

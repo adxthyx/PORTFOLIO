@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemma-3-27b-it" })
+    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" })
 
     const systemPrompt = `
 You are Adithya Narayana, a Software Engineer at HPE India and a graduate from Ramaiah Institute of Technology in AI & ML.

@@ -6,6 +6,7 @@ import { useState } from "react"
 import { MessageSquare, Share, Bookmark, Eye, Github, Pin, Medal } from "lucide-react"
 import { AnimatePresence, m } from "motion/react"
 import Image from "next/image"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +19,8 @@ interface PostCardProps {
   userVote?: VoteDir
   onVote: (dir: VoteDir) => void
   onClick?: () => void
+  saved?: boolean
+  onToggleSave?: () => void
 }
 
 function VoteButton({
@@ -105,7 +108,7 @@ function VoteButton({
   )
 }
 
-export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
+export function PostCard({ post, userVote, onVote, onClick, saved = false, onToggleSave }: PostCardProps) {
   const {
     title,
     content,
@@ -129,6 +132,24 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
   const handleVote = (dir: VoteDir, e: React.MouseEvent) => {
     e.stopPropagation()
     onVote(dir)
+  }
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const url = `${window.location.origin}${window.location.pathname}?post=${post.id}`
+    navigator.clipboard.writeText(url).then(
+      () => toast.success("Link copied to clipboard"),
+      () => toast.error("Couldn't copy the link"),
+    )
+  }
+
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!onToggleSave) return
+    onToggleSave()
+    toast(saved ? "Removed from saved" : "Post saved", {
+      description: saved ? undefined : "Find it under the Saved filter",
+    })
   }
 
   const voteCountClass =
@@ -273,7 +294,11 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
                 variant="ghost"
                 size="sm"
                 className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-                onClick={(e) => e.stopPropagation()}
+                aria-label={`Open comments (${comments})`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onClick?.()
+                }}
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>{comments}</span>
@@ -281,8 +306,9 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
+                aria-label="Copy link to this post"
                 className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-                onClick={(e) => e.stopPropagation()}
+                onClick={handleShare}
               >
                 <Share className="w-4 h-4" />
                 <span className="hidden sm:inline">Share</span>
@@ -290,11 +316,15 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:bg-secondary hover:text-brand gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
-                onClick={(e) => e.stopPropagation()}
+                aria-label={saved ? "Remove from saved" : "Save post"}
+                aria-pressed={saved}
+                className={`gap-1 h-auto p-2 transition-all duration-200 hover:scale-105 text-xs sm:text-sm hover:bg-secondary ${
+                  saved ? "text-brand" : "text-muted-foreground hover:text-brand"
+                }`}
+                onClick={handleSave}
               >
-                <Bookmark className="w-4 h-4" />
-                <span className="hidden sm:inline">Save</span>
+                <Bookmark className={`w-4 h-4 ${saved ? "fill-current" : ""}`} />
+                <span className="hidden sm:inline">{saved ? "Saved" : "Save"}</span>
               </Button>
             </div>
 

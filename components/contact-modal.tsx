@@ -73,7 +73,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                 <h2 className="text-base sm:text-xl font-bold text-foreground">Contact Me</h2>
               </DialogTitle>
               <DialogDescription asChild>
-                <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Let's discuss your next project</p>
+                <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Let&apos;s discuss your next project</p>
               </DialogDescription>
             </div>
           </div>

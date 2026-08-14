@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Github, Linkedin, Mail, ExternalLink, Calendar, TrendingUp, Users, Code2, Briefcase, Sparkles, FileText, MessageSquare } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { profile } from "@/lib/content"
+import { TrophyCase } from "@/components/trophy-case"
 
 interface ProfileCardProps {
   karma?: number
@@ -53,7 +54,7 @@ export function ProfileCard({ karma = profile.baseKarma, onJoin, onResume, onAsk
             <div className="font-bold text-foreground flex items-center gap-1">
               <span className="w-2 h-2 bg-green-500 rounded-full inline-block" />1
             </div>
-            <div className="text-muted-foreground">Online (it's me)</div>
+            <div className="text-muted-foreground">Online (it&apos;s me)</div>
           </div>
         </div>
 
@@ -191,9 +192,10 @@ interface SidebarProps {
   onResume?: () => void
   onAskAI?: () => void
   showProfile?: boolean
+  unlockedAchievements?: string[]
 }
 
-export function Sidebar({ karma, onJoin, onResume, onAskAI, showProfile = true }: SidebarProps) {
+export function Sidebar({ karma, onJoin, onResume, onAskAI, showProfile = true, unlockedAchievements }: SidebarProps) {
   return (
     <div className="w-full lg:w-80 space-y-3 sm:space-y-4">
       {/* Profile card shown on desktop, hidden on mobile (shown separately before posts) */}
@@ -242,6 +244,8 @@ export function Sidebar({ karma, onJoin, onResume, onAskAI, showProfile = true }
           ))}
         </div>
       </Card>
+
+      {unlockedAchievements && <TrophyCase unlockedIds={unlockedAchievements} />}
     </div>
   )
 }

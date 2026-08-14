@@ -1,6 +1,6 @@
 "use client"
 
-import { Search, Trophy, BarChart3, FolderOpen, Settings, User, Download, MessageSquare } from "lucide-react"
+import { Search, Trophy, BarChart3, FolderOpen, Settings, User, Download, MessageSquare, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -10,9 +10,18 @@ interface HeaderProps {
   onSearch: (query: string) => void
   searchQuery: string
   onOpenPalette?: () => void
+  recruiterMode?: boolean
+  onToggleRecruiter?: () => void
 }
 
-export function Header({ onNavAction, onSearch, searchQuery, onOpenPalette }: HeaderProps) {
+export function Header({
+  onNavAction,
+  onSearch,
+  searchQuery,
+  onOpenPalette,
+  recruiterMode = false,
+  onToggleRecruiter,
+}: HeaderProps) {
   return (
     <header className="bg-card border-b border-border sticky top-0 z-50 shadow-sm transition-colors duration-300">
       <div className="w-full px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
@@ -52,6 +61,29 @@ export function Header({ onNavAction, onSearch, searchQuery, onOpenPalette }: He
 
         <TooltipProvider>
           <div className="flex items-center justify-evenly sm:justify-end gap-1 sm:gap-2 overflow-x-auto w-full sm:flex-1 pb-1 sm:pb-0 order-2 sm:order-3 scrollbar-hide">
+            {onToggleRecruiter && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-pressed={recruiterMode}
+                    className={`transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none ${
+                      recruiterMode
+                        ? "bg-brand text-white hover:bg-brand-hover hover:text-white"
+                        : "text-muted-foreground hover:bg-secondary hover:text-brand"
+                    }`}
+                    onClick={onToggleRecruiter}
+                  >
+                    <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{recruiterMode ? "Back to r/adithya" : "Recruiter mode — clean resume view"}</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
