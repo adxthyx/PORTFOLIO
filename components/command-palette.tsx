@@ -57,7 +57,13 @@ const LINKS = [
 
 // The global ⌘K listener lives in app/page.tsx — this component is loaded
 // lazily on first open, so it can't own its open shortcut.
-export function CommandPalette({ open, onOpenChange, onSelectPost, onModal, onToggleRecruiter }: CommandPaletteProps) {
+export function CommandPalette({
+  open,
+  onOpenChange,
+  onSelectPost,
+  onModal,
+  onToggleRecruiter,
+}: CommandPaletteProps) {
   const { setTheme } = useTheme()
 
   const run = (action: () => void) => {
@@ -72,12 +78,18 @@ export function CommandPalette({ open, onOpenChange, onSelectPost, onModal, onTo
         <CommandEmpty>No results found.</CommandEmpty>
 
         <CommandGroup heading="Posts">
-          {allPosts.map((post) => (
-            <CommandItem key={post.id} value={`${post.title} ${post.flair}`} onSelect={() => run(() => onSelectPost(post))}>
-              <FileText className="text-muted-foreground" />
-              <span className="truncate">{post.title}</span>
-            </CommandItem>
-          ))}
+          {allPosts
+            .filter((post) => !post.archived)
+            .map((post) => (
+              <CommandItem
+                key={post.id}
+                value={`${post.title} ${post.flair}`}
+                onSelect={() => run(() => onSelectPost(post))}
+              >
+                <FileText className="text-muted-foreground" />
+                <span className="truncate">{post.title}</span>
+              </CommandItem>
+            ))}
         </CommandGroup>
 
         <CommandSeparator />

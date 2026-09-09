@@ -1,218 +1,208 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { Flame, Clock, BarChart3, Search, Bookmark } from "lucide-react"
-import { AnimatePresence, m } from "motion/react"
+import { useMemo } from "react"
+import Link from "next/link"
+import { ArrowRight, Search, Bookmark, SlidersHorizontal, Check } from "lucide-react"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PostCard } from "@/components/post-card"
 import { searchPosts, type Post } from "@/lib/content"
-import { feedContainer, feedItem } from "@/lib/motion"
+import { featuredPostIds } from "@/lib/post-utils"
 import { useKeyboardNav } from "@/lib/use-keyboard-nav"
-import type { VoteDir } from "@/lib/votes"
 
-export type SortMode = "hot" | "new" | "top"
-export type FilterKey = "all" | "main" | "aiml" | "webdev" | "saved"
-
+export type SortMode = "featured" | "new"
+export type FilterKey = "all" | "aiml" | "webdev" | "mobile" | "saved"
 interface FeedProps {
   posts: Post[]
   searchQuery: string
   activeFilter: FilterKey
   onFilterChange: (filter: FilterKey) => void
-  votes: Record<string, VoteDir>
-  onVote: (postId: string, dir: VoteDir) => void
+  sortMode: SortMode
+  onSortChange: (sort: SortMode) => void
   onSelectPost: (post: Post) => void
   savedIds: string[]
   onToggleSave: (postId: string) => void
   keyboardEnabled?: boolean
 }
-
-const SORT_TABS: Array<{ key: SortMode; label: string; icon: typeof Flame }> = [
-  { key: "hot", label: "Hot", icon: Flame },
-  { key: "new", label: "New", icon: Clock },
-  { key: "top", label: "Top", icon: BarChart3 },
+const filters: { key: FilterKey; label: string }[] = [
+  { key: "all", label: "Featured" },
+  { key: "aiml", label: "AI / ML" },
+  { key: "webdev", label: "Web" },
+  { key: "mobile", label: "Android" },
 ]
-
-const FILTERS: Array<{ key: FilterKey; label: string }> = [
-  { key: "all", label: "All" },
-  { key: "main", label: "About & Skills" },
-  { key: "aiml", label: "AI/ML" },
-  { key: "webdev", label: "Web Dev" },
-]
-
-// Reddit-ish hot ranking: vote weight decays with age (half-day units)
-function hotScore(post: Post, voteDelta: number): number {
-  const votes = post.upvotes + voteDelta
-  const ageHours = (Date.now() - new Date(post.postedAt).getTime()) / 3_600_000
-  return Math.log10(Math.max(votes, 1)) - ageHours / 12
-}
 
 export function Feed({
   posts,
   searchQuery,
   activeFilter,
   onFilterChange,
-  votes,
-  onVote,
+  sortMode,
+  onSortChange,
   onSelectPost,
   savedIds,
   onToggleSave,
   keyboardEnabled = true,
 }: FeedProps) {
-  const [sortMode, setSortMode] = useState<SortMode>("hot")
-
   const visiblePosts = useMemo(() => {
-    let filtered: Post[]
-    switch (activeFilter) {
-      case "aiml":
-      case "webdev":
-        filtered = posts.filter((p) => p.category === activeFilter)
-        break
-      case "main":
-        filtered = posts.filter((p) => p.category === "main")
-        break
-      case "saved":
-        filtered = posts.filter((p) => savedIds.includes(p.id))
-        break
-      default:
-        filtered = posts
-    }
-    filtered = searchPosts(filtered, searchQuery)
-
-    const sorted = [...filtered].sort((a, b) => {
-      switch (sortMode) {
-        case "new":
-          return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime()
-        case "top":
-          return b.upvotes + (votes[b.id] ?? 0) - (a.upvotes + (votes[a.id] ?? 0))
-        default:
-          return hotScore(b, votes[b.id] ?? 0) - hotScore(a, votes[a.id] ?? 0)
-      }
+    const filtered = searchPosts(
+      posts.filter((post) => {
+        if (activeFilter === "saved") return savedIds.includes(post.id)
+        if (post.type !== "project" || post.archived) return false
+        if (activeFilter !== "all") return post.category === activeFilter
+        return searchQuery.trim() || featuredPostIds.includes(post.id)
+      }),
+      searchQuery,
+    )
+    return [...filtered].sort((a, b) => {
+      if (sortMode === "new") return Date.parse(b.postedAt) - Date.parse(a.postedAt)
+      const rank = (post: Post) => (featuredPostIds.includes(post.id) ? featuredPostIds.indexOf(post.id) : 10)
+      return rank(a) - rank(b)
     })
-
-    // Pinned posts always lead the feed, Reddit-style
-    return [...sorted.filter((p) => p.pinned), ...sorted.filter((p) => !p.pinned)]
-  }, [posts, searchQuery, activeFilter, sortMode, votes, savedIds])
-
+  }, [posts, searchQuery, activeFilter, savedIds, sortMode])
   const focusedId = useKeyboardNav(visiblePosts, keyboardEnabled, onSelectPost)
+  const heading = searchQuery.trim()
+    ? "Search results"
+    : activeFilter === "all"
+      ? "Selected work"
+      : activeFilter === "saved"
+        ? "Saved projects"
+        : `${filters.find((filter) => filter.key === activeFilter)?.label} projects`
+  const menuClass =
+    "flex cursor-pointer items-center gap-2 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-secondary data-[highlighted]:bg-secondary"
 
   return (
-    <div className="space-y-3 sm:space-y-4">
-      {/* Sort + filter bar */}
-      <div className="bg-card rounded-lg border border-border p-2 sm:p-3">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-1" role="tablist" aria-label="Sort posts">
-            {SORT_TABS.map(({ key, label, icon: Icon }) => (
-              <button
-                key={key}
-                role="tab"
-                aria-selected={sortMode === key}
-                onClick={() => setSortMode(key)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
-                  sortMode === key
-                    ? "bg-secondary text-brand"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
-            {FILTERS.map((filter) => (
-              <button
-                key={filter.key}
-                onClick={() => onFilterChange(filter.key)}
-                className={`px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium whitespace-nowrap transition-all duration-200 ${
-                  activeFilter === filter.key
-                    ? "bg-brand text-white"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-            {(savedIds.length > 0 || activeFilter === "saved") && (
-              <button
-                onClick={() => onFilterChange("saved")}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium whitespace-nowrap transition-all duration-200 ${
-                  activeFilter === "saved"
-                    ? "bg-brand text-white"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Bookmark className={`w-3 h-3 ${activeFilter === "saved" ? "fill-current" : ""}`} />
-                Saved{savedIds.length > 0 ? ` (${savedIds.length})` : ""}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {searchQuery && (
-          <div className="mt-2 px-1 text-xs sm:text-sm text-muted-foreground">
-            Showing results for: <span className="font-medium text-brand">&quot;{searchQuery}&quot;</span>
-          </div>
+    <section aria-label="Portfolio projects" className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold tracking-tight">{heading}</h2>
+        {(searchQuery.trim() || activeFilter !== "all") && (
+          <span className="text-sm text-muted-foreground" role="status">
+            {visiblePosts.length} results
+          </span>
         )}
       </div>
-
-      {/* Post list — staggered entrance, FLIP reorder on sort change */}
-      {visiblePosts.length > 0 ? (
-        <m.div
-          className="space-y-3 sm:space-y-4"
-          variants={feedContainer}
-          initial="hidden"
-          animate="show"
-        >
-          <AnimatePresence mode="popLayout" initial={false}>
-            {visiblePosts.map((post) => (
-              <m.div
-                key={post.id}
-                layout
-                variants={feedItem}
-                exit="exit"
-                whileHover={{ y: -2 }}
-                data-post-id={post.id}
-                className={focusedId === post.id ? "ring-2 ring-brand rounded-lg" : undefined}
+      <div className="flex items-start justify-between gap-2">
+        <div role="group" aria-label="Filter projects" className="flex flex-wrap gap-1.5">
+          {filters.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={activeFilter === key && !searchQuery.trim()}
+              onClick={() => onFilterChange(key)}
+              className={`inline-flex min-h-9 items-center rounded-full border px-3 text-sm font-medium transition-colors ${activeFilter === key && !searchQuery.trim() ? "border-brand-accent/50 bg-brand-accent/10 text-brand" : "border-border text-muted-foreground hover:bg-card hover:text-foreground"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button
+              type="button"
+              aria-label="Project options"
+              className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full hover:bg-card ${activeFilter === "saved" ? "text-brand" : "text-muted-foreground"}`}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              align="end"
+              sideOffset={6}
+              className="z-50 min-w-52 rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-lg"
+            >
+              <DropdownMenu.CheckboxItem
+                checked={activeFilter === "saved"}
+                onCheckedChange={(checked) => onFilterChange(checked ? "saved" : "all")}
+                className={menuClass}
               >
-                <PostCard
-                  post={post}
-                  userVote={votes[post.id]}
-                  onVote={(dir) => onVote(post.id, dir)}
-                  onClick={() => onSelectPost(post)}
-                  saved={savedIds.includes(post.id)}
-                  onToggleSave={() => onToggleSave(post.id)}
-                />
-              </m.div>
-            ))}
-          </AnimatePresence>
-        </m.div>
+                <Bookmark className="h-4 w-4" /> Saved projects
+                <DropdownMenu.ItemIndicator>
+                  <Check className="ml-auto h-4 w-4" />
+                </DropdownMenu.ItemIndicator>
+              </DropdownMenu.CheckboxItem>
+              <DropdownMenu.Separator className="my-1 h-px bg-border" />
+              <DropdownMenu.Label className="px-3 py-1.5 text-xs text-muted-foreground">
+                Order
+              </DropdownMenu.Label>
+              <DropdownMenu.RadioGroup
+                value={sortMode}
+                onValueChange={(value) => onSortChange(value as SortMode)}
+              >
+                {[
+                  { key: "featured", label: "Selected order" },
+                  { key: "new", label: "Recently updated" },
+                ].map(({ key, label }) => (
+                  <DropdownMenu.RadioItem key={key} value={key} className={menuClass}>
+                    {label}
+                    <DropdownMenu.ItemIndicator>
+                      <Check className="ml-auto h-4 w-4" />
+                    </DropdownMenu.ItemIndicator>
+                  </DropdownMenu.RadioItem>
+                ))}
+              </DropdownMenu.RadioGroup>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      </div>
+      {searchQuery.trim() && <p className="text-sm text-muted-foreground">Results for “{searchQuery}”</p>}
+      {visiblePosts.length ? (
+        <div className="space-y-4">
+          {visiblePosts.map((post) => (
+            <div
+              key={post.id}
+              data-post-id={post.id}
+              className={
+                focusedId === post.id
+                  ? "rounded-2xl ring-2 ring-brand ring-offset-4 ring-offset-canvas"
+                  : undefined
+              }
+            >
+              <PostCard
+                post={post}
+                onClick={() => onSelectPost(post)}
+                saved={savedIds.includes(post.id)}
+                onToggleSave={() => onToggleSave(post.id)}
+              />
+            </div>
+          ))}
+        </div>
       ) : (
-        <m.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-card rounded-lg border border-border p-8 text-center"
-        >
-          {activeFilter === "saved" && !searchQuery ? (
-            <>
-              <Bookmark className="w-10 h-10 sm:w-14 sm:h-14 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Nothing saved yet</h3>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Hit Save on any post to bookmark it here — it sticks around between visits.
-              </p>
-            </>
+        <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-10 text-center">
+          {activeFilter === "saved" ? (
+            <Bookmark className="mx-auto mb-3 h-6 w-6 text-muted-foreground" />
           ) : (
-            <>
-              <Search className="w-10 h-10 sm:w-14 sm:h-14 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">No results found</h3>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                {searchQuery
-                  ? `No posts found matching "${searchQuery}". Try different keywords.`
-                  : "No posts available in this category."}
-              </p>
-            </>
+            <Search className="mx-auto mb-3 h-6 w-6 text-muted-foreground" />
           )}
-        </m.div>
+          <h3 className="text-lg font-semibold">
+            {activeFilter === "saved" ? "Your reading list starts here" : "Nothing here just yet"}
+          </h3>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            {activeFilter === "saved"
+              ? "Save a project to find it here on your next visit from this browser."
+              : "Try another keyword or choose a different category."}
+          </p>
+          <button
+            type="button"
+            onClick={() => onFilterChange("all")}
+            className="mt-4 rounded-full bg-secondary px-4 py-2.5 text-sm font-semibold"
+          >
+            Back to featured projects
+          </button>
+        </div>
       )}
-    </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
+        <Link
+          href="/projects"
+          className="inline-flex min-h-10 items-center gap-2 text-base font-semibold text-brand hover:underline"
+        >
+          View all projects <ArrowRight className="h-4 w-4" />
+        </Link>
+        <Link
+          href="/about"
+          className="inline-flex min-h-10 items-center text-sm text-muted-foreground hover:text-foreground"
+        >
+          Experience, education & skills →
+        </Link>
+      </div>
+    </section>
   )
 }

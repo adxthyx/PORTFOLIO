@@ -1,201 +1,241 @@
 "use client"
 
-import { Search, Trophy, BarChart3, FolderOpen, Settings, User, Download, MessageSquare, Briefcase } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
+import { usePathname } from "next/navigation"
+import {
+  Search,
+  ArrowUpRight,
+  FileText,
+  MoreHorizontal,
+  Moon,
+  Sun,
+  Monitor,
+  Check,
+  Trophy,
+  BarChart3,
+  Command,
+} from "lucide-react"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useTheme } from "@/components/theme-provider"
 
 interface HeaderProps {
-  onNavAction: (action: string) => void
-  onSearch: (query: string) => void
-  searchQuery: string
+  onNavAction?: (action: string) => void
+  onSearch?: (query: string) => void
+  searchQuery?: string
   onOpenPalette?: () => void
   recruiterMode?: boolean
   onToggleRecruiter?: () => void
 }
 
+const navigation = [
+  { href: "/", label: "Home" },
+  { href: "/projects", label: "Projects" },
+  { href: "/about", label: "About" },
+  { href: "/blog", label: "Notes" },
+]
+
 export function Header({
   onNavAction,
   onSearch,
-  searchQuery,
+  searchQuery = "",
   onOpenPalette,
-  recruiterMode = false,
+  recruiterMode,
   onToggleRecruiter,
 }: HeaderProps) {
+  const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
+  const [searchOpen, setSearchOpen] = useState(false)
+  const itemClass =
+    "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-secondary data-[highlighted]:bg-secondary"
   return (
-    <header className="bg-card border-b border-border sticky top-0 z-50 shadow-sm transition-colors duration-300">
-      <div className="w-full px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-        <button
-          onClick={() => onNavAction("home")}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
-        >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-brand-gradient rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-xs sm:text-sm">A</span>
-          </div>
-          <span className="font-bold text-foreground text-base sm:text-lg md:text-xl bg-brand-gradient bg-clip-text text-transparent">
-            adxthyx
+    <header className="sticky top-0 z-40 border-b border-border bg-card">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:p-3"
+      >
+        Skip to content
+      </a>
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 sm:gap-x-5 sm:px-6 sm:py-3">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="r/adithya home">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-accent font-mono text-lg font-semibold text-[#0e1113]">
+            r/
           </span>
-        </button>
-
-        <div className="flex-1 w-full sm:max-w-2xl sm:mx-4 order-3 sm:order-2">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-brand transition-colors" />
-            <Input
-              placeholder="Search r/adithya..."
-              value={searchQuery}
-              onChange={(e) => onSearch(e.target.value)}
-              className="pl-10 pr-14 w-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-brand focus:ring-brand transition-all duration-200 text-sm"
-            />
-            {onOpenPalette && (
-              <button
-                type="button"
-                onClick={onOpenPalette}
-                aria-label="Open command palette"
-                className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground hover:text-brand hover:border-brand transition-colors"
+          <span className="text-lg font-bold tracking-tight">
+            adithya<span className="text-brand-accent">.</span>
+          </span>
+        </Link>
+        <nav
+          aria-label="Main navigation"
+          className="order-3 flex w-full items-center gap-1 border-t border-border pt-2 md:order-none md:w-auto md:border-0 md:pt-0"
+        >
+          {navigation.map(({ href, label }) => {
+            const active =
+              href === "/"
+                ? (pathname === "/" || pathname.startsWith("/posts/")) && !recruiterMode
+                : pathname.startsWith(href)
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={(event) => {
+                  if (
+                    href === "/" &&
+                    pathname === "/" &&
+                    onNavAction &&
+                    !event.metaKey &&
+                    !event.ctrlKey &&
+                    !event.shiftKey
+                  ) {
+                    event.preventDefault()
+                    onNavAction("home")
+                  }
+                }}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-full px-2 py-2 text-sm font-semibold transition-colors sm:px-3 ${active ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
               >
-                ⌘K
-              </button>
-            )}
+                {label}
+              </Link>
+            )
+          })}
+          {onSearch && (
+            <button
+              type="button"
+              onClick={() => setSearchOpen((open) => !open)}
+              aria-label="Search projects"
+              aria-expanded={searchOpen || Boolean(searchQuery)}
+              aria-controls="portfolio-search-wrap"
+              className="ml-auto inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary lg:hidden"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+          )}
+        </nav>
+        {onSearch && (
+          <div
+            id="portfolio-search-wrap"
+            className={`${searchOpen || searchQuery ? "block" : "hidden"} order-4 w-full pb-1 lg:order-none lg:ml-auto lg:block lg:min-w-0 lg:max-w-xs lg:flex-1 lg:pb-0`}
+          >
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
+              <label htmlFor="portfolio-search" className="sr-only">
+                Search projects
+              </label>
+              <Input
+                id="portfolio-search"
+                type="search"
+                placeholder="Search projects…"
+                value={searchQuery}
+                onChange={(event) => onSearch(event.target.value)}
+                className="h-10 rounded-full border-transparent bg-secondary pl-10 text-base sm:text-sm"
+              />
+            </div>
           </div>
+        )}
+        <div className={`ml-auto flex items-center gap-1 sm:gap-2 ${onSearch ? "lg:ml-0" : ""}`}>
+          {onOpenPalette && (
+            <button
+              type="button"
+              onClick={onOpenPalette}
+              className="hidden items-center gap-2 rounded-lg border border-border px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground lg:inline-flex"
+              aria-label="Open command palette"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <kbd>⌘ K</kbd>
+            </button>
+          )}
+          <Button asChild variant="ghost" className="gap-1.5 rounded-full px-2.5 sm:px-3">
+            <Link href="/about#resume" aria-label="Resume">
+              <FileText className="h-4 w-4" />
+              <span className="hidden min-[375px]:inline">Resume</span>
+            </Link>
+          </Button>
+          <Button
+            asChild
+            className="gap-1 rounded-full bg-brand-accent px-3 font-semibold text-[#0e1113] hover:bg-[#ff5a1f] sm:px-4"
+          >
+            <Link
+              href="/?modal=contact"
+              onClick={(event) => {
+                if (onNavAction && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+                  event.preventDefault()
+                  onNavAction("contact")
+                }
+              }}
+            >
+              Say hello
+              <ArrowUpRight className="hidden h-4 w-4 sm:block" />
+            </Link>
+          </Button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="More options"
+                className="h-10 w-10 rounded-full"
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                align="end"
+                sideOffset={10}
+                className="z-[60] min-w-[220px] rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-xl"
+              >
+                {onToggleRecruiter && (
+                  <DropdownMenu.Item className={itemClass} onSelect={onToggleRecruiter}>
+                    <FileText className="h-4 w-4" />
+                    {recruiterMode ? "Back to posts" : "Quick résumé view"}
+                  </DropdownMenu.Item>
+                )}
+                {onOpenPalette && (
+                  <DropdownMenu.Item className={itemClass} onSelect={onOpenPalette}>
+                    <Command className="h-4 w-4" />
+                    Command palette
+                  </DropdownMenu.Item>
+                )}
+                {[
+                  { action: "stats", label: "Coding activity", icon: BarChart3 },
+                  { action: "achievements", label: "Achievements", icon: Trophy },
+                ].map(({ action, label, icon: Icon }) => (
+                  <DropdownMenu.Item key={action} asChild className={itemClass}>
+                    <Link
+                      href={`/?modal=${action}`}
+                      onClick={(event) => {
+                        if (onNavAction && !event.metaKey && !event.ctrlKey) {
+                          event.preventDefault()
+                          onNavAction(action)
+                        }
+                      }}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {label}
+                    </Link>
+                  </DropdownMenu.Item>
+                ))}
+                <DropdownMenu.Separator className="my-1.5 h-px bg-border" />
+                <DropdownMenu.Label className="px-3 py-1.5 text-xs font-medium text-muted-foreground">
+                  Appearance
+                </DropdownMenu.Label>
+                {[
+                  { value: "light", label: "Light", icon: Sun },
+                  { value: "dark", label: "Dark", icon: Moon },
+                  { value: "system", label: "System", icon: Monitor },
+                ].map(({ value, label, icon: Icon }) => (
+                  <DropdownMenu.Item key={value} className={itemClass} onSelect={() => setTheme(value)}>
+                    <Icon className="h-4 w-4" />
+                    {label}
+                    {theme === value && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenu.Item>
+                ))}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
         </div>
-
-        <TooltipProvider>
-          <div className="flex items-center justify-evenly sm:justify-end gap-1 sm:gap-2 overflow-x-auto w-full sm:flex-1 pb-1 sm:pb-0 order-2 sm:order-3 scrollbar-hide">
-            {onToggleRecruiter && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-pressed={recruiterMode}
-                    className={`transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none ${
-                      recruiterMode
-                        ? "bg-brand text-white hover:bg-brand-hover hover:text-white"
-                        : "text-muted-foreground hover:bg-secondary hover:text-brand"
-                    }`}
-                    onClick={onToggleRecruiter}
-                  >
-                    <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{recruiterMode ? "Back to r/adithya" : "Recruiter mode — clean resume view"}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
-                  onClick={() => onNavAction("achievements")}
-                >
-                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Achievements & Certifications</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
-                  onClick={() => onNavAction("stats")}
-                >
-                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>GitHub & Coding Stats</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
-                  onClick={() => onNavAction("projects")}
-                >
-                  <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>All Projects</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
-                  onClick={() => onNavAction("contact")}
-                >
-                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Contact Me</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
-                  onClick={() => onNavAction("settings")}
-                >
-                  <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Theme Settings</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="bg-brand hover:bg-brand-hover text-white font-semibold transition-all duration-200 hover:scale-105 flex-shrink-0 h-9 sm:h-10 px-2.5 sm:px-4 flex-1 sm:flex-none rounded-full gap-1.5"
-                  onClick={() => onNavAction("resume")}
-                >
-                  <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="text-xs sm:text-sm">Resume</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View / Download Resume</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-secondary hover:text-brand transition-all duration-200 hover:scale-110 flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex-1 sm:flex-none"
-                  onClick={() => onNavAction("profile")}
-                >
-                  <User className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>About Me</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </TooltipProvider>
       </div>
     </header>
   )

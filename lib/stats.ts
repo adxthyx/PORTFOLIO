@@ -1,14 +1,12 @@
 export interface GitHubStats {
   totalRepos: number
-  totalCommits: number
-  totalPRs: number
+  totalPRs: number | null
   totalStars: number
   totalForks: number
   followers: number
   following: number
   yearsActive: number
-  currentStreak: number
-  profileViews: number
+  updatedAt: string
   topLanguages: Array<{
     name: string
     percentage: number
@@ -17,6 +15,7 @@ export interface GitHubStats {
 }
 
 export interface LeetCodeStats {
+  updatedAt: string
   totalSolved: number
   easy: number
   medium: number

@@ -1,230 +1,211 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
+import { MessageCircle, Send, Loader2, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { MessageSquare, Send, Loader2 } from "lucide-react"
 import { profile } from "@/lib/content"
 
 interface Comment {
   id: string
   question: string
   answer: string
-  timestamp: Date
+  status: "pending" | "answered" | "error"
   seeded?: boolean
 }
-
 interface CommentSectionProps {
-  postTitle: string
-  context: string
-  postType?: "post" | "project"
+  postId: string
   seed?: { question: string; answer: string }
 }
+const threads = new Map<string, Comment[]>()
 
-function BotBadge() {
-  return (
-    <span className="inline-flex items-center rounded px-1 py-px text-[9px] sm:text-[10px] font-bold bg-brand/15 text-brand uppercase tracking-wide">
-      Bot
-    </span>
-  )
-}
-
-export function CommentSection({ postTitle, context, postType = "post", seed }: CommentSectionProps) {
+export function CommentSection({ postId, seed }: CommentSectionProps) {
   const [question, setQuestion] = useState("")
-  const [comments, setComments] = useState<Comment[]>(() =>
-    seed
-      ? [
-          {
-            id: "seed",
-            question: seed.question,
-            answer: seed.answer,
-            timestamp: new Date(),
-            seeded: true,
-          },
-        ]
-      : [],
+  const [comments, setComments] = useState<Comment[]>(
+    () => threads.get(postId) ?? (seed ? [{ id: "seed", ...seed, status: "answered", seeded: true }] : []),
   )
-  const [isLoading, setIsLoading] = useState(false)
-  const commentsContainerRef = useRef<HTMLDivElement>(null)
+  const request = useRef<AbortController | null>(null)
+  const mounted = useRef(true)
+  const isLoading = comments.some((comment) => comment.status === "pending")
+  const updateComments = (update: (previous: Comment[]) => Comment[]) =>
+    setComments((previous) => {
+      const next = update(previous)
+      threads.set(postId, next)
+      return next
+    })
 
-  // Auto-scroll to bottom when new comments are added
   useEffect(() => {
-    if (commentsContainerRef.current) {
-      commentsContainerRef.current.scrollTop = commentsContainerRef.current.scrollHeight
+    mounted.current = true
+    return () => {
+      mounted.current = false
+      request.current?.abort()
+      const saved = threads.get(postId)
+      if (saved)
+        threads.set(
+          postId,
+          saved.map((comment) =>
+            comment.status === "pending"
+              ? { ...comment, status: "error", answer: "The request was interrupted. You can try again." }
+              : comment,
+          ),
+        )
     }
-  }, [comments, isLoading])
+  }, [postId])
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
-    if (!question.trim() || isLoading) return
-
-    const userQuestion = question.trim()
-    const tempId = Date.now().toString()
+  const ask = async (text: string, retryId?: string) => {
+    const value = text.trim()
+    if (!value || value.length > 500 || request.current) return
+    const id = retryId ?? `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+    const controller = new AbortController()
+    request.current = controller
+    updateComments((previous) =>
+      retryId
+        ? previous.map((comment) =>
+            comment.id === id ? { ...comment, answer: "", status: "pending" } : comment,
+          )
+        : [...previous, { id, question: value, answer: "", status: "pending" }],
+    )
     setQuestion("")
-    setIsLoading(true)
-
-    // Add question immediately (optimistic UI)
-    const tempComment: Comment = {
-      id: tempId,
-      question: userQuestion,
-      answer: "",
-      timestamp: new Date(),
-    }
-    setComments((prev) => [...prev, tempComment])
-
+    const timer = setTimeout(() => controller.abort(), 20000)
     try {
       const response = await fetch("/api/ask", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          question: userQuestion,
-          context: context,
-          postTitle: postTitle,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: value, postId }),
+        signal: controller.signal,
       })
-
-      if (!response.ok) {
-        throw new Error("Failed to get answer")
-      }
-
       const data = await response.json()
-
-      // Update the comment with the answer
-      setComments((prev) =>
-        prev.map((comment) => (comment.id === tempId ? { ...comment, answer: data.answer } : comment)),
-      )
-    } catch (error) {
-      console.error("Error submitting question:", error)
-      // Update the comment with error message
-      setComments((prev) =>
-        prev.map((comment) =>
-          comment.id === tempId
-            ? { ...comment, answer: "Sorry, I couldn't process your question right now. Please try again later." }
-            : comment,
+      if (!mounted.current) return
+      if (!response.ok) throw new Error(data.error || "Couldn't get an answer. Please try again.")
+      if (typeof data.answer !== "string" || !data.answer.trim())
+        throw new Error("The reply was empty. Please try again.")
+      updateComments((previous) =>
+        previous.map((comment) =>
+          comment.id === id ? { ...comment, answer: data.answer, status: "answered" } : comment,
         ),
       )
+    } catch (error) {
+      if (!mounted.current) return
+      const answer = controller.signal.aborted
+        ? "The request was interrupted or took too long. Please try again."
+        : error instanceof Error
+          ? error.message
+          : "Couldn't connect. Please try again."
+      updateComments((previous) =>
+        previous.map((comment) => (comment.id === id ? { ...comment, answer, status: "error" } : comment)),
+      )
     } finally {
-      setIsLoading(false)
+      clearTimeout(timer)
+      request.current = null
     }
   }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSubmit()
-    }
-  }
-
-  const botAvatar = (
-    <img
-      src={profile.avatar}
-      alt="u/adithya-bot avatar"
-      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover ring-1 ring-brand flex-shrink-0"
-    />
-  )
 
   return (
-    <div className="border-t border-border bg-card flex flex-col h-full overflow-hidden">
-      {/* Comment Input Area */}
-      <div className="p-2 sm:p-3 border-b border-border flex-shrink-0">
-        <div className="flex items-start gap-2">
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-brand flex items-center justify-center flex-shrink-0 mt-1">
-            <span className="text-white text-[10px] sm:text-xs font-bold">u</span>
-          </div>
-          <form onSubmit={handleSubmit} className="flex-1 min-w-0 flex gap-2 items-center">
-            <Textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={`Ask u/adithya-bot anything about ${postType === "project" ? "this project" : "this post"} or me...`}
-              className="h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] max-h-[32px] sm:max-h-[36px] resize-none bg-background border-input focus:border-brand focus:ring-brand text-xs sm:text-sm flex-1 py-1.5 px-2"
-              disabled={isLoading}
-              rows={1}
-              aria-label="Ask a question"
-            />
-            <Button
-              type="submit"
-              disabled={!question.trim() || isLoading}
-              className="bg-brand hover:bg-brand-hover text-white px-3 py-1.5 h-8 sm:h-9 text-xs sm:text-sm flex-shrink-0"
-            >
-              {isLoading ? (
-                <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-              ) : (
-                <Send className="w-3 h-3 sm:w-4 sm:h-4" />
-              )}
-              <span className="sr-only">Send question</span>
-            </Button>
-          </form>
-        </div>
+    <section id="discussion" aria-labelledby={`discussion-title-${postId}`} className="scroll-mt-24 pt-1">
+      <div className="flex items-center gap-2">
+        <MessageCircle className="h-5 w-5 text-muted-foreground" />
+        <h2 id={`discussion-title-${postId}`} className="text-lg font-bold">
+          Let&apos;s talk about it
+        </h2>
       </div>
-
-      {/* Comments List - Fixed height with scrollbar */}
-      <div
-        ref={commentsContainerRef}
-        className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden p-2 sm:p-3 space-y-3"
-        style={{
-          maxHeight: "100%",
-          WebkitOverflowScrolling: "touch",
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        Ask u/adithya-bot about this post. It&apos;s an AI assistant answering from my portfolio, and it can
+        make mistakes. This conversation is private to your visit.
+      </p>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault()
+          void ask(question)
         }}
+        className="mt-5 rounded-xl border border-input bg-background p-3"
       >
-        {comments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-4 text-center">
-            <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground mb-1" />
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              No questions yet. u/adithya-bot is standing by.
+        <label htmlFor={`question-${postId}`} className="sr-only">
+          Ask a question
+        </label>
+        <Textarea
+          id={`question-${postId}`}
+          value={question}
+          onChange={(event) => setQuestion(event.target.value)}
+          onKeyDown={(event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+              event.preventDefault()
+              void ask(question)
+            }
+          }}
+          maxLength={500}
+          rows={3}
+          placeholder="How does it work? What would you do differently?"
+          className="min-h-20 resize-y border-0 bg-transparent p-1 text-base shadow-none focus-visible:ring-0 sm:text-sm"
+          disabled={isLoading}
+        />
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <span className="text-xs text-muted-foreground">{question.length}/500</span>
+          <Button
+            type="submit"
+            disabled={!question.trim() || isLoading}
+            className="gap-2 rounded-full bg-brand-solid text-white hover:bg-brand-hover"
+          >
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}Ask a
+            question
+          </Button>
+        </div>
+      </form>
+      <div
+        role="log"
+        aria-label="Your conversation with the portfolio assistant"
+        aria-live="polite"
+        aria-relevant="additions text"
+        className="mt-6 space-y-6"
+      >
+        {comments.map((comment) => (
+          <div key={comment.id}>
+            <p className="text-xs font-semibold text-muted-foreground">
+              {comment.seeded ? "A question to get started" : "You"}
             </p>
-          </div>
-        ) : (
-          comments.map((comment) => (
-            <div key={comment.id} className="space-y-1.5">
-              {/* Question */}
-              <div className="flex gap-2">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-muted-foreground flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-[10px] sm:text-xs font-bold">u</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="bg-secondary rounded-lg p-1.5 sm:p-2">
-                    <p className="text-xs sm:text-sm text-foreground/90 break-words">{comment.question}</p>
-                  </div>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
-                    u/visitor •{" "}
-                    {comment.seeded
-                      ? "earlier"
-                      : comment.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            <p className="mt-1.5 break-words text-sm leading-relaxed">{comment.question}</p>
+            <div className="ml-2 mt-3 flex gap-3 border-l-2 border-border pl-4">
+              <Image
+                src={profile.avatar}
+                alt=""
+                width={28}
+                height={28}
+                sizes="28px"
+                className="h-7 w-7 shrink-0 rounded-full object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                  u/adithya-bot
+                  <span className="rounded bg-brand/10 px-1.5 py-0.5 text-[10px] text-brand">AI</span>
+                </p>
+                {comment.status === "pending" ? (
+                  <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Thinking…
                   </p>
-                </div>
-              </div>
-
-              {/* Answer — threaded under the question, Reddit-style */}
-              <div className="flex gap-2 ml-3 sm:ml-4 border-l-2 border-border pl-2 sm:pl-3">
-                {botAvatar}
-                <div className="flex-1 min-w-0">
-                  <div className="bg-brand/10 dark:bg-brand/20 rounded-lg p-1.5 sm:p-2">
-                    {comment.answer ? (
-                      <p className="text-xs sm:text-sm text-foreground/90 break-words whitespace-pre-wrap">
-                        {comment.answer}
-                      </p>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-3 h-3 animate-spin text-brand" />
-                        <p className="text-xs sm:text-sm text-muted-foreground">Typing...</p>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                    u/adithya-bot <BotBadge />
-                    {!comment.seeded && comment.answer && (
-                      <> • {comment.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</>
-                    )}
+                ) : (
+                  <p
+                    className={`mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed ${comment.status === "error" ? "text-destructive" : "text-foreground/85"}`}
+                  >
+                    {comment.answer}
                   </p>
-                </div>
+                )}
+                {comment.status === "error" && (
+                  <button
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() => void ask(comment.question, comment.id)}
+                    className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-2 text-xs font-semibold disabled:opacity-50"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Try again
+                  </button>
+                )}
               </div>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   )
 }

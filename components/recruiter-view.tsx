@@ -15,6 +15,7 @@ import {
   Wrench,
 } from "lucide-react"
 import { m } from "motion/react"
+import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -80,8 +81,11 @@ export function RecruiterView({ onExit, onContact, onResume, onSelectPost }: Rec
         <Card className="overflow-hidden bg-card border border-border">
           <div className="h-14 sm:h-16 bg-brand-gradient" />
           <div className="p-4 sm:p-6 -mt-9 sm:-mt-10">
-            <img
+            <Image
               src={profile.avatar}
+              width={80}
+              height={80}
+              sizes="80px"
               alt={`${profile.displayName} portrait`}
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-card bg-card mb-3"
             />
@@ -96,7 +100,7 @@ export function RecruiterView({ onExit, onContact, onResume, onSelectPost }: Rec
             <div className="flex flex-wrap items-center gap-2 mt-4">
               <Button
                 onClick={onResume}
-                className="bg-brand hover:bg-brand-hover text-white rounded-full font-semibold h-9 gap-1.5 text-xs sm:text-sm"
+                className="bg-brand-solid hover:bg-brand-hover text-white rounded-full font-semibold h-9 gap-1.5 text-xs sm:text-sm"
               >
                 <Download className="w-4 h-4" />
                 Resume
@@ -104,7 +108,7 @@ export function RecruiterView({ onExit, onContact, onResume, onSelectPost }: Rec
               <Button
                 onClick={onContact}
                 variant="outline"
-                className="rounded-full font-semibold h-9 gap-1.5 text-xs sm:text-sm border-brand text-brand hover:bg-brand hover:text-white transition-colors"
+                className="rounded-full font-semibold h-9 gap-1.5 text-xs sm:text-sm border-brand text-brand hover:bg-brand-solid hover:text-white transition-colors"
               >
                 <MessageSquare className="w-4 h-4" />
                 Contact
@@ -139,12 +143,17 @@ export function RecruiterView({ onExit, onContact, onResume, onSelectPost }: Rec
                   <h3 className="font-semibold text-sm sm:text-base text-foreground">
                     {exp.role} · <span className="text-brand">{exp.company}</span>
                   </h3>
-                  <span className="text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">{exp.period}</span>
+                  <span className="text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
+                    {exp.period}
+                  </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-muted-foreground mb-1.5">{exp.location}</p>
                 <ul className="space-y-1">
                   {exp.points.map((point) => (
-                    <li key={point} className="flex gap-2 text-xs sm:text-sm text-foreground/80 leading-relaxed">
+                    <li
+                      key={point}
+                      className="flex gap-2 text-xs sm:text-sm text-foreground/80 leading-relaxed"
+                    >
                       <span className="text-brand mt-0.5 flex-shrink-0">›</span>
                       {point}
                     </li>
@@ -164,7 +173,9 @@ export function RecruiterView({ onExit, onContact, onResume, onSelectPost }: Rec
             <div key={edu.degree} className="border-l-2 border-brand/40 pl-3 sm:pl-4">
               <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
                 <h3 className="font-semibold text-sm sm:text-base text-foreground">{edu.degree}</h3>
-                <span className="text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">{edu.period}</span>
+                <span className="text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
+                  {edu.period}
+                </span>
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground">{edu.school}</p>
               <p className="text-xs sm:text-sm text-foreground/80 mt-1">{edu.detail}</p>
@@ -185,7 +196,11 @@ export function RecruiterView({ onExit, onContact, onResume, onSelectPost }: Rec
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {group.skills.map((skill) => (
-                    <Badge key={skill} variant="secondary" className="text-xs bg-secondary text-foreground/80 font-normal">
+                    <Badge
+                      key={skill}
+                      variant="secondary"
+                      className="text-xs bg-secondary text-foreground/80 font-normal"
+                    >
                       {skill}
                     </Badge>
                   ))}
@@ -210,16 +225,24 @@ export function RecruiterView({ onExit, onContact, onResume, onSelectPost }: Rec
                 <h3 className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-brand transition-colors line-clamp-2 mb-1">
                   {project.title}
                 </h3>
-                <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 mb-2">{project.content}</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 mb-2">
+                  {project.content}
+                </p>
                 {project.tags && (
                   <div className="flex flex-wrap gap-1">
                     {project.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-[10px] bg-secondary text-muted-foreground font-normal">
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="text-[10px] bg-secondary text-muted-foreground font-normal"
+                      >
                         {tag}
                       </Badge>
                     ))}
                     {project.tags.length > 3 && (
-                      <span className="text-[10px] text-muted-foreground self-center">+{project.tags.length - 3}</span>
+                      <span className="text-[10px] text-muted-foreground self-center">
+                        +{project.tags.length - 3}
+                      </span>
                     )}
                   </div>
                 )}

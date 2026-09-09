@@ -1,6 +1,8 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect } from "react"
+import { createBrowserStore } from "@/lib/browser-store"
+import { allPosts, projects } from "@/lib/content"
 import { toast } from "sonner"
 
 export interface Achievement {
@@ -38,7 +40,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "completionist",
     emoji: "🏆",
     title: "Completionist",
-    description: "Read every post on the feed",
+    description: "Opened every current project",
     hint: "Leave no post unread",
   },
   {
@@ -64,44 +66,62 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
 ]
 
-const STORAGE_KEY = "r-adithya:achievements:v1"
+const achievementsStore = createBrowserStore<string[]>("r-adithya:achievements:v1", [], (value) =>
+  Array.isArray(value)
+    ? [
+        ...new Set(
+          value.filter(
+            (id): id is string =>
+              typeof id === "string" && ACHIEVEMENTS.some((achievement) => achievement.id === id),
+          ),
+        ),
+      ]
+    : [],
+)
+const openedPostsStore = createBrowserStore<string[]>("r-adithya:openedPosts:v1", [], (value) =>
+  Array.isArray(value)
+    ? [
+        ...new Set(
+          value.filter(
+            (id): id is string => typeof id === "string" && allPosts.some((post) => post.id === id),
+          ),
+        ),
+      ]
+    : [],
+)
 
-// Visitor achievements persisted in localStorage. Unlocking an already-earned
-// achievement is a no-op, so call sites can fire unconditionally.
+const unlock = (id: string) => {
+  const definition = ACHIEVEMENTS.find((achievement) => achievement.id === id)
+  if (!definition) return
+  let earned = false
+  achievementsStore.write((previous) => {
+    if (previous.includes(id)) return previous
+    earned = true
+    return [...previous, id]
+  })
+  if (earned)
+    toast(`${definition.emoji} Achievement unlocked — ${definition.title}`, {
+      description: definition.description,
+    })
+}
+
 export function useAchievements() {
-  const [unlockedIds, setUnlockedIds] = useState<string[]>([])
-  const unlockedRef = useRef<Set<string>>(new Set())
+  return { unlockedIds: achievementsStore.useValue(), unlock }
+}
 
+// Full pages and the inline reader share visit tracking, including on mobile.
+export function usePostVisit(postId: string) {
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        const ids: string[] = JSON.parse(raw)
-        unlockedRef.current = new Set(ids)
-        setUnlockedIds(ids)
-      }
-    } catch {
-      // ignore corrupt storage
-    }
-  }, [])
-
-  const unlock = useCallback((id: string) => {
-    const def = ACHIEVEMENTS.find((a) => a.id === id)
-    if (!def || unlockedRef.current.has(id)) return
-    unlockedRef.current.add(id)
-    setUnlockedIds((prev) => {
-      const next = [...prev, id]
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      } catch {
-        // storage full/blocked — achievement still shows for the session
-      }
+    if (!allPosts.some((post) => post.id === postId)) return
+    let count = 0
+    let complete = false
+    openedPostsStore.write((previous) => {
+      const next = previous.includes(postId) ? previous : [...previous, postId]
+      count = next.length
+      complete = projects.every((project) => next.includes(project.id))
       return next
     })
-    toast(`${def.emoji} Achievement unlocked — ${def.title}`, {
-      description: def.description,
-    })
-  }, [])
-
-  return { unlockedIds, unlock }
+    if (count >= 3) unlock("explorer")
+    if (complete) unlock("completionist")
+  }, [postId])
 }
