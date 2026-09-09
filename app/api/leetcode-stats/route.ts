@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
 const LEETCODE_USERNAME = "adxthyx"
+export const revalidate = 3600
 
 interface LeetCodeResponse {
   data: {
@@ -30,8 +31,6 @@ interface LeetCodeResponse {
 
 export async function GET() {
   try {
-    console.log(`Fetching LeetCode stats for user: ${LEETCODE_USERNAME}`)
-
     const query = `
       query getUserProfile($username: String!) {
         matchedUser(username: $username) {
@@ -59,6 +58,8 @@ export async function GET() {
     `
 
     const response = await fetch("https://leetcode.com/graphql", {
+      next: { revalidate },
+      signal: AbortSignal.timeout(7000),
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -77,7 +78,6 @@ export async function GET() {
     }
 
     const data: LeetCodeResponse = await response.json()
-    console.log("LeetCode API Response:", JSON.stringify(data, null, 2))
 
     if (!data.data?.matchedUser) {
       throw new Error("User not found or API response invalid")
@@ -121,20 +121,19 @@ export async function GET() {
       }))
 
     const stats = {
-      totalSolved, // This should now be 192 as per your API response
-      easy, // 64
-      medium, // 106
-      hard, // 18
-      ranking: profile.ranking || 0, // 674288
+      totalSolved,
+      easy,
+      medium,
+      hard,
+      ranking: profile.ranking || 0,
       languages,
       userAvatar: profile.userAvatar,
       realName: profile.realName,
+      updatedAt: new Date().toISOString(),
     }
 
-    console.log("LeetCode stats calculated successfully:", stats)
     return NextResponse.json(stats)
   } catch (error) {
-    console.error("Error fetching LeetCode stats:", error)
-    return NextResponse.json({ error: "Internal server error while fetching LeetCode stats" }, { status: 500 })
+    return NextResponse.json({ error: "LeetCode activity is temporarily unavailable." }, { status: 503 })
   }
 }

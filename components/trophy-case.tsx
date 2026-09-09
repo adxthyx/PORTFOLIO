@@ -29,7 +29,7 @@ export function TrophyCase({ unlockedIds }: TrophyCaseProps) {
             <div
               key={a.id}
               className={`flex items-center gap-2.5 p-2 rounded transition-colors ${
-                unlocked ? "hover:bg-secondary" : "opacity-60"
+                unlocked ? "hover:bg-secondary" : ""
               }`}
             >
               <span className="w-6 text-center text-base flex-shrink-0" aria-hidden>
@@ -39,7 +39,9 @@ export function TrophyCase({ unlockedIds }: TrophyCaseProps) {
                 {unlocked ? (
                   <>
                     <div className="text-foreground font-medium truncate">{a.title}</div>
-                    <div className="text-muted-foreground text-[10px] sm:text-xs truncate">{a.description}</div>
+                    <div className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                      {a.description}
+                    </div>
                   </>
                 ) : (
                   <div className="text-muted-foreground italic truncate">{a.hint}</div>

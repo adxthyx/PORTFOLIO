@@ -1,18 +1,15 @@
-import { formatDistanceToNowStrict, parseISO } from "date-fns"
+import { projectEntries } from "@/lib/project-content"
 
 export interface Post {
   id: string
   title: string
   content: string
   fullContent: string
-  upvotes: number
-  comments: number
   subreddit: string
   author: string
   postedAt: string
-  timeAgo: string
-  type: string
-  category: "main" | "aiml" | "webdev"
+  type: "about" | "experience" | "education" | "skills" | "project"
+  category: "main" | "aiml" | "webdev" | "mobile" | "other"
   flair: string
   pinned?: boolean
   tags?: string[]
@@ -20,6 +17,12 @@ export interface Post {
   demo?: string
   awards?: string[]
   faq?: { question: string; answer: string }
+  archived?: boolean
+  projectDetails?: {
+    context: string
+    contribution: string
+    outcome: string
+  }
 }
 
 export interface Profile {
@@ -28,7 +31,6 @@ export interface Profile {
   role: string
   subreddit: string
   cakeDay: string
-  baseKarma: number
   avatar: string
   resumePath: string
   links: {
@@ -45,7 +47,6 @@ export const profile: Profile = {
   role: "Software Engineer @ HPE · AI/ML",
   subreddit: "r/adithya",
   cakeDay: "2025-09-01",
-  baseKarma: 2847,
   avatar: "/a.jpeg",
   resumePath: "/resume.pdf",
   links: {
@@ -56,32 +57,27 @@ export const profile: Profile = {
   },
 }
 
-export function timeAgo(postedAt: string): string {
-  return formatDistanceToNowStrict(parseISO(postedAt), { addSuffix: true })
-}
-
-type PostInput = Omit<Post, "timeAgo" | "subreddit" | "author">
+type PostInput = Omit<Post, "subreddit" | "author">
 
 function definePost(input: PostInput): Post {
   return {
     ...input,
     subreddit: profile.subreddit,
     author: profile.username,
-    timeAgo: timeAgo(input.postedAt),
   }
 }
 
 const about = definePost({
   id: "about",
-  title: "I'm Adithya — AI/ML Software Engineer @ HPE. Ask Me Anything.",
+  title: "Hey, I'm Adithya. Ask me anything.",
   content:
-    "Fresh AI & ML grad, now building Gen AI / LLM things full-time at HPE. AMA about my work, my projects, or why tea is a war crime. (There's a u/adithya-bot in the comments that answers as me — go poke it.)",
+    "Software engineer, AI tinkerer, and story-game enthusiast. Ask about my projects, life in Bengaluru, or why RDR2 is so hard to beat.",
   fullContent: `# Ask Me Anything
 
-> Drop a question in the comments — **u/adithya-bot** answers as me, trained on everything below.
+> Drop a question below — **u/adithya-bot** is an AI assistant that answers from this portfolio.
 
 🎓 **The Academic Chapter**
-Just graduated from Ramaiah Institute of Technology, Bengaluru with a degree in AI & Machine Learning (Class of 2025). The journey was wild - late night debugging sessions, project deadlines that made me question my life choices, and somehow managing to build some cool stuff along the way.
+I graduated from Ramaiah Institute of Technology, Bengaluru with a degree in AI & Machine Learning (Class of 2025). The journey was wild - late night debugging sessions, project deadlines that made me question my life choices, and somehow managing to build some cool stuff along the way.
 Spent Feb-Aug 2025 as a Software Engineering Intern at HPE India, and now I've transitioned to a full-time role there. Still feels surreal that I'm getting paid to write code.
 
 💻 **What I Actually Do**
@@ -95,7 +91,7 @@ My comfort zone: Python, NextJS, FastAPI, Flask, JS, Streamlit (and honestly, to
 **AI Stuff:** LangChain for LLM applications
 
 If I had to pick my favorite tech combo: NextJS + FastAPI. Fast, modern, scalable. Chef's kiss.
-Coolest project? AskAPS — a multi-module AI assistant I built for HPE's supply chain planners that lives right inside Microsoft Teams. RAG over docs, similarity search over tickets, and natural-language-to-SQL for metrics, all from one chat box.
+My main project at HPE is AskAPS. I own the application and integration layer that brings existing document retrieval, ticket search, and analytics services into Microsoft Teams and the web.
 
 🏍️ **When I'm Not Coding**
 
@@ -145,8 +141,6 @@ Generally trying to go from "it works" to "it works well"
 📫 **Let's Connect**
 I'm active on GitHub, LinkedIn, and here on Reddit. Always down to discuss tech, swap project ideas, or debate why RDR2 has the best story in gaming history.
 If you're working on something cool or need help with AI/web dev stuff, hit me up. Still learning, but happy to figure things out together.`,
-  upvotes: 342,
-  comments: 67,
   postedAt: "2026-05-01T10:00:00+05:30",
   type: "about",
   category: "main",
@@ -180,8 +174,6 @@ Started my professional journey building dashboards, Agentic AI solutions, and P
 
 **Technologies Used:**
 Python, NextJS, FastAPI, Streamlit, SQL, LangChain`,
-  upvotes: 189,
-  comments: 34,
   postedAt: "2026-06-12T09:00:00+05:30",
   type: "experience",
   category: "main",
@@ -199,8 +191,6 @@ const education = definePost({
 - **CGPA:** 8.8/10.0
 - **Relevant Coursework:** Data Structures, Algorithms, Database Systems, Software Engineering, Machine Learning
 - **Senior Project:** LLM Powered Solution for Supply and Demand Planners and AI Powered CLI System`,
-  upvotes: 156,
-  comments: 28,
   postedAt: "2026-06-12T07:00:00+05:30",
   type: "education",
   category: "main",
@@ -255,89 +245,16 @@ const skills = definePost({
 - **Docker** - Containerized dev and deployment
 - **Vercel** - Frontend deployment and edge functions
 - **Agile** - Sprints, standups, the whole HPE workflow`,
-  upvotes: 234,
-  comments: 45,
   postedAt: "2026-06-11T14:00:00+05:30",
   type: "skills",
   category: "main",
   flair: "Skills",
 })
 
-const aiml: Post[] = [
-  definePost({
-    id: "ai-askaps",
-    title: "AskAPS — AI Assistant for HPE Supply Chain Planning",
-    content:
-      "My main project at HPE. A multi-module AI assistant that lives inside Microsoft Teams and lets supply chain planners query docs, tickets, and metrics in natural language — without leaving their workflow.",
-    fullContent: `# AskAPS — AI Assistant for HPE Supply Chain Planning
-
-## 🎯 What it is
-A production, multi-module AI assistant built for HPE's Advanced Planning & Scheduling (APS) supply chain team. Deployed on Microsoft Teams, it lets planners query documents, tickets, and metrics in natural language without leaving their workflow.
-
-## 🧩 Modules
-
-### KnowledgeAI
-RAG pipeline over SharePoint documents. A COT/DOE service auto-tags documents based on folder and file structure using an LLM — so tagging is automated, not manual. Planners ask questions and get answers grounded in actual internal documentation.
-
-### TicketingAI
-Similarity search against Monday.com tickets. Routes queries through \`hippo_search\` with domain identifiers — \`sp\` for supply planning, \`dp\` for demand planning. The same query interface serves two different planning domains with separate ticket corpora.
-
-### MetricsAI / BOA
-Natural language to SQL. A planner types a question about supply chain metrics; it generates and runs SQL, then streams the result back via SSE. No need to know the schema or write queries by hand.
-
-## 🛠️ Architecture
-- **FastAPI backend** — a single app handling both Teams Bot Framework requests and AskAPS module logic
-- **No separate HTTP hop** between the bot layer and the AI logic — direct function calls within the same app
-- **Adaptive Cards** for responses — ColumnSet tables for structured data, monospace blocks for SQL, accent colors per module
-- **SSE streaming** for MetricsAI / BOA responses
-- **Auth** via Bearer token through HPE's One AI ITG API Hub
-- **Deployed on Kubernetes**
-- **Secrets** managed via Vault
-
-## 💡 Why it matters
-Supply chain planners normally context-switch between SharePoint, Monday.com, and BI dashboards to answer a single question. AskAPS collapses that into one Teams message. The three modules cover the three most common query types — "what does this doc say", "has this been raised before", and "show me the numbers" — all from one interface, in natural language.
-
-*Internal HPE project — no public repository.*`,
-    upvotes: 512,
-    comments: 94,
-    postedAt: "2026-06-10T11:00:00+05:30",
-    type: "project",
-    category: "aiml",
-    flair: "AI/ML",
-    tags: ["RAG", "FastAPI", "LLM", "NL-to-SQL", "Kubernetes", "Teams"],
-  }),
-  definePost({
-    id: "ai-vlm",
-    title: "Assistive Device for the Blind using a Vision-Language Model",
-    content:
-      "Finetuned MoonDream and BLIP vision-language models and wired them into a wearable setup (webcam + earphone) to describe surroundings to blind users in realtime.",
-    fullContent: `# Assistive Device for the Blind using a VLM
-
-## 🎯 Project Overview
-A wearable assistive system that helps blind users understand their surroundings in realtime by describing what a camera sees, out loud.
-
-## 🚀 What it does
-- Captures the scene from a head/body-mounted **webcam**
-- Runs it through a **vision-language model** to generate a natural description
-- Speaks the description back through an **earphone** — all in realtime
-
-## 🛠️ Technical Implementation
-- **Models**: Finetuned **MoonDream** and **BLIP** for scene description and visual question answering
-- **Hardware loop**: Webcam input → VLM inference → text-to-speech → earphone output
-- **Target**: A mobile-friendly architecture so the whole pipeline can run close to the user
-
-## 💡 Why it matters
-Off-the-shelf VLMs are heavy and verbose. Finetuning smaller models like MoonDream made realtime, on-the-go description practical for an assistive wearable instead of a lab demo.`,
-    upvotes: 387,
-    comments: 58,
-    postedAt: "2026-06-08T16:00:00+05:30",
-    type: "project",
-    category: "aiml",
-    flair: "AI/ML",
-    tags: ["VLM", "MoonDream", "BLIP", "Computer Vision", "Accessibility"],
-  }),
+const archivedProjects: Post[] = [
   definePost({
     id: "ai-kannada",
+    archived: true,
     title: "Regional Language (Kannada) Handwritten Character Recognition",
     content:
       "Built a model to recognize handwritten Kannada characters, then wrapped it in a gamified website that teaches children the language.",
@@ -358,8 +275,6 @@ A team project to recognize handwritten **Kannada** characters and turn it into 
 
 ## 💡 Why it matters
 Regional Indian scripts are underrepresented in handwriting datasets and tooling. Pairing recognition with a kids' learning game makes the tech useful for language preservation, not just a benchmark.`,
-    upvotes: 264,
-    comments: 41,
     postedAt: "2026-06-06T12:00:00+05:30",
     type: "project",
     category: "aiml",
@@ -368,6 +283,7 @@ Regional Indian scripts are underrepresented in handwriting datasets and tooling
   }),
   definePost({
     id: "ai-attendance",
+    archived: true,
     title: "Attendance Tracker via Face Recognition",
     content:
       "Built a face-recognition ML model (VGGFace + HaarCascade) that detects every person in a classroom photo and marks attendance automatically.",
@@ -388,8 +304,6 @@ An automated attendance system that recognizes every student in a single classro
 
 ## 💡 Why it matters
 Manual attendance for a full class is slow and error-prone. One photo and a detection + recognition pipeline turns it into a few seconds of work.`,
-    upvotes: 231,
-    comments: 37,
     postedAt: "2026-06-04T10:00:00+05:30",
     type: "project",
     category: "aiml",
@@ -398,73 +312,11 @@ Manual attendance for a full class is slow and error-prone. One photo and a dete
   }),
 ]
 
-const webdev: Post[] = [
-  definePost({
-    id: "web-ngo",
-    title: "SaaS Platform for NGOs — Investor Matching + AI Pitch Decks",
-    content:
-      "Full-stack Next.js platform that helps NGOs find investors via semantic search, and auto-generates pitch presentations using OpenAI and python-pptx.",
-    fullContent: `# SaaS Platform for NGOs
-
-## 🎯 Project Overview
-A full-stack Next.js platform that connects NGOs with potential investors and helps them pitch — using semantic search to find the right matches and AI to build the deck.
-
-## 🚀 Key Features
-- **Semantic investor search** — NGOs describe their mission and get matched to relevant investors by meaning, not just keywords
-- **AI pitch presentations** — generates dynamic pitch decks using **OpenAI** for content and **python-pptx** to assemble the slides
-- **Activity dashboard** — tracks NGO activity and manages connections between NGOs and investors
-
-## 🛠️ Technical Implementation
-- **Frontend & app**: Full-stack **Next.js**
-- **Matching**: Semantic search over investor/NGO profiles
-- **Pitch generation**: OpenAI for slide content + **python-pptx** for the actual \`.pptx\` output
-- **Dashboard**: Tracks activities and surfaces NGO ↔ investor connections
-
-## 💡 Why it matters
-Small NGOs rarely have the time or design skills to court investors. This collapses "find the right investor" and "make a convincing pitch" into a single tool.`,
-    upvotes: 298,
-    comments: 52,
-    postedAt: "2026-06-09T13:00:00+05:30",
-    type: "project",
-    category: "webdev",
-    flair: "Web Dev",
-    tags: ["Next.js", "OpenAI", "python-pptx", "Semantic Search", "SaaS"],
-  }),
-  definePost({
-    id: "web-rit",
-    title: "Minimalist Student Portal for RIT — with Chatbot",
-    content:
-      "A clean student portal for RIT students with an integrated chatbot. Scrapes data with BeautifulSoup, auto-logs-in via Selenium, and answers questions about grades, attendance, events, and timetables.",
-    fullContent: `# Minimalist Student Portal for RIT (with Chatbot)
-
-## 🎯 Project Overview
-A minimalist portal for Ramaiah Institute of Technology students that pulls together everything scattered across the official systems — grades, attendance, events, timetables — behind one clean interface and a chatbot.
-
-## 🚀 Key Features
-- **Minimalist dashboard** for the data students actually check
-- **Integrated chatbot** that answers questions about grades, attendance, events, and timetables
-- **Auto-login** so students don't re-enter credentials every time
-
-## 🛠️ Technical Implementation
-- **Data extraction**: **BeautifulSoup** to scrape data from the institute's systems
-- **Automation**: **Selenium** for automated logins
-- **Chatbot**: Connected to a database so it can answer queries about grades, attendance, events, and timetables on demand
-
-## 💡 Why it matters
-The official portals are clunky and split across pages. This puts the day-to-day info one question away, in a UI that doesn't fight you.`,
-    upvotes: 276,
-    comments: 48,
-    postedAt: "2026-06-07T15:00:00+05:30",
-    type: "project",
-    category: "webdev",
-    flair: "Web Dev",
-    tags: ["Python", "BeautifulSoup", "Selenium", "Chatbot", "Web Scraping"],
-  }),
-]
-
 export const mainPosts: Post[] = [about, experience, education, skills]
-export const projects: Post[] = [...aiml, ...webdev]
-export const allPosts: Post[] = [...mainPosts, ...projects]
+export const projects: Post[] = projectEntries.map(definePost)
+// Preserve existing article URLs while retiring old work from discovery.
+export const allProjects: Post[] = [...projects, ...archivedProjects]
+export const allPosts: Post[] = [...mainPosts, ...allProjects]
 
 // Structured resume data for the recruiter-mode view. Same facts as the
 // posts above, flattened for fast scanning.
@@ -508,8 +360,8 @@ export const resume: ResumeData = {
       location: "Bengaluru, India",
       points: [
         "Building AI/ML solutions and web applications with Python and Next.js.",
-        "Own AskAPS — a multi-module AI assistant for supply chain planners inside Microsoft Teams: RAG over SharePoint docs, ticket similarity search, and natural-language-to-SQL for metrics.",
-        "FastAPI backend deployed on Kubernetes with SSE streaming, Adaptive Cards responses, and Vault-managed secrets.",
+        "Own the AskAPS application and integration layer: shared Teams/web workflows, scoped document and ticket retrieval, and natural-language analytics backed by existing HPE services.",
+        "Built shared FastAPI execution, Teams Adaptive Cards, Redis-backed sessions, and reliable upstream streaming/refinement handling; contributed application packaging and release validation.",
       ],
     },
     {
@@ -537,7 +389,15 @@ export const resume: ResumeData = {
     { label: "Backend", skills: ["FastAPI", "Flask", "Node.js", "REST API design"] },
     {
       label: "AI/ML",
-      skills: ["LangChain", "RAG", "LLM applications", "Forecasting", "PyTorch", "TensorFlow", "Scikit-learn"],
+      skills: [
+        "LangChain",
+        "RAG",
+        "LLM applications",
+        "Forecasting",
+        "PyTorch",
+        "TensorFlow",
+        "Scikit-learn",
+      ],
     },
     { label: "Data & Infra", skills: ["MongoDB", "Docker", "Kubernetes", "Vercel", "Git/GitHub"] },
   ],

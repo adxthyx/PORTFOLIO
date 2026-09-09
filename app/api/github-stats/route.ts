@@ -1,214 +1,91 @@
 import { NextResponse } from "next/server"
+import type { GitHubStats } from "@/lib/stats"
 
-const GITHUB_USERNAME = "adxthyx"
-
+export const revalidate = 3600
+const username = "adxthyx"
 interface GitHubRepo {
-  name: string
+  private: boolean
   stargazers_count: number
   forks_count: number
-  language: string
-  languages_url: string
-  created_at: string
-  updated_at: string
+  language: string | null
 }
-
-interface GitHubUser {
-  public_repos: number
-  followers: number
-  following: number
-  created_at: string
-}
-
-interface GitHubCommit {
-  commit: {
-    author: {
-      date: string
-    }
-  }
-}
-
-const LANGUAGE_COLORS: Record<string, string> = {
-  JavaScript: "#f1e05a",
-  TypeScript: "#2b7489",
-  Python: "#3572A5",
-  Java: "#b07219",
-  "C++": "#f34b7d",
-  C: "#555555",
-  HTML: "#e34c26",
-  CSS: "#563d7c",
-  Go: "#00ADD8",
-  Rust: "#dea584",
-  PHP: "#4F5D95",
-  Ruby: "#701516",
-  Swift: "#ffac45",
-  Kotlin: "#F18E33",
-  Shell: "#89e051",
-  Dart: "#00B4AB",
-  Vue: "#2c3e50",
-  React: "#61DAFB",
-  "C#": "#178600",
-  Dockerfile: "#384d54",
-  "Jupyter Notebook": "#DA5B0B",
+const languageColors: Record<string, string> = {
+  Python: "#3572a5",
+  TypeScript: "#3178c6",
+  JavaScript: "#b58b00",
+  "Jupyter Notebook": "#bc5b0b",
+  "C++": "#cc5187",
+  HTML: "#d44c2d",
+  CSS: "#7656ad",
+  C: "#777777",
+  Java: "#9c641b",
 }
 
 export async function GET() {
-  const githubToken = process.env.GITHUB_TOKEN
-
-  if (!githubToken) {
-    return NextResponse.json(
-      { error: "GitHub token not configured. Please set GITHUB_TOKEN environment variable." },
-      { status: 500 },
-    )
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "User-Agent": "Adithya-Portfolio",
   }
-
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`
+  const read = async (path: string) => {
+    const response = await fetch(`https://api.github.com${path}`, {
+      headers,
+      next: { revalidate },
+      signal: AbortSignal.timeout(7000),
+    })
+    if (!response.ok) throw new Error("GitHub unavailable")
+    return response.json()
+  }
   try {
-    const headers = {
-      Authorization: `Bearer ${githubToken}`,
-      Accept: "application/vnd.github.v3+json",
-      "User-Agent": "Portfolio-App",
+    const user = await read(`/users/${username}`)
+    const repos: GitHubRepo[] = []
+    // Pagination is bounded; an incomplete result is never presented as a total.
+    for (let page = 1; page <= 10; page++) {
+      const result: GitHubRepo[] = await read(`/users/${username}/repos?type=owner&per_page=100&page=${page}`)
+      if (!Array.isArray(result)) throw new Error("Invalid repositories")
+      repos.push(...result.filter((repo) => repo.private === false))
+      if (result.length < 100) break
+      if (page === 10) throw new Error("Repository list exceeds supported size")
     }
-
-    console.log(`Fetching GitHub stats for user: ${GITHUB_USERNAME}`)
-
-    // Fetch user data
-    const userResponse = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, { headers })
-    if (!userResponse.ok) {
-      throw new Error(`Failed to fetch user data: ${userResponse.status}`)
-    }
-    const userData: GitHubUser = await userResponse.json()
-    console.log(`User has ${userData.public_repos} public repos`)
-
-    // Fetch ALL repositories with proper pagination
-    const allRepos: GitHubRepo[] = []
-    let page = 1
-    let hasMore = true
-
-    while (hasMore) {
-      console.log(`Fetching repositories page ${page}`)
-      const reposResponse = await fetch(
-        `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&page=${page}&sort=updated&type=all`,
-        { headers },
-      )
-
-      if (!reposResponse.ok) {
-        console.error(`Failed to fetch repos page ${page}: ${reposResponse.status}`)
-        break
-      }
-
-      const repos: GitHubRepo[] = await reposResponse.json()
-      console.log(`Page ${page}: Found ${repos.length} repositories`)
-
-      if (repos.length === 0) {
-        hasMore = false
-      } else {
-        allRepos.push(...repos)
-        if (repos.length < 100) {
-          hasMore = false
-        } else {
-          page++
-        }
-      }
-    }
-
-    console.log(`Total repositories fetched: ${allRepos.length}`)
-
-    // Calculate basic stats
-    let totalStars = 0
-    let totalForks = 0
-    const languageBytes: Record<string, number> = {}
-
-    for (const repo of allRepos) {
-      totalStars += repo.stargazers_count || 0
-      totalForks += repo.forks_count || 0
-
-      // Fetch languages for each repo (with rate limiting consideration)
-      try {
-        const langResponse = await fetch(repo.languages_url, { headers })
-        if (langResponse.ok) {
-          const languages = await langResponse.json()
-          for (const [lang, bytes] of Object.entries(languages)) {
-            languageBytes[lang] = (languageBytes[lang] || 0) + (bytes as number)
-          }
-        }
-        // Small delay to avoid rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      } catch (error) {
-        console.warn(`Failed to fetch languages for ${repo.name}:`, error)
-      }
-    }
-
-    // Get total commits across repos (limit to avoid rate limits)
-    let totalCommits = 0
-    const reposToCheck = allRepos.slice(0, 15) // Check first 15 repos to avoid rate limits
-
-    for (const repo of reposToCheck) {
-      try {
-        const commitsResponse = await fetch(
-          `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/commits?author=${GITHUB_USERNAME}&per_page=100`,
-          { headers },
-        )
-        if (commitsResponse.ok) {
-          const commits: GitHubCommit[] = await commitsResponse.json()
-          totalCommits += commits.length
-        }
-        // Small delay to avoid rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 100))
-      } catch (error) {
-        console.warn(`Failed to fetch commits for ${repo.name}:`, error)
-      }
-    }
-
-    // Get total PRs
-    let totalPRs = 0
+    let totalPRs: number | null = null
     try {
-      const prsResponse = await fetch(
-        `https://api.github.com/search/issues?q=author:${GITHUB_USERNAME}+type:pr&per_page=100`,
-        { headers },
-      )
-      if (prsResponse.ok) {
-        const prsData = await prsResponse.json()
-        totalPRs = prsData.total_count || 0
-      }
-    } catch (error) {
-      console.warn("Failed to fetch PRs:", error)
+      const prs = await read(`/search/issues?q=author:${username}+type:pr+is:public&per_page=1`)
+      if (!prs.incomplete_results && typeof prs.total_count === "number") totalPRs = prs.total_count
+    } catch {
+      /* Other public stats remain useful. */
     }
-
-    // Calculate top languages
-    const totalBytes = Object.values(languageBytes).reduce((sum, bytes) => sum + bytes, 0)
-    const topLanguages = Object.entries(languageBytes)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 5)
-      .map(([name, bytes]) => ({
-        name,
-        percentage: totalBytes > 0 ? Math.round((bytes / totalBytes) * 100 * 10) / 10 : 0,
-        color: LANGUAGE_COLORS[name] || "#cccccc",
-      }))
-
-    // Calculate years active
-    const createdDate = new Date(userData.created_at)
-    const yearsActive = new Date().getFullYear() - createdDate.getFullYear()
-
-    // Calculate current streak (simplified - last 7 days of activity)
-    const currentStreak = 7 // This would need more complex logic to calculate actual streak
-
-    const stats = {
-      totalRepos: allRepos.length, // Use actual count from fetched repos
-      totalCommits,
+    const languages: Record<string, number> = {}
+    for (const repo of repos)
+      if (repo.language) languages[repo.language] = (languages[repo.language] || 0) + 1
+    const languageTotal = Object.values(languages).reduce((total, count) => total + count, 0)
+    const createdAt = new Date(user.created_at)
+    const now = new Date()
+    const anniversaryPassed =
+      now.getUTCMonth() > createdAt.getUTCMonth() ||
+      (now.getUTCMonth() === createdAt.getUTCMonth() && now.getUTCDate() >= createdAt.getUTCDate())
+    const stats: GitHubStats = {
+      totalRepos: repos.length,
       totalPRs,
-      totalStars,
-      totalForks,
-      followers: userData.followers,
-      following: userData.following,
-      yearsActive,
-      currentStreak,
-      topLanguages,
-      profileViews: 0, // GitHub doesn't provide this via API
+      totalStars: repos.reduce((total, repo) => total + repo.stargazers_count, 0),
+      totalForks: repos.reduce((total, repo) => total + repo.forks_count, 0),
+      followers: user.followers,
+      following: user.following,
+      yearsActive: Math.max(
+        0,
+        now.getUTCFullYear() - createdAt.getUTCFullYear() - (anniversaryPassed ? 0 : 1),
+      ),
+      topLanguages: Object.entries(languages)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([name, count]) => ({
+          name,
+          percentage: Math.round((count / languageTotal) * 1000) / 10,
+          color: languageColors[name] || "#788b85",
+        })),
+      updatedAt: now.toISOString(),
     }
-
-    console.log("GitHub stats calculated successfully:", stats)
     return NextResponse.json(stats)
-  } catch (error) {
-    console.error("Error fetching GitHub stats:", error)
-    return NextResponse.json({ error: "Internal server error while fetching GitHub stats" }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: "GitHub activity is temporarily unavailable." }, { status: 503 })
   }
 }

@@ -5,57 +5,64 @@
 /*
   Design tokens.
   Surfaces use a layered scale (canvas < card < hover surface) in both themes.
-  Brand orange lives in tailwind.config.ts as `brand`; --primary mirrors it
-  so shadcn button/badge defaults pick it up.
-  Radius scale: cards and modals use rounded-lg (var(--radius)) everywhere.
+  Brand text and solid actions have separate contrast-safe orange values.
+  Cards and dialogs use a shared spacing and rounded-corner scale.
 */
 @layer base {
   :root {
-    --canvas: 210 17% 88%; /* #dae0e6 reddit light canvas */
+    --canvas: 210 10% 96.078%;
     --background: 0 0% 100%;
     --foreground: 210 11% 11%;
     --card: 0 0% 100%;
     --card-foreground: 210 11% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 210 11% 11%;
-    --primary: 16 100% 50%; /* brand orange */
+    --primary: 16.119 100% 39.412%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 17% 95%;
+    --secondary: 210 10% 94%;
     --secondary-foreground: 210 11% 15%;
     --muted: 210 17% 95%;
-    --muted-foreground: 215 9% 42%;
+    --muted-foreground: 210 7% 35%;
     --accent: 210 17% 95%;
     --accent-foreground: 210 11% 15%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 42%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214 15% 89%;
-    --input: 214 15% 89%;
-    --ring: 16 100% 50%;
-    --radius: 0.5rem;
+    --border: 210 9% 84%;
+    --input: 210 7% 74%;
+    --ring: 16.119 100% 39.412%;
+    --brand: 16.304 100% 36.078%;
+    --brand-accent: 16.235 100% 50%; /* #FF4500: small accents */
+    --brand-solid: 16.119 100% 39.412%; /* #C93600: white text contrast 5.24:1 */
+    --brand-hover: 16.331 100% 33.137%;
+    --radius: 0.75rem;
   }
 
   .dark {
-    /* Layered reddit dark: canvas #0b1416 < card #14181c < hover #1b2226 */
-    --canvas: 200 33% 6%;
-    --background: 200 33% 6%;
-    --foreground: 210 17% 91%;
-    --card: 204 17% 9%;
-    --card-foreground: 210 17% 91%;
-    --popover: 204 17% 11%;
-    --popover-foreground: 210 17% 91%;
-    --primary: 16 100% 50%;
+    /* Charcoal: #0E1113 canvas, #181C1F cards, #22272B raised surfaces. */
+    --canvas: 204 15.152% 6.471%;
+    --background: 204 15.152% 6.471%;
+    --foreground: 200 13.043% 95.49%; /* #F2F4F5 */
+    --card: 205.714 12.727% 10.784%;
+    --card-foreground: 200 13.043% 95.49%;
+    --popover: 205.714 12.727% 10.784%;
+    --popover-foreground: 200 13.043% 95.49%;
+    --primary: 16.119 100% 39.412%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 206 14% 13%;
-    --secondary-foreground: 210 17% 91%;
-    --muted: 206 14% 13%;
-    --muted-foreground: 210 8% 62%;
-    --accent: 206 14% 13%;
-    --accent-foreground: 210 17% 91%;
-    --destructive: 0 62.8% 40%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 199 13% 19%;
-    --input: 199 13% 19%;
-    --ring: 16 100% 55%;
+    --secondary: 206.667 11.688% 15.098%;
+    --secondary-foreground: 200 13.043% 95.49%;
+    --muted: 206.667 11.688% 15.098%;
+    --muted-foreground: 212.727 6.748% 68.039%; /* #A8ADB3 */
+    --accent: 206.667 11.688% 15.098%;
+    --accent-foreground: 200 13.043% 95.49%;
+    --destructive: 0 90% 76%;
+    --destructive-foreground: 0 0% 10%;
+    --border: 207.273 10.28% 20.98%; /* #30363B */
+    --input: 207.273 10.28% 20.98%;
+    --ring: 16.235 100% 50%;
+    --brand: 15.804 100% 56.078%; /* #FF5A1F: readable small text on raised surfaces */
+    --brand-accent: 16.235 100% 50%;
+    --brand-solid: 16.119 100% 39.412%;
+    --brand-hover: 16.331 100% 33.137%;
   }
 }
 
@@ -66,11 +73,102 @@
   body {
     @apply bg-canvas text-foreground;
   }
+  html {
+    scroll-padding-top: 7rem;
+  }
+  ::selection {
+    background: hsl(var(--brand) / 0.18);
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 4px;
+  }
 }
 
 @layer utilities {
   .bg-brand-gradient {
-    background-image: linear-gradient(to right, #ff4500, #ff6b35);
+    background-color: hsl(var(--brand-solid));
+    background-image: none;
+  }
+}
+
+.post-body {
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: hsl(var(--foreground) / 0.88);
+}
+.post-body > * + * {
+  margin-top: 1.25rem;
+}
+.post-body h2,
+.post-body h3,
+.post-body h4 {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.35;
+  margin-top: 2rem;
+}
+.post-body h2 {
+  font-size: 1.5rem;
+}
+.post-body h3 {
+  font-size: 1.2rem;
+}
+.post-body h4 {
+  font-size: 1.05rem;
+}
+.post-body ul,
+.post-body ol {
+  padding-left: 1.4rem;
+}
+.post-body ul {
+  list-style: disc;
+}
+.post-body ol {
+  list-style: decimal;
+}
+.post-body li + li {
+  margin-top: 0.4rem;
+}
+.post-body blockquote {
+  border-left: 3px solid hsl(var(--brand) / 0.5);
+  padding: 0.5rem 1.2rem;
+  color: hsl(var(--muted-foreground));
+}
+.post-body code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+  background: hsl(var(--secondary));
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
+}
+.post-body pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: hsl(var(--secondary));
+}
+.post-body pre code {
+  padding: 0;
+}
+.post-body a {
+  color: hsl(var(--brand));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.post-body hr {
+  border-color: hsl(var(--border));
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -80,16 +178,16 @@
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: hsl(206 14% 13%);
+  background: hsl(var(--canvas));
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: hsl(199 13% 25%);
+  background: hsl(var(--border));
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: hsl(199 13% 32%);
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
 /* Hide scrollbar utility */

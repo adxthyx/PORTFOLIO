@@ -3,6 +3,7 @@ import localFont from "next/font/local"
 import { ThemeProvider } from "@/components/theme-provider"
 import { MotionProvider } from "@/components/motion-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { PersonJsonLd, WebSiteJsonLd } from "@/components/json-ld"
 import "./globals.css"
 
 const redditSans = localFont({
@@ -21,37 +22,69 @@ const redditMono = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://adithyaholla.com"),
+  metadataBase: new URL("https://www.adithyaholla.com"),
   alternates: {
-    canonical: "/",
+    canonical: "https://www.adithyaholla.com",
   },
   title: {
-    default: "Adithya N | AI/ML Engineer — r/adithya",
-    template: "%s | r/adithya",
+    default: "Adithya Narayana Holla | Software Engineer – AI/ML & Generative AI",
+    template: "%s | Adithya Narayana Holla",
   },
   description:
-    "Software Engineer at HPE building AI/ML solutions. Python, Next.js, FastAPI, LangChain. Browse my work like a subreddit — posts, projects, and an AI that answers as me.",
+    "Adithya Narayana Holla is a Software Engineer at Hewlett Packard Enterprise building AI/ML solutions, Generative AI, RAG systems, and LLM applications using Python, FastAPI, LangChain, and Next.js.",
+  keywords: undefined, // Avoid legacy keywords tag
+  authors: [{ name: "Adithya Narayana Holla", url: "https://www.adithyaholla.com" }],
+  creator: "Adithya Narayana Holla",
+  publisher: "Adithya Narayana Holla",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     type: "website",
-    url: "/",
-    siteName: "r/adithya",
-    title: "Adithya N | AI/ML Engineer — r/adithya",
+    locale: "en_US",
+    url: "https://www.adithyaholla.com",
+    siteName: "Adithya Narayana Holla",
+    title: "Adithya Narayana Holla | Software Engineer – AI/ML & Generative AI",
     description:
-      "Software Engineer at HPE building AI/ML solutions. Browse my portfolio like a subreddit.",
+      "Software Engineer at Hewlett Packard Enterprise building AI/ML solutions, Generative AI, RAG systems, and LLM applications with Python, FastAPI, LangChain, and Next.js.",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Adithya Narayana Holla — Software Engineer at Hewlett Packard Enterprise",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Adithya N | AI/ML Engineer — r/adithya",
+    title: "Adithya Narayana Holla | Software Engineer – AI/ML & Generative AI",
     description:
-      "Software Engineer at HPE building AI/ML solutions. Browse my portfolio like a subreddit.",
+      "Software Engineer at Hewlett Packard Enterprise building AI/ML solutions, Generative AI, RAG systems, and LLM applications.",
+    images: ["/opengraph-image"],
+  },
+  icons: {
+    icon: [{ url: "/image.png", sizes: "1254x1254", type: "image/png" }],
+    shortcut: "/image.png",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#dae0e6" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b1416" },
-  ],
+  themeColor: "#0e1113",
 }
 
 export default function RootLayout({
@@ -61,6 +94,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <PersonJsonLd />
+        <WebSiteJsonLd />
+      </head>
       <body className={`${redditSans.variable} ${redditMono.variable} font-sans`}>
         <ThemeProvider>
           <MotionProvider>{children}</MotionProvider>

@@ -37,6 +37,7 @@ export function ResumeModal({ open, onOpenChange }: ResumeModalProps) {
               variant="outline"
               size="sm"
               onClick={handleDownload}
+              aria-label="Download résumé"
               className="flex items-center gap-1 sm:gap-2 bg-transparent text-xs sm:text-sm px-2 sm:px-3"
             >
               <Download className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -46,6 +47,7 @@ export function ResumeModal({ open, onOpenChange }: ResumeModalProps) {
               variant="outline"
               size="sm"
               onClick={handleOpenInNewTab}
+              aria-label="Open résumé in a new tab"
               className="flex items-center gap-1 sm:gap-2 bg-transparent text-xs sm:text-sm px-2 sm:px-3"
             >
               <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />

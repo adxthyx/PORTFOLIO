@@ -1,43 +1,20 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-
+import { createBrowserStore } from "@/lib/browser-store"
 export type VoteDir = 1 | -1
-
-const STORAGE_KEY = "r-adithya:votes:v1"
-
-// Visitor votes persisted in localStorage. State starts empty and hydrates in
-// an effect so the server and first client render always agree.
+const votesStore = createBrowserStore<Record<string, VoteDir>>("r-adithya:votes:v1", {}, (value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {}
+  return Object.fromEntries(
+    Object.entries(value).filter(([id, vote]) => /^[a-z0-9-]{1,80}$/.test(id) && (vote === 1 || vote === -1)),
+  )
+})
+const vote = (postId: string, dir: VoteDir) =>
+  votesStore.write((previous) => {
+    const next = { ...previous }
+    if (next[postId] === dir) delete next[postId]
+    else next[postId] = dir
+    return next
+  })
 export function useVotes() {
-  const [votes, setVotes] = useState<Record<string, VoteDir>>({})
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setVotes(JSON.parse(raw))
-    } catch {
-      // ignore corrupt storage
-    }
-  }, [])
-
-  const vote = useCallback((postId: string, dir: VoteDir) => {
-    setVotes((prev) => {
-      const next = { ...prev }
-      if (next[postId] === dir) {
-        delete next[postId] // tapping the same arrow un-votes
-      } else {
-        next[postId] = dir
-      }
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      } catch {
-        // storage full/blocked — vote still works for the session
-      }
-      return next
-    })
-  }, [])
-
-  const karmaDelta = Object.values(votes).reduce<number>((sum, v) => sum + v, 0)
-
-  return { votes, vote, karmaDelta }
+  return { votes: votesStore.useValue(), vote }
 }

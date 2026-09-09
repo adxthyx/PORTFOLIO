@@ -26,7 +26,9 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
                 <h2 className="text-base sm:text-xl font-bold text-foreground">Settings</h2>
               </DialogTitle>
               <DialogDescription asChild>
-                <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Customize your experience</p>
+                <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">
+                  Customize your experience
+                </p>
               </DialogDescription>
             </div>
           </div>
@@ -47,7 +49,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
                   variant={theme === "light" ? "default" : "outline"}
                   className={`flex flex-col gap-2 h-auto p-4 ${
                     theme === "light"
-                      ? "bg-brand hover:bg-brand-hover text-white"
+                      ? "bg-brand-solid hover:bg-brand-hover text-white"
                       : "border-input hover:border-brand hover:text-brand bg-transparent"
                   }`}
                   onClick={() => setTheme("light")}
@@ -59,7 +61,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
                   variant={theme === "dark" ? "default" : "outline"}
                   className={`flex flex-col gap-2 h-auto p-4 ${
                     theme === "dark"
-                      ? "bg-brand hover:bg-brand-hover text-white"
+                      ? "bg-brand-solid hover:bg-brand-hover text-white"
                       : "border-input hover:border-brand hover:text-brand bg-transparent"
                   }`}
                   onClick={() => setTheme("dark")}
@@ -71,7 +73,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
                   variant={theme === "system" ? "default" : "outline"}
                   className={`flex flex-col gap-2 h-auto p-4 ${
                     theme === "system"
-                      ? "bg-brand hover:bg-brand-hover text-white"
+                      ? "bg-brand-solid hover:bg-brand-hover text-white"
                       : "border-input hover:border-brand hover:text-brand bg-transparent"
                   }`}
                   onClick={() => setTheme("system")}

@@ -1,11 +1,12 @@
 "use client"
 
-import { X, Github, Eye, ExternalLink, Star, Calendar, User, Code, Zap } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { useRef } from "react"
+import { X, ArrowUpRight } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
-import { CommentSection } from "@/components/comment-section"
-import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { PostArticle } from "@/components/post-article"
+import { getPostHref } from "@/lib/post-utils"
 import type { Post } from "@/lib/content"
 
 interface PostModalProps {
@@ -13,245 +14,40 @@ interface PostModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
-
-export function PostModal({ post, open, onOpenChange }: PostModalProps) {
-  const [activeTab, setActiveTab] = useState("overview")
-
-  // Fresh tab state each time a different post is opened
-  useEffect(() => {
-    setActiveTab("overview")
-  }, [post?.id])
-
-  const isAboutPost = post?.type === "about"
-
-  // Minimal markdown -> HTML converter for bold and headings.
-  // Escapes HTML before transforming — do not extend the syntax
-  // (e.g. links/images) without re-auditing for XSS.
-  const convertMarkdownLite = (markdown: string): string => {
-    if (!markdown) return ""
-    // Escape HTML first
-    let escaped = markdown
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-
-    // Bold **text**
-    escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-
-    // Headings #, ##, ### at start of line - increased font sizes
-    const lines = escaped.split("\n")
-    const htmlLines = lines.map((line) => {
-      if (line.startsWith("### ")) return `<h1 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-3">${line.slice(4)}</h1>`
-      if (line.startsWith("## ")) return `<h1 class="text-xl sm:text-3xl font-bold mb-3 sm:mb-4">${line.slice(3)}</h1>`
-      if (line.startsWith("# ")) return `<h1 class="text-2xl sm:text-4xl font-bold mb-4 sm:mb-5">${line.slice(2)}</h1>`
-      return line
-    })
-
-    // Preserve line breaks between regular lines
-    return htmlLines.join("<br/>")
-  }
-
+export function PostModal({ post: selectedPost, open, onOpenChange }: PostModalProps) {
+  const lastPost = useRef(selectedPost)
+  if (selectedPost) lastPost.current = selectedPost
+  const post = selectedPost ?? lastPost.current
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-h-[95vh] sm:max-h-[90vh] flex flex-col">
+      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-2rem)] max-w-3xl flex-col rounded-2xl">
         {post && (
           <>
-            {/* Header */}
-            <div className="relative bg-brand-gradient p-4 sm:p-6 text-white flex-shrink-0">
+            <div className="flex shrink-0 items-center gap-4 border-b border-border px-5 py-4 sm:px-7">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="line-clamp-2 text-base font-bold leading-snug">
+                  {post.title}
+                </DialogTitle>
+                <DialogDescription className="sr-only">
+                  Read the post and ask questions about it.
+                </DialogDescription>
+              </div>
+              <Link
+                href={getPostHref(post)}
+                className="inline-flex min-h-10 shrink-0 items-center gap-1 text-sm font-medium text-brand"
+                aria-label="Open full page"
+              >
+                <span className="hidden sm:inline">Full page</span>
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
               <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 sm:top-4 sm:right-4 text-white hover:bg-white/20 rounded-full"
-                >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="sr-only">Close</span>
+                <Button variant="ghost" size="icon" className="shrink-0 rounded-full" aria-label="Close post">
+                  <X className="h-5 w-5" />
                 </Button>
               </DialogClose>
-
-              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 pr-10 sm:pr-0">
-                {isAboutPost && (
-                  <img
-                    src="/a.jpeg"
-                    alt="Profile"
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 sm:border-4 border-white/20 flex-shrink-0"
-                  />
-                )}
-                <div className="flex-1 min-w-0">
-                  <DialogTitle asChild>
-                    <h1 className="text-lg sm:text-2xl font-bold mb-2 break-words">{post.title}</h1>
-                  </DialogTitle>
-                  <DialogDescription className="sr-only">{post.content}</DialogDescription>
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-white/80 text-xs sm:text-sm">
-                    <div className="flex items-center gap-1">
-                      <User className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="truncate">{post.author}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span>{post.timeAgo}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span>{post.upvotes} upvotes</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            {/* Navigation Tabs */}
-            <div className="border-b border-border bg-card flex-shrink-0">
-              <div className="flex gap-1 p-1 overflow-x-auto">
-                {["overview", "details", "links"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${activeTab === tab
-                      ? "bg-brand text-white shadow-lg"
-                      : "text-muted-foreground hover:bg-secondary hover:text-brand"
-                      }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Content - Scrollable (75% of space) */}
-            <div className="flex-[3] min-h-0 overflow-y-auto bg-card">
-              <div className="p-4 sm:p-6">
-                {activeTab === "overview" && (
-                  <div className="space-y-6">
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {post.tags.map((tag: string, index: number) => (
-                          <Badge
-                            key={index}
-                            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 px-3 py-1"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert">
-                      <div
-                        className="text-foreground/80 leading-relaxed text-sm sm:text-base"
-                        dangerouslySetInnerHTML={{ __html: convertMarkdownLite(post.fullContent || post.content) }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "details" && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                            <Code className="w-5 h-5 text-white" />
-                          </div>
-                          <h3 className="font-semibold text-foreground">Technical Stack</h3>
-                        </div>
-                        <div className="space-y-2">
-                          {post.tags?.map((tag: string, index: number) => (
-                            <div key={index} className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                              <span className="text-foreground/80">{tag}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-xl border border-green-200 dark:border-green-800">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-white" />
-                          </div>
-                          <h3 className="font-semibold text-foreground">Impact</h3>
-                        </div>
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Upvotes</span>
-                            <span className="font-semibold text-foreground">{post.upvotes}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Comments</span>
-                            <span className="font-semibold text-foreground">{post.comments}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Community</span>
-                            <span className="font-semibold text-foreground">{post.subreddit}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "links" && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                      {post.github && (
-                        <Button
-                          variant="outline"
-                          className="h-auto p-4 sm:p-6 border-2 border-input hover:border-brand hover:bg-brand/5 transition-all duration-200 group bg-transparent"
-                          onClick={() => window.open(post.github, "_blank")}
-                        >
-                          <div className="flex items-center gap-3 sm:gap-4 w-full">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                              <Github className="w-5 h-5 sm:w-6 sm:h-6 text-white dark:text-black" />
-                            </div>
-                            <div className="text-left flex-1 min-w-0">
-                              <div className="font-semibold text-sm sm:text-base text-foreground">View Source Code</div>
-                              <div className="text-xs sm:text-sm text-muted-foreground">Explore the implementation</div>
-                            </div>
-                            <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                          </div>
-                        </Button>
-                      )}
-
-                      {post.demo && (
-                        <Button
-                          variant="outline"
-                          className="h-auto p-4 sm:p-6 border-2 border-brand bg-gradient-to-r from-brand/5 to-orange-400/5 hover:from-brand/10 hover:to-orange-400/10 transition-all duration-200 group"
-                          onClick={() => window.open(post.demo, "_blank")}
-                        >
-                          <div className="flex items-center gap-3 sm:gap-4 w-full">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-gradient rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                            </div>
-                            <div className="text-left flex-1 min-w-0">
-                              <div className="font-semibold text-sm sm:text-base text-foreground">Live Demo</div>
-                              <div className="text-xs sm:text-sm text-muted-foreground">Try it out yourself</div>
-                            </div>
-                            <ExternalLink className="w-4 h-4 text-brand flex-shrink-0" />
-                          </div>
-                        </Button>
-                      )}
-                    </div>
-
-                    {!post.github && !post.demo && (
-                      <div className="text-center py-8">
-                        <div className="text-muted-foreground">No external links available for this post</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Comment Section - Fixed at Bottom (25% of space) */}
-            <div className="flex-[1] min-h-0 max-h-[220px] border-t border-border overflow-hidden flex-shrink-0 flex flex-col">
-              <CommentSection
-                key={post.id}
-                postTitle={post.title}
-                context={post.fullContent || post.content || ""}
-                postType={post.type === "project" ? "project" : "post"}
-                seed={post.faq}
-              />
+            <div className="min-h-0 overflow-y-auto overscroll-contain px-5 py-6 sm:px-7 sm:py-7">
+              <PostArticle post={post} showTitle={false} />
             </div>
           </>
         )}

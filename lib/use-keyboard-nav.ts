@@ -23,7 +23,14 @@ export function useKeyboardNav<T extends { id: string }>(
     const handler = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return
       const target = e.target as HTMLElement
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return
+      if (
+        e.defaultPrevented ||
+        target.closest(
+          "input, textarea, select, button, a, [role='button'], [role='menuitem'], [role='dialog'], [contenteditable='true']",
+        ) ||
+        target.isContentEditable
+      )
+        return
       if (e.key !== "j" && e.key !== "k" && e.key !== "Enter") return
 
       const idx = items.findIndex((i) => i.id === focusedId)
@@ -44,7 +51,10 @@ export function useKeyboardNav<T extends { id: string }>(
       if (id) {
         document
           .querySelector(`[data-post-id="${id}"]`)
-          ?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+          ?.scrollIntoView({
+            block: "nearest",
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          })
       }
     }
 
