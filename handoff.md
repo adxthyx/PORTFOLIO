@@ -2,7 +2,7 @@
 
 ## Goal and state
 
-Complete the portfolio refactor, evidence/content improvements, charcoal theme, and final orange/spacing/copy polish. Implementation and local verification are complete. The user has authorized a new branch, push, and PR. Branch: `codex/portfolio-refresh`, based on current `origin/main` (`64625fe`). Commit/push/PR are being prepared; do not merge the PR without a request.
+Complete the portfolio refactor, evidence/content improvements, charcoal theme, and final orange/spacing/copy polish. Implementation and local verification are complete. All 75 changed files were staged with `git add .`, committed as `fa9b7e1`, and pushed on `codex/portfolio-refresh`, based on `origin/main` (`64625fe`). [PR #7](https://github.com/adxthyx/PORTFOLIO/pull/7) is open for review against `main`; the local branch tracks its remote. Do not merge without a request.
 
 ## Completed work
 
@@ -44,4 +44,4 @@ Complete the portfolio refactor, evidence/content improvements, charcoal theme, 
 - Chrome/local-server checks require sandbox escalation; rerunning with approved permissions passes. Browser skill file was absent, so the established isolated Chrome/Playwright workflow was used.
 - Theme test initialization is scoped to the top-level site to avoid the PDF viewer's unavailable storage. Hover QA waits for the color transition to settle.
 - GitHub CLI is unavailable. PR operations use a temporary Python GitHub API helper with the existing Git credential helper; credentials are never printed or written to disk.
-- Next: commit/push the verified changes and open the authorized PR against `main`; record its URL here. Afterward, no required implementation work remains. Additional project evidence or production-provider checks can follow when requested.
+- Next: review PR #7. No required implementation work remains. Additional project evidence or production-provider checks can follow when requested.
