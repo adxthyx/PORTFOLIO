@@ -15,6 +15,15 @@ const previews: Record<string, Preview> = {
     ],
     caption: "I own the application and integrations. Existing services provide retrieval and analytics.",
   },
+  clearweb: {
+    label: "From checkout page to checked findings",
+    steps: [
+      ["Checkout page", "Redacted outline"],
+      ["Nemotron agents", "Page · terms · prices"],
+      ["Verifier", "Evidence-matched findings"],
+    ],
+    caption: "The model proposes findings; deterministic code shows only what the page supports.",
+  },
   "chart-climber": {
     label: "From price chart to playable terrain",
     steps: [
@@ -147,7 +156,7 @@ export function ProjectPreview({
       </figure>
     )
   }
-  if (compact && postId !== "ai-askaps") return <ProjectIllustration postId={postId} className={className} />
+  if (compact && postId !== "ai-askaps" && postId !== "clearweb") return <ProjectIllustration postId={postId} className={className} />
   const preview = previews[postId]
   if (!preview) return <ProjectIllustration postId={postId} className={className} />
   return (

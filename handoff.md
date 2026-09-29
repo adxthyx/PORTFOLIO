@@ -1,4 +1,4 @@
-# Portfolio refresh — 2026-09-09
+# Portfolio refresh — updated 2026-09-29
 
 ## Goal and state
 
@@ -38,6 +38,16 @@ Complete the portfolio refactor, evidence/content improvements, charcoal theme, 
 - Final visual checks passed at 320, 390, 768, and 1440px in both themes: exact logo/button/hover colors, correct personal line, no overflow/runtime errors, contact opens, full-size Reconcile links preserved. First project title remains above 720px, including 701px at the narrowest width. Desktop homepage/mobile card screenshots inspected.
 - Latest artifacts: `/private/tmp/portfolio-final-polish-{before,after}/`; script `/private/tmp/portfolio-final-polish-qa.mjs`. Earlier comprehensive artifacts: `/private/tmp/portfolio-visual-evidence/`; dialog animation proof `/private/tmp/portfolio-dialog-animation-qa.mjs --verify`.
 - Preview: **http://127.0.0.1:3000**, exec session **66663**, `npm run start -- --hostname 127.0.0.1 --port 3000`. Stop before rebuilding because `.next` is shared.
+
+## ClearWeb added (2026-09-29, uncommitted)
+
+- Source: `~/Desktop/ABC/LangChain/clearweb/` (solo project; no git commits or remote yet, so no `github` link). Facts come from its `handoff.md`, `README.md`, and `docs/model-rates.json` (Nemotron-3.5 Lightning ×3 + Nemotron-3 Ultra on Nebius).
+- New `clearweb` entry in `lib/project-content.ts` (aiml, `postedAt` 2026-09-29). Its caveats are stated in the entry: the corpus is synthetic (7 pages, 60/60 facts, 0 leaks), $0.03 / 24 s / 13 amounts come from one live Flipkart run, the extension is unpacked (not on the Web Store), and the backend is self-hosted. Tests: 81 backend + 6 unit + 24 Playwright.
+- Step diagram in `components/project-preview.tsx`. Compact cards now also use the diagram for `clearweb` (it has no illustration).
+- `featuredPostIds` is now `["ai-askaps", "clearweb", "rag-bench", "reconcile"]` (4 featured).
+- `tests/portfolio.spec.ts` updated: 4 featured, 11 articles, 4 in the AI/ML filter, and the trophy walk goes askaps → clearweb → reconcile (the "More projects" links are the first 2 other entries in file order).
+- Verified: lint, build (`/projects/clearweb` generated), e2e 38 passed / 4 skipped. Card and article screenshots checked at 390 and 1440 px (dark).
+- Next: commit on this branch when asked; add a `github` link once ClearWeb is pushed; replace the diagram with real workspace captures once they exist (the existing `artifacts/e2e/overlay.png` shows an outdated UI and should not be used).
 
 ## Resolved failures and next steps
 
