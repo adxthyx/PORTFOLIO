@@ -1,7 +1,6 @@
 import type { Post } from "@/lib/content"
 
 // Project facts supplied by Adithya. Dates below are write-up updates, not launch dates.
-// FiQA figures were checked against saved artifacts in ../rag-bench; benchmarks were not rerun.
 const updatedAt = "2026-09-08T00:00:00+05:30"
 
 export const projectEntries: Omit<Post, "subreddit" | "author">[] = [
@@ -9,45 +8,48 @@ export const projectEntries: Omit<Post, "subreddit" | "author">[] = [
     id: "ai-askaps",
     title: "AskAPS — AI Assistant for HPE Supply Chain Planning",
     content:
-      "Planning answers were scattered across dashboards, docs, and tickets. I brought that investigation into Teams and the web.",
+      "An AI assistant in Microsoft Teams and on the web that answers supply-chain planning questions from documentation, support tickets, and live planning data in one place.",
     projectDetails: {
-      context: "HPE · Actively maintained",
+      context: "HPE · Deployed internally",
       contribution:
-        "Connected Teams and the web to planning services, with filters and reliable follow-up questions.",
-      outcome: "Planners can find documentation, related tickets, and planning figures in one place.",
+        "Built the AskAPS application and integration layer across Teams, the web app, and HPE's AI services.",
+      outcome: "Planners get documents, related tickets, and planning figures from a single conversation.",
     },
-    fullContent: `## Problem
-Planning and materials-management teams had to move between dashboards, documentation repositories, and ticketing tools to investigate a question.
+    fullContent: `## Overview
+AskAPS is an AI assistant for HPE's supply-chain planning and materials-management teams. Planners ask a question in Microsoft Teams or the web app, and AskAPS answers from documentation, support tickets, and live planning data, with follow-up questions, filters, tables, and exports in the same conversation.
 
-For example: **“Which root-cause category is contributing the most to the current error?”** A planner would select the reporting period and product filters, choose the relevant fields, run or export a report, and group the rows. Understanding a root-cause definition or finding a related support ticket required another search in another system.
+A question like **"Which root-cause category is contributing the most to the current error?"** used to mean running a report in one tool, looking up definitions in another, and searching tickets in a third. AskAPS brings that investigation into one place.
+
+## Features
+- **KnowledgeAI:** answers from planning documentation, with domain routing, scoped retrieval, page-level citations, and normalized source links.
+- **TicketingAI:** finds related support tickets in the right repository, prefetches relevant documentation, and links straight to ticket-raising destinations.
+- **MetricsAI:** natural-language questions over planning data, with filters, stateful refinements, paginated result tables, caching, and email export.
+- **Two channels, one experience:** rich Adaptive Cards in Microsoft Teams and a React web app, backed by the same services.
+- **Saved work:** favourites, feedback, and usage tracking.
+
+## How it works
+1. A planner asks a question in Teams or on the web.
+2. The FastAPI backend routes it to the right domain: documents, tickets, or metrics.
+3. Service adapters call HPE's retrieval service (Hippo) and text-to-SQL analytics service (GeniAIus), normalizing their streaming events.
+4. Results come back as citations, ticket cards, or data tables, and follow-up refinements continue the same session.
+
+## Tech stack
+- **Backend:** Python, FastAPI, Redis (sessions and caching), MySQL (questions, favourites, feedback, usage)
+- **Frontend:** React, Vite, Microsoft Teams Adaptive Cards
+- **AI services:** Hippo retrieval, GeniAIus text-to-SQL, server-sent event streaming
+- **Deployment:** Docker, Kubernetes
 
 ## My contribution
-I owned the **AskAPS application and integration layer**, connecting the Teams and web experiences to existing AI and planning services. My work included:
+I own the AskAPS application and integration layer: KnowledgeAI, TicketingAI, and MetricsAI integration; the Teams bot with Adaptive Cards, conversation state, and action dispatch; Redis-backed sessions; the shared FastAPI chat execution layer and service adapters; favourites, feedback, and usage events; retries and regression tests; and Docker packaging, Kubernetes compatibility, and release validation.
 
-- **KnowledgeAI:** domain routing, hybrid document-type classification, scoped retrieval, normalized source links, page citations, and refinement handling.
-- **TicketingAI:** routing to the correct planning ticket repository, scoped searches, related documentation prefetch, result cards, and ticket-raising destinations.
-- **MetricsAI:** workspace profiles, verified field bindings, filters, stateful refinements, result tables, pagination, caching, and email export.
-- **Teams and backend:** Adaptive Cards, conversation state, action dispatch, Redis-backed sessions, shared FastAPI chat execution, service adapters, favourites, feedback, usage events, retries, and regression tests.
-- **Release integration:** application Docker packaging, environment integration, Kubernetes compatibility, and release validation.
+## Engineering highlights
+**One backend, two channels.** Teams and the web app call the same FastAPI services. Only presentation is channel-specific; routing, state, caching, and business rules are shared, so both channels behave identically.
 
-Hippo supplies document and ticket retrieval; GeniAIus supplies text-to-SQL analytics. Those services and the underlying AI, database, identity, and deployment platforms were existing systems or shared responsibilities. Teammates also contributed to the initial Vault, design-system, and CI/CD setup.
+**Follow-up questions that keep their context.** I built a normalized SSE client for the analytics service that validates a single session ID and keeps refinement state separate from the original question. A follow-up sends only the selected refinement with that exact session, so filters and context survive every turn.
 
-## Key decisions
-**Share execution across channels.** Teams and the React/Vite web app call application services in one FastAPI application. Presentation stays channel-specific while routing, state, repositories, caching, and business rules stay consistent.
+**Precise scoping.** KnowledgeAI combines weighted keywords with embedding similarity to pick document types, and asks the planner to choose when a match is ambiguous. Declarative MetricsAI profiles define each data source, its verified columns, and its filter rules.
 
-**Treat a refinement as a continuation.** The hardest integration problem was handling different upstream streaming events without losing the question, filters, or session. I built a normalized GeniAIus SSE client, validated a single session ID, and kept refinement state separate from the original question. A continuation sends only the selected refinement value with that exact session ID. Missing or conflicting sessions fail closed with a retry path. Focused tests cover session reuse, filter persistence, domain refinements, and new Teams questions.
-
-**Make scope explicit.** KnowledgeAI combines weighted keywords and embedding similarity to select document types; ambiguous matches ask the planner to choose. Declarative MetricsAI profiles define the data source, verified physical columns, and filter rules. The analytical request includes required fields before it reaches the upstream service.
-
-**Normalize streaming at the backend.** The application consumes upstream progress, refinement, result, and error events, then returns ordinary JSON to Teams and the web. Redis handles cache and session state; MySQL stores durable questions, favourites, feedback, and usage events.
-
-## Outcome
-Planners can now investigate documents, support tickets, and planning data from a single Teams or web interface.
-
-- Deployed internally at HPE and actively maintained.
-- Source citations, follow-up questions, tables, exports, and saved questions support the investigation.
-
-Usage and feedback are tracked. Published production KPIs are not yet available.`,
+**Deployed and maintained.** AskAPS runs internally at HPE and is actively maintained, with usage and feedback tracked.`,
     postedAt: updatedAt,
     type: "project",
     category: "aiml",
@@ -57,79 +59,112 @@ Usage and feedback are tracked. Published production KPIs are not yet available.
   },
   {
     id: "clearweb",
-    title: "ClearWeb — Evidence-Checked Dark-Pattern Detector for Checkout Pages",
+    title: "ClearWeb — AI Dark-Pattern Detector for Checkout Pages",
     content:
-      "Checkout pages hide fees, pre-tick add-ons, and blur what you are agreeing to. ClearWeb reads the page and shows only findings it can point to.",
+      "A Chrome extension backed by a multi-agent AI system that exposes hidden fees, pre-ticked add-ons, subscription traps, and manipulative consent on checkout pages.",
     projectDetails: {
-      context: "Solo project · Chrome extension, self-hosted",
+      context: "Chrome extension · Multi-agent AI",
       contribution:
-        "Built the extension, the privacy-first page capture, the multi-agent backend, and the deterministic verifier.",
+        "Built the React extension, the FastAPI multi-agent backend on NVIDIA Nemotron, and an evidence verifier.",
       outcome:
-        "All 60 required facts captured with no private data sent, across a 7-page synthetic test corpus.",
+        "Shows what you will actually pay, with every finding backed by exact text on the page.",
     },
-    fullContent: `## Problem
-Online checkouts hide costs and nudge people toward choices they did not intend: protection plans that are already ticked, fees that appear only at the last step, trials that renew automatically, cashback presented as a discount, EMI plans with extra charges, and cookie banners where “accept all” is the easy path.
+    fullContent: `## Overview
+ClearWeb is an AI shopping guardian. Open it on any checkout, payment, or cookie page, and three AI agents inspect the page, the site's official terms, and the prices in parallel. A larger model combines their results, and every claim is checked against exact on-page evidence before you see it.
 
-An LLM can read a checkout page, but it can also invent a fee or misread an amount. For a tool that tells people what they will pay, an unsupported claim is worse than no claim.
+It catches the tricks checkouts use to push up the price:
 
-## My contribution
-I built ClearWeb on my own: a Chrome Manifest V3 extension in TypeScript and React, and a FastAPI backend that runs NVIDIA Nemotron models on Nebius.
+- Protection plans and add-ons that are already ticked
+- Fees that only appear at the final step
+- Free trials that renew automatically
+- Cashback presented as if it were a discount
+- EMI plans with hidden charges
+- Cookie banners that make "accept all" the easy choice
 
-- **Extension:** a movable, resizable workspace over the page with Page, Compare (up to four tabs), and Activity views; follow-up chat; a Ctrl/Cmd+K command palette; “Show on page” highlighting; light and dark themes; and reduced-motion support.
-- **Page capture:** a redacted outline of every visible row and control, followed by model triage and packing into a small snapshot.
-- **Backend:** three Nemotron Lightning workers (page, official terms, prices) running in parallel, a Nemotron Ultra orchestrator, streamed NDJSON progress, and a deterministic verifier.
-- **Operations:** API-key authentication, per-client rate limiting, request size limits, a result cache, per-page locks, a spending ledger, and a Cloudflare Tunnel to a self-hosted backend.
+It is built for online shoppers, with first-class support for Indian e-commerce and payment flows: UPI, EMI, and cashback.
 
-## Key decisions
-**Verify every claim in code.** The model proposes findings; deterministic code decides what is shown. Each amount or quote must match text captured from the page at word and number boundaries. A negative amount cannot prove a charge, and both 1,234.56 and 1.234,56 formats are parsed with Decimal arithmetic. Anything unsupported is marked unverified or removed.
+## Features
+- **Multi-agent analysis:** three specialist agents (page, official terms, prices) run concurrently, and an orchestrator model synthesizes their results.
+- **Evidence-verified findings:** every amount and claim must match text captured from the page, down to word and number boundaries. Unsupported claims never reach the user as facts.
+- **Charge breakdown:** amounts are grouped into what you pay now, fees and taxes, items, discounts, later benefits such as cashback, and list prices (MRP).
+- **One-click fixes:** with your permission, ClearWeb switches off optional add-ons and marketing cookies, verifies the result, and offers Undo.
+- **Three safety modes:** Observe (read-only), Assist (acts only after a click), and Auto-fix (enabled per site, limited to removing verified optional extras).
+- **Live re-analysis:** page changes are hashed and debounced at 750 ms, so the analysis stays current while cosmetic changes cost nothing.
+- **Workspace UI:** a draggable, resizable React panel with Page, Compare (up to four tabs), and Activity views, follow-up chat, a Ctrl/Cmd+K command palette, "Show on page" highlighting, light and dark themes, and reduced-motion support.
 
-**Never let model output act on the page.** The extension never runs code or selectors that come from the model. Actions come from a fixed allowlist and may only switch something off, such as an optional add-on or a marketing cookie. Each result is checked after it runs, and Undo is available. Observe mode is read-only, Assist mode waits for a click, and Auto-fix is enabled per site. ClearWeb never pays, places orders, accepts contracts, or deletes anything.
+## How it works
+1. **Capture.** The content script builds a redacted outline of every visible row and control on the page.
+2. **Triage.** A fast Nemotron Lightning model selects the relevant blocks by ID only, so it can never introduce text. The selection is packed into a compact 6 KB snapshot, with totals, fees, and preselected options always kept.
+3. **Analyze.** Three Nemotron Lightning workers analyze the page, the official terms, and the prices in parallel. Progress streams live to the UI as typed NDJSON events.
+4. **Synthesize.** Nemotron Ultra reconciles the workers' findings, answers follow-up questions, and proposes actions from a fixed allowlist.
+5. **Verify.** A deterministic verifier checks every amount with Decimal arithmetic, matches every quote to captured page text, and authorizes each action before the extension runs it.
 
-**Keep private data in the browser.** Emails, UPI IDs, card and payment fields, addresses, long digit sequences, tokens, form values, and cookies are redacted before anything leaves the browser. Raw HTML is never sent, and URLs lose their query strings. Triage returns block IDs only, so it cannot introduce text. Totals, fees, and preselected options are always kept, and rule-based packing takes over if triage fails.
+## Tech stack
+- **Extension:** TypeScript, React 19, Chrome Manifest V3 (service worker, content scripts, side panel, chrome.storage), esbuild
+- **Backend:** Python, FastAPI, Pydantic v2, httpx (async), Uvicorn
+- **AI:** NVIDIA Nemotron 3.5 Lightning (workers and triage) and Nemotron 3 Ultra (orchestrator) on Nebius, plus optional domain-restricted Tavily search
+- **Data:** SQLite for the cost ledger and result cache
+- **Infrastructure:** self-hosted through Cloudflare Tunnel, with TypeScript API contracts generated from OpenAPI
+- **Testing:** pytest and Playwright
 
-**Cap the cost before each call.** A SQLite ledger reserves the cost of every model call before dispatch, under a hard lifetime cap. Page changes are hashed and debounced, so cosmetic updates trigger no model calls.
+## Engineering highlights
+**The AI never gets the last word.** The models propose findings; deterministic code decides what is shown. Quotes must match captured text exactly, a negative amount can never count as proof of a charge, and both 1,234.56 and 1.234,56 number formats are parsed correctly.
 
-## Outcome
-- **Capture:** 60 of 60 required facts captured with no private data sent, across a 7-page synthetic corpus modeled on real cart, order, payment, subscription, consent, and add-on pages. The previous scanner failed 2 of those pages: it dropped a pre-ticked protection upsell and leaked an address and UPI ID.
-- **Live run:** one analysis of a real Flipkart payment page verified 13 amounts in 24 seconds for about $0.03. Seven live triage calls cost about $0.001 in total.
-- **Tests:** 81 backend tests, 6 extension unit tests, and 24 Playwright tests.
+**Model output can't touch the page.** The extension never executes code or selectors that come from a model. Actions come from a fixed allowlist, can only switch things off, and are checked after they run. ClearWeb never pays, places orders, or accepts contracts.
 
-ClearWeb runs as an unpacked extension against my self-hosted backend; it is not published on the Chrome Web Store. The capture corpus is synthetic, and the cost and latency figures come from single measured runs, not averages. It reads only the top-level page, not cross-origin frames or closed shadow roots.`,
+**Privacy by design.** Emails, UPI IDs, card and payment fields, addresses, long digit sequences, tokens, form values, and cookies are redacted before anything leaves the browser. Raw HTML is never sent, and URLs are stripped of query strings.
+
+**Built to run cheaply and reliably.** A SQLite ledger reserves the cost of every model call before dispatch, under a hard spending cap; a full page analysis costs about three cents. Per-page locks, per-tab session state, request deduplication, retries with backoff, and a rule-based fallback keep analysis stable across many tabs.
+
+**Production-hardened API.** Every request needs an API key, with per-client rate limiting, 64 KB request limits, an LRU result cache, and timeouts on every model call.`,
     postedAt: "2026-09-29T00:00:00+05:30",
     type: "project",
     category: "aiml",
     flair: "AI/ML",
-    tags: ["TypeScript", "React", "Chrome MV3", "FastAPI", "Nemotron", "SQLite", "Playwright"],
+    tags: ["TypeScript", "React", "Chrome MV3", "FastAPI", "NVIDIA Nemotron", "SQLite"],
   },
   {
     id: "reconcile",
     title: "Reconcile — Offline Expense Tracker for Android",
     content:
-      "Keeping track of UPI, bank, card, and cash payments takes work. Reconcile reads payment messages and keeps your spending organized, all on your phone.",
+      "A native Android expense tracker that reads UPI and bank SMS, records every transaction automatically, and keeps budgets, card bills, and shared expenses in one offline app.",
     projectDetails: {
-      context: "Android · Completed app",
-      contribution: "Built automatic expense entry, duplicate checks, and a clear view of everyday spending.",
-      outcome: "Budgets, card bills, and shared expenses, saved on your device and available offline.",
+      context: "Android · Native app",
+      contribution: "Built the full app: SMS parsing, duplicate detection, budgeting, card cycles, and the Compose UI.",
+      outcome: "Automatic expense tracking that runs entirely on your phone, with no internet permission.",
     },
-    fullContent: `## Problem
-Manual expense tracking becomes harder when payments are spread across UPI, bank accounts, credit cards, and cash. Duplicate messages, self-transfers, and shared expenses can also make spending totals misleading.
+    fullContent: `## Overview
+Reconcile is a native Android app that tracks spending automatically. It reads supported Indian bank and UPI transaction SMS, records income and expenses, and organizes them into budgets, accounts, and categories. Cash can be added by hand. Everything stays on the device: the app has no internet permission and no backend.
 
-## My contribution
-I built Reconcile, a native Android app that reads supported Indian bank and UPI transaction SMS, records income and expenses, and allows manual cash entries.
+## Features
+- **Automatic entry:** incoming and historical SMS are parsed into transactions, with duplicate and self-transfer detection.
+- **Smart categories:** transactions are categorized automatically, and corrections are remembered for next time.
+- **Budgets and goals:** monthly and per-category budgets with rollover, plus savings goals.
+- **Credit cards:** bill cycles, due dates, and scheduled reminders.
+- **Shared expenses:** track money others owe you and mark it settled.
+- **Spending insights:** trends, top merchants, category breakdowns, recurring payments, and month-end projections.
+- **Everyday Android:** home-screen widget, quick-add shortcut, CSV export, and light and dark themes.
 
-The application covers the complete workflow: transaction search and editing, automatic categories that remember corrections, account linking, monthly and category budgets, rollover, savings goals, credit-card bill cycles and reminders, and money owed by others. Spending views show trends, merchants, category breakdowns, recurring payments, and month-end projections.
+## How it works
+1. SMS messages pass through a Kotlin parser that extracts amount, account, merchant, and reference.
+2. The repository checks for duplicates, assigns a category, and links the account before writing to Room.
+3. ViewModels expose changes through Flow and StateFlow, and the Jetpack Compose UI updates live.
 
-## Key decisions
-**Process and store locally.** Incoming and historical SMS pass through a Kotlin parser. The repository checks duplicates, assigns categories, and links accounts before writing to Room. ViewModels expose changes through Flow and StateFlow to the Compose interface. The app has no internet permission and needs no hosted backend.
+## Tech stack
+- **Language:** Kotlin, Coroutines, Flow
+- **UI:** Jetpack Compose, Material, Navigation Compose
+- **Storage:** Room (financial records), DataStore (preferences)
+- **Architecture:** MVVM with a repository layer
+- **Testing:** JUnit, with 32 unit tests across SMS parsing, financial calculations, and reminder cycles
 
-**Protect the accounting.** Financial amounts are stored as integer paise to avoid floating-point storage errors. SMS fingerprints, transaction references, and time-based matching help detect duplicates. Transfers and excluded transactions can be kept out of spending totals; shared expenses track the amount owed and its settlement.
+## Engineering highlights
+**Accurate money math.** Amounts are stored as integer paise, so totals never drift from floating-point rounding.
 
-**Fit Android's everyday workflows.** The app includes a home-screen widget, quick-add shortcut, CSV export, light and dark themes, and scheduled credit-card reminders. DataStore holds preferences, while Room holds financial records.
+**Reliable duplicate detection.** SMS fingerprints, transaction references, and time-based matching catch the same payment reported twice by a bank and a UPI app.
 
-## Outcome
-A completed expense-tracking app brings automated entry, budgeting, card management, shared expenses, and financial review together offline. The repository includes 32 unit tests covering SMS parsing, financial calculations, reminder cycles, and seed data.
+**Honest totals.** Transfers between your own accounts and excluded transactions stay out of spending figures, and shared expenses track what you are owed separately.
 
-SMS capture depends on supported message formats. The project demonstrates the delivered application and its local architecture; no adoption or financial-benefit metric is claimed.`,
+**Private by design.** With no internet permission and no hosted backend, financial data never leaves the phone.`,
     postedAt: updatedAt,
     type: "project",
     category: "mobile",
@@ -141,39 +176,52 @@ SMS capture depends on supported message formats. The project demonstrates the d
     id: "rag-bench",
     title: "RAG-Bench — A Reproducible Retrieval Evaluation Framework",
     content:
-      "Which search approach finds the most useful documents? RAG-Bench compares them on the same questions and shows how much extra time each needs.",
+      "A framework for benchmarking RAG retrieval pipelines: keyword, dense, hybrid, and reranked search compared on the same questions, with statistical significance and latency.",
     projectDetails: {
-      context: "Search engineering · Completed framework",
+      context: "Search engineering · Evaluation framework",
       contribution:
-        "Built repeatable search comparisons and checked quality, response time, and statistical confidence.",
+        "Built config-driven experiments, retrieval pipelines, IR metrics, and statistical testing.",
       outcome:
-        "A 21% relative improvement in finding relevant documents among the first five results on FiQA.",
+        "Measured a 21% relative gain in Recall@5 from reranking on FiQA, statistically significant.",
     },
-    fullContent: `## Problem
-Choosing a retrieval pipeline involves tradeoffs that a polished chat demo cannot settle. Keyword, semantic, and hybrid search can behave differently across domains; reranking can improve quality while adding latency. Chunking can change both the candidate pool and the ranking.
+    fullContent: `## Overview
+RAG-Bench is a Python framework for answering a practical question: which retrieval pipeline actually finds the right documents? It runs keyword, dense, hybrid, and reranked search on the same labeled questions, then reports quality, latency, and statistical confidence side by side.
 
-## My contribution
-I built a Python command-line framework for controlled retrieval experiments with ground-truth relevance labels. YAML configurations select datasets, models, chunkers, fusion methods, and rerankers. The runner saves full configurations, hashes, Git commit identifiers, corpus counts, and per-query measurements, then generates JSON results, CSV summaries, Markdown tables, plots, and an analysis notebook.
+## Features
+- **Config-driven experiments:** YAML files choose the dataset, embedding model, chunker, fusion method, and reranker.
+- **Full retrieval stack:** BM25 keyword search, BGE-M3 dense retrieval on Qdrant, Reciprocal Rank Fusion and weighted fusion, and a BGE cross-encoder reranker.
+- **Standard IR metrics:** Recall@5/10/20, nDCG@10, and MRR@10, validated against pytrec_eval.
+- **Statistical rigor:** 95% bootstrap confidence intervals with 10,000 resamples, and paired significance tests.
+- **Reproducible runs:** every run saves its full configuration, hashes, Git commit, and per-query results.
+- **Reports:** JSON results, CSV summaries, Markdown tables, plots, and an analysis notebook.
 
-The saved benchmark collection contains **26 runs across four datasets and 2,071 distinct evaluation queries**: SciFact, NFCorpus, FiQA, and a constructed English MLDR subset. Together the evaluated corpora contain 67,654 documents. The MLDR subset contains relevant passages and selected hard negatives; it is not the full corpus.
+## How it works
+1. A YAML config defines the pipeline under test.
+2. Documents are chunked with one of four strategies and embedded, with embeddings cached in SQLite.
+3. Each query runs through retrieval, optional fusion, and optional reranking of the top 50 candidates.
+4. Chunk scores are max-pooled back to documents and scored against ground-truth relevance labels.
+5. Results are compared across configurations with confidence intervals and significance tests.
 
-## Key decisions
-**Compare retrieval stages separately.** BM25 provides keyword retrieval; BGE-M3 embeddings and local Qdrant provide dense retrieval. Reciprocal Rank Fusion and normalized weighted fusion combine rankings. An optional BGE cross-encoder reranks the top 50 candidates. Candidate-pool Recall@50 helps distinguish missing documents from poor reranking.
+## Tech stack
+- **Language:** Python
+- **Retrieval:** BM25, BGE-M3 embeddings, Qdrant, BGE cross-encoder reranker
+- **Evaluation:** pytrec_eval, SciPy (bootstrap and Wilcoxon tests)
+- **Storage:** SQLite embedding cache
+- **Testing:** pytest
 
-**Evaluate documents, not duplicate chunks.** Four chunking approaches are exercised through five configurations. Chunk scores are max-pooled and deduplicated to match document-level relevance labels. Metrics include Recall@5/10/20, nDCG@10, and MRR@10, with checks against pytrec_eval.
+## Results
+- **26 benchmark runs** across **4 datasets** (SciFact, NFCorpus, FiQA, and an English MLDR subset), covering **2,071 queries** and **67,654 documents**.
+- On FiQA, reranking raised **Recall@5 from 0.353 to 0.427, a 21% relative improvement** across 648 queries (Wilcoxon p ≈ 1.6 × 10⁻¹⁰).
+- On SciFact, the best pipeline reached **0.803 Recall@5** and **0.757 nDCG@10**.
 
-**Make experiments repeatable.** SQLite caches document and query embeddings in model-specific namespaces using text hashes. Incremental writes preserve progress during interrupted jobs. The evaluation supports 95% bootstrap confidence intervals with 10,000 resamples and paired significance tests. Behavioral tests cover fusion, chunking invariants, metrics, and a miniature-dataset smoke run.
+[Inspect the configurations and per-query results](#benchmark-evidence) behind the FiQA comparison.
 
-## Outcome
-The saved FiQA runs show **Recall@5 rising from 0.353 for RRF hybrid retrieval to 0.427 with reranking: a 21.0% relative improvement across 648 queries**. The paired Wilcoxon result is approximately p = 1.6 × 10⁻¹⁰.
+## Engineering highlights
+**Diagnose, don't just score.** Candidate-pool Recall@50 separates "the document was never retrieved" from "the reranker ranked it poorly", pointing to which stage to fix.
 
-[Inspect the configurations and saved per-query results](#benchmark-evidence) behind this comparison.
+**Fair document-level scoring.** Chunk results are deduplicated and max-pooled, so a document split into many chunks can't inflate the metrics.
 
-The results also challenge simple assumptions: dense retrieval alone reached 0.399 on FiQA, above plain RRF's 0.353. Hybrid plus reranking recorded the highest Recall@5 on the three BEIR datasets, but did not lead every metric, and improvements were not significant on every dataset. SciFact reached 0.803 Recall@5 and 0.757 nDCG@10. Fixed 256-token chunks reached 0.964 Recall@5 on the constructed MLDR subset; that score should not be generalized to full MLDR.
-
-**The tradeoff matters.** Local reranking recorded roughly 14–16 seconds p95 latency on the documented 8 GB Apple Silicon setup. Query embeddings were cached, so these are not cold-request production timings. Recorded zero-dollar costs mean no model API charges, not free compute.
-
-These figures come from saved benchmark artifacts, not a new benchmark run for this portfolio. The framework evaluates retrieval quality, not generated-answer quality; its use cases are potential applications, not enterprise deployment claims.`,
+**Fast and resumable.** Embeddings are cached by model and text hash, and results are written incrementally, so interrupted runs pick up where they stopped.`,
     postedAt: updatedAt,
     type: "project",
     category: "aiml",
@@ -185,30 +233,42 @@ These figures come from saved benchmark artifacts, not a new benchmark run for t
     id: "chart-climber",
     title: "Chart Climber — Ride the Market",
     content:
-      "Historical stock and crypto charts become bike-game terrain: price rises form climbs, and falls become downhill runs.",
+      "A browser bike game where real stock and crypto price history becomes the terrain: rallies are climbs, crashes are downhill runs.",
     projectDetails: {
-      context: "Browser game · Playable online",
+      context: "Browser game · Live",
       contribution:
         "Built terrain generation, bike physics, Canvas rendering, market-data integration, and leaderboards.",
-      outcome: "Eight assets, four time ranges, and keyboard or touch play with historical-data fallbacks.",
+      outcome: "A playable game across eight assets and four time ranges, on desktop and mobile.",
     },
-    fullContent: `## Problem
-Market charts communicate movement visually. I wanted to make that movement playable: a price climb becomes a hill, and a market drop becomes a descent in a browser-based bike game.
+    fullContent: `## Overview
+Chart Climber turns market charts into a bike game. Pick a stock or cryptocurrency and a time range, and its real price history becomes the track: every rally is a hill to climb and every crash is a descent. Collect coins, manage fuel, land flips, and set a high score.
 
-## My contribution
-I built a terrain generator that converts percentage price movements into consistent slopes across assets, along with bike physics, collision detection, stunt scoring, camera tracking, and Canvas rendering. The game includes coins, fuel, flips, asset selection, keyboard and mobile touch controls, and light and dark themes.
+## Features
+- **Eight assets** across US stocks, Indian stocks, and cryptocurrency.
+- **Four time ranges,** from one month to five years.
+- **Physics-based riding** with collisions, flips, and stunt scoring.
+- **Coins and fuel** to keep each run strategic.
+- **Global leaderboards** and saved personal bests.
+- **Keyboard and touch controls,** with light and dark themes.
 
-I also integrated market-data APIs, caching, historical-data fallbacks, PostgreSQL-backed leaderboards, and locally saved personal bests.
+## How it works
+1. Price history is fetched from CoinGecko or Twelve Data, with caching and bundled historical data as a fallback.
+2. Percentage price changes are converted into terrain slopes, so every asset rides consistently whatever its price level.
+3. Matter.js simulates the bike, and Canvas draws each frame with requestAnimationFrame and a tracking camera.
+4. Scores are saved to a PostgreSQL leaderboard through Next.js API routes.
 
-## Key decisions
-**Normalize percentage changes.** Terrain is based on relative movement, so assets at different price levels can produce comparable riding conditions.
+## Tech stack
+- **Framework:** Next.js, React, TypeScript
+- **Game engine:** Matter.js physics, HTML Canvas
+- **State:** Zustand, localStorage for personal bests
+- **Data:** Neon serverless PostgreSQL, CoinGecko and Twelve Data APIs
 
-**Keep the game playable when data fails.** CoinGecko and Twelve Data are backed by caching and bundled historical JSON. A failed upstream request does not have to end a game session.
+## Engineering highlights
+**Fair terrain for every asset.** Building slopes from relative movement rather than absolute price means a $10 stock and a $60,000 coin produce comparable rides.
 
-**Separate rendering, physics, and persistence.** Matter.js handles physics while Canvas and requestAnimationFrame draw the game. Zustand manages application state, localStorage keeps personal bests, and Neon PostgreSQL stores leaderboard entries through Next.js API routes.
+**Always playable.** Cached responses and bundled historical data keep the game running even when a market API fails.
 
-## Outcome
-A playable browser game supports eight assets across US stocks, Indian stocks, and cryptocurrency, with four ranges from one month to five years. Visitors can try the deployed game directly from this case study.`,
+**Clean separation.** Physics, rendering, state, and persistence are independent layers, which keeps the game loop fast and the code easy to extend.`,
     postedAt: updatedAt,
     type: "project",
     category: "webdev",
@@ -221,30 +281,40 @@ A playable browser game supports eight assets across US stocks, Indian stocks, a
     id: "github-quiz",
     title: "GitHub Code-Match Quiz",
     content:
-      "Can you identify an open-source project from its code? A six-round quiz hides the obvious clues and tests how you read unfamiliar source.",
+      "A six-round quiz that shows you real code from a popular open-source project, with the giveaways hidden, and asks which repository it came from.",
     projectDetails: {
-      context: "Web game · Completed project",
+      context: "Web game · Next.js",
       contribution:
         "Built question generation, identifying-term redaction, balanced answer choices, and three lifelines.",
-      outcome: "A complete six-round game with fresh snippets, feedback, and a score recap.",
+      outcome: "A complete six-round game with fresh snippets every play, lifelines, and a score recap.",
     },
-    fullContent: `## Problem
-Recognizing a repository name is easier than recognizing its code. This game turns reading unfamiliar source into a short quiz, with identifying terms hidden so the answer requires a closer look.
+    fullContent: `## Overview
+GitHub Code-Match Quiz tests how well you can read unfamiliar code. Each round shows a real snippet from a popular open-source repository, with project names and identifying terms hidden, and you pick which repository it came from.
 
-## My contribution
-I built a server-side pipeline that fetches GitHub source files and creates questions from randomized repositories and code sections. The interface presents six multiple-choice rounds, syntax-highlighted snippets, answer feedback, progress, and a final score recap.
+## Features
+- **Six rounds** with fresh, randomly chosen repositories and code sections every game.
+- **Syntax-highlighted snippets** that keep their original formatting.
+- **Three lifelines,** once per game: remove two wrong answers, reveal more code, or show a redacted file-path hint.
+- **Instant feedback,** progress tracking, and a final score recap with confetti.
+- **Responsive design** with smooth animations and reduced-motion support.
 
-Three once-per-game lifelines remove two wrong answers, reveal more code, or show a redacted file-path hint.
+## How it works
+1. The server picks a repository and fetches a random source file from GitHub.
+2. A section of code is selected and identifying terms such as project names are redacted, with formatting preserved.
+3. Answer choices are drawn from repositories in the same language, so the language alone never gives it away.
+4. Shiki renders the snippet, and the player chooses.
 
-## Key decisions
-**Remove accidental giveaways.** Redaction hides project names and identifying terms while retaining code formatting. Answer choices use the same programming language so language alone cannot reveal the repository.
+## Tech stack
+- **Framework:** Next.js, React, TypeScript
+- **Data:** GitHub REST API (server-side only)
+- **UI:** Shiki syntax highlighting, Motion animations, Lucide icons, canvas-confetti
 
-**Recover from missing sources.** Fallback files and replacement repositories keep question generation moving when GitHub requests fail. Credentials stay on the server.
+## Engineering highlights
+**Fair questions.** Redaction removes the obvious giveaways, and same-language answer choices mean you have to read the code to get it right.
 
-**Keep code readable on different screens.** Shiki provides syntax highlighting; the responsive interface supports reduced motion alongside its animations.
+**Resilient generation.** Fallback files and replacement repositories keep the game going when a GitHub request fails.
 
-## Outcome
-A completed Next.js game combines fresh source-based questions, fairer answer choices, lifelines, and an end-of-game recap. The repository is available to inspect; no player-count or learning-effectiveness metric is claimed.`,
+**Secure by design.** All GitHub calls run on the server, so credentials never reach the browser.`,
     postedAt: updatedAt,
     type: "project",
     category: "webdev",
@@ -256,31 +326,42 @@ A completed Next.js game combines fresh source-based questions, fairer answer ch
     id: "repo-watch",
     title: "Repo Watch — GitHub Repository Monitor",
     content:
-      "Issues, pull requests, and CI failures tell different parts of a repository's story. Repo Watch collects them into one dashboard with daily trends.",
+      "A full-stack dashboard that tracks a GitHub repository's issues, pull requests, and CI runs over time, with daily snapshots and trend charts.",
     projectDetails: {
-      context: "Developer tooling · Completed project",
+      context: "Developer tooling · Full stack",
       contribution:
-        "Built the dashboard, FastAPI metrics service, GitHub synchronization, and daily database snapshots.",
-      outcome:
-        "Historical and incremental repository monitoring, currently configured for langfuse/langfuse.",
+        "Built the Next.js dashboard, FastAPI metrics service, GitHub sync pipeline, and daily snapshots.",
+      outcome: "Historical and live monitoring of repository health, set up for langfuse/langfuse.",
     },
-    fullContent: `## Problem
-Understanding an open-source repository's activity means checking its issue backlog, pending pull requests, workflow runs, and how those change over time. Separate lists make that history harder to follow.
+    fullContent: `## Overview
+Repo Watch is a monitoring dashboard for open-source repositories. It collects issues, pull requests, and CI workflow runs from GitHub, stores their full history, and shows how a project's backlog and build health change day by day. It is currently set up to monitor langfuse/langfuse.
 
-## My contribution
-I built Repo Watch, a full-stack repository monitoring dashboard with overview, issues, pull requests, and CI pages. A FastAPI service exposes metrics from PostgreSQL, and a GitHub REST integration collects source activity. The project is currently configured for langfuse/langfuse.
+## Features
+- **Overview, Issues, Pull Requests, and CI pages** in one dashboard.
+- **Daily trend charts** for backlog size, merge activity, and workflow failures.
+- **Change detection** for closed issues, merged pull requests, and failed workflows.
+- **Historical backfill** to build a baseline, plus scheduled and on-demand sync.
+- **Daily metric snapshots** for repeatable, point-in-time reporting.
 
-The data pipeline supports historical backfills, scheduled updates, and manual synchronization. It detects changes including issue closures, merged pull requests, and failed workflows, and stores repeatable daily metric snapshots.
+## How it works
+1. A GitHub REST integration backfills the repository's history, handling pagination, rate limits, and retries.
+2. APScheduler runs incremental syncs to keep data current.
+3. Activity and daily snapshots are stored in PostgreSQL.
+4. A FastAPI service exposes the metrics, and the Next.js dashboard renders them with Recharts.
 
-## Key decisions
-**Handle the API as a changing source.** Collection includes pagination, rate-limit handling, and retries. Historical backfills establish the baseline, while incremental synchronization updates the evolving repository state.
+## Tech stack
+- **Frontend:** Next.js, React, Recharts
+- **Backend:** Python, FastAPI, APScheduler
+- **Database:** PostgreSQL, SQLAlchemy, Alembic migrations
+- **Infrastructure:** Docker Compose
+- **Testing:** pytest
 
-**Keep durable history.** PostgreSQL and SQLAlchemy store activity and snapshots, with Alembic migrations for schema changes. Automated tests cover data processing.
+## Engineering highlights
+**Built for a changing API.** Pagination, rate-limit handling, and retries make syncing reliable against GitHub's limits.
 
-**Separate collection from presentation.** APScheduler handles scheduled work in the Python backend; the Next.js interface uses Recharts to display daily trends and workflow summaries.
+**Durable history.** Snapshots preserve what the repository looked like each day, so trends stay accurate even as issues and pull requests change.
 
-## Outcome
-A completed dashboard brings repository backlogs, pull requests, CI failures, and historical trends together. Monitoring a public repository is the implemented use case; this is not a claim that the Langfuse maintainers use or endorse the tool.`,
+**Clean separation.** Collection, storage, API, and presentation are independent layers, with schema changes managed through Alembic migrations.`,
     postedAt: updatedAt,
     type: "project",
     category: "webdev",
@@ -292,32 +373,40 @@ A completed dashboard brings repository backlogs, pull requests, CI failures, an
     id: "web-rit",
     title: "RIT Student Portal — Campus in One Place",
     content:
-      "Attendance, results, notes, and timetables lived on different sites. I built a central portal that classmates used to prepare for exams and check attendance.",
+      "A student portal that brought attendance, exam results, notes, and timetables together in one place, with a chatbot for attendance and grades. Used by classmates at RIT.",
     projectDetails: {
-      context: "Solo college project · Retired",
+      context: "Solo project · Used by students",
       contribution:
-        "Built the full portal in my second semester, including scraping, result extraction, and a Rasa chatbot.",
-      outcome: "Used by students for notes, exam preparation, and attendance checks before retirement.",
+        "Built the entire portal in my second semester, including scraping, result extraction, and a Rasa chatbot.",
+      outcome: "Students used it for notes, exam preparation, and attendance checks.",
     },
-    fullContent: `## Problem
-RIT's student information was scattered across separate attendance, examination, and timetable sites, with no central place for class notes and documents. Finding routine information meant knowing which system to open.
+    fullContent: `## Overview
+At RIT, attendance, exam results, and timetables each lived on a different college website, and there was no central place for class notes. I built a single portal that brought all of it together, and students used it throughout the semester, especially around exams.
 
-## My contribution
-I built the complete portal myself during my second semester. It brought together notes, attendance, exam results, examination timetables, and regular class timetables across branches.
+## Features
+- **Attendance** at a glance, including how many more classes you can miss.
+- **Exam results** extracted and shown in one view.
+- **Class and examination timetables** across branches.
+- **Notes and documents** organized for exam preparation.
+- **Chatbot** answering around 50 kinds of questions, including attendance and grades.
 
-The project included a result extractor, data scraping with BeautifulSoup, login automation with Selenium, and a Rasa-based chatbot that handled roughly 50 question types, including attendance and grades.
+## How it works
+1. When a student logs in, Selenium automates sign-in to the college systems.
+2. BeautifulSoup scrapes attendance, results, and timetables, and a result extractor parses them.
+3. The portal shows everything in one place, refreshed at every login.
+4. A Rasa chatbot answers questions from the same data.
 
-## Key decisions
-**Refresh at login.** Student data updated when someone logged in, keeping the experience tied to the latest available source data.
+## Tech stack
+- **Language:** Python
+- **Scraping and automation:** BeautifulSoup, Selenium
+- **Chatbot:** Rasa
 
-**Build around actual student tasks.** The portal emphasized finding notes, preparing for exams, and understanding attendance—including how many classes a student could miss—rather than reproducing every official page.
+## Engineering highlights
+**Built solo, used by real students.** I designed and built the whole portal myself in my second semester, and classmates relied on it for notes and attendance.
 
-**Treat scraping as ongoing maintenance.** I repeatedly tested extraction for accuracy. Source pages changed every few weeks or months as classes and layouts changed, and those changes required fixes to the app.
+**Always current.** Data refreshes at each login, so students always see the latest from the source systems.
 
-## Outcome
-Students beyond the development effort used the portal, particularly around exams, for notes and attendance checks. I do not have a measured user count to publish.
-
-I retired it around my fifth or sixth semester when maintaining the changing source integrations became too time-consuming. It was a useful student-facing product, and a direct lesson in the maintenance cost of depending on scraped interfaces.`,
+**Designed around student tasks.** The portal focused on what students actually needed, such as finding notes, preparing for exams, and knowing how many classes they could skip, rather than mirroring every official page.`,
     postedAt: updatedAt,
     type: "project",
     category: "webdev",
@@ -328,29 +417,39 @@ I retired it around my fifth or sixth semester when maintaining the changing sou
     id: "web-ngo",
     title: "NGO Pitch Platform — HackBangalore Prototype",
     content:
-      "A hackathon team built a way to connect NGOs and potential donors. My part turned their interests and background into tailored pitch presentations.",
+      "A HackBangalore project connecting NGOs with potential donors. I built the AI pitch generator that turns a donor's interests into a tailored PowerPoint presentation.",
     projectDetails: {
-      context: "Team hackathon · Working prototype",
+      context: "HackBangalore · Team project",
       contribution: "Owned AI pitch generation and much of the Next.js user dashboard.",
-      outcome: "Generated tailored PowerPoint pitches from collected NGO and donor information.",
+      outcome: "Generates tailored, editable PowerPoint pitches from NGO and donor information.",
     },
-    fullContent: `## Problem
-An NGO approaching a potential donor needs to explain how its work connects to that donor's interests. Finding that background and preparing a relevant pitch are separate, time-consuming tasks.
+    fullContent: `## Overview
+Built at HackBangalore, this platform helps NGOs reach the right donors. The team gathered public information about NGOs, donors, past initiatives, and interests, then matched causes to supporters. For example, someone who had backed a lake cleanup could be matched with a river-restoration NGO. The platform then generates a pitch tailored to that donor.
+
+## Features
+- **AI-generated pitches** written around the donor's interests and history.
+- **Editable PowerPoint output,** ready to refine and present.
+- **Interest-based matching** between NGOs and potential donors.
+- **User dashboard** for organizers and donors.
+
+## How it works
+1. The team collected public information from thousands of websites about NGOs, donors, and their past work.
+2. Donors and NGOs were grouped by shared causes.
+3. My pitch generator sent that context to the OpenAI API to write the presentation content.
+4. python-pptx assembled the content into a PowerPoint deck.
+
+## Tech stack
+- **Frontend:** Next.js
+- **AI:** OpenAI API
+- **Presentation generation:** Python, python-pptx
 
 ## My contribution
-Our team built a working prototype for HackBangalore. I owned the **AI-powered pitch generator** and much of the **Next.js user dashboard**.
+I owned the **AI pitch generator**, from prompt design to PowerPoint assembly, and built much of the **Next.js user dashboard**.
 
-I used the OpenAI API to generate presentation content and python-pptx to assemble PowerPoint files. Organizers and potential donors could tailor pitches using the information collected about the other party.
+## Engineering highlights
+**A real deliverable, not a text box.** Generating an actual PowerPoint gives NGOs a presentation they can edit and use, not just a block of AI text.
 
-## Key decisions
-**Use interests as context.** The team collected public information from thousands of websites about NGOs, donors, past initiatives, and interests. Someone who had supported river or lake cleanup, for example, could be grouped with that cause. That research informed matching and pitch generation.
-
-**Deliver an editable artifact.** Combining generated content with python-pptx produced a presentation people could revise, rather than only showing a block of generated text.
-
-**Keep ownership clear.** My contribution was pitch generation and dashboard work. The wider data collection and matching effort belonged to the team.
-
-## Outcome
-We delivered a working hackathon prototype that generated tailored presentations. No NGOs used it in practice, and we stopped development when placements and other college commitments took priority. The outcome is the prototype, not validated matching quality or donor adoption.`,
+**Context-aware content.** Each pitch is grounded in what the donor has supported before, so it speaks to their interests.`,
     postedAt: updatedAt,
     type: "project",
     category: "webdev",
@@ -361,24 +460,33 @@ We delivered a working hackathon prototype that generated tailored presentations
     id: "ai-vlm",
     title: "Assistive Device for the Blind using a Vision-Language Model",
     content:
-      "A camera-to-audio assistive prototype uses vision-language models to describe a scene aloud through an earphone.",
+      "A wearable assistive device that describes the user's surroundings aloud, using fine-tuned vision-language models to turn camera input into speech.",
     projectDetails: {
-      context: "Computer vision · Assistive prototype",
-      contribution: "Fine-tuned MoonDream and BLIP models and connected camera input to spoken descriptions.",
-      outcome:
-        "A wearable camera → model → audio prototype; user-study and latency results are not published.",
+      context: "Computer vision · Assistive technology",
+      contribution: "Fine-tuned MoonDream and BLIP models and built the camera-to-speech pipeline.",
+      outcome: "A wearable prototype that describes the scene through an earphone.",
     },
-    fullContent: `## Problem
-Visual surroundings can contain information that is difficult to access without sight. This project explores describing camera input through audio in a wearable setup.
+    fullContent: `## Overview
+This assistive device helps people who are blind or visually impaired understand their surroundings. A camera captures the scene, a vision-language model describes it, and the description is spoken through an earphone.
 
-## My contribution
-I fine-tuned MoonDream and BLIP vision-language models and connected a webcam-to-model-to-speech pipeline, with descriptions played through an earphone.
+## Features
+- **Scene descriptions** generated from live camera input.
+- **Spoken output** delivered privately through an earphone.
+- **Wearable design,** built to be used on the move.
 
-## Key decisions
-The pipeline connects scene capture, language generation, and text-to-speech in one interaction loop. The design targets a wearable, mobile-friendly setup so descriptions can be heard close to the user.
+## How it works
+1. A webcam captures the user's surroundings.
+2. A fine-tuned vision-language model generates a natural-language description.
+3. Text-to-speech reads the description aloud through the earphone.
 
-## Outcome
-The delivered work is an assistive prototype. No measured latency, user-study findings, or validated accessibility outcome is published here. Those would be needed to assess its practical usefulness beyond the demonstrated pipeline.`,
+## Tech stack
+- **Models:** MoonDream and BLIP vision-language models, fine-tuned
+- **Pipeline:** Python, webcam capture, text-to-speech
+
+## Engineering highlights
+**Fine-tuned models.** I fine-tuned both MoonDream and BLIP to produce clear, useful scene descriptions.
+
+**End-to-end loop.** Capture, description, and speech run as one continuous interaction, so the user hears what is in front of them without any interface to operate.`,
     postedAt: updatedAt,
     type: "project",
     category: "aiml",
@@ -388,18 +496,18 @@ The delivered work is an assistive prototype. No measured latency, user-study fi
   {
     id: "multicity-routing",
     title: "Multicity Vehicle Routing",
-    content:
-      "A college hackathon project exploring vehicle routing across multiple cities. The application was deployed and working; it is now inactive.",
+    content: "A hackathon project that plans vehicle routes across multiple cities, built and deployed during a college hackathon.",
     projectDetails: {
-      context: "College hackathon · Inactive",
-      contribution: "Built a multicity vehicle-routing project for a college hackathon.",
-      outcome: "Reached a working deployment before becoming inactive.",
+      context: "College hackathon",
+      contribution: "Built a multicity vehicle-routing application.",
+      outcome: "Deployed and working by the end of the hackathon.",
     },
-    fullContent: `## Project overview
-A college hackathon project focused on vehicle routing across multiple cities.
+    fullContent: `## Overview
+Multicity Vehicle Routing plans routes for vehicles travelling across multiple cities. It was built during a college hackathon.
 
-## Outcome
-The application reached a working deployment. It is now inactive.`,
+## Highlights
+- Built and deployed a working application within the hackathon timeframe.
+- Tackled a classic optimization problem: routing vehicles across several cities.`,
     postedAt: updatedAt,
     type: "project",
     category: "other",

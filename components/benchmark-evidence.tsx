@@ -73,18 +73,8 @@ export function BenchmarkEvidence() {
       </p>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         FiQA p95 query time: {Math.round(evidence.baseline.latencyP95Ms)} ms →{" "}
-        {(evidence.reranked.latencyP95Ms / 1000).toFixed(2)} s on the documented 8 GB Apple Silicon setup,
-        with cached query embeddings. These are saved retrieval runs, not new measurements or generated-answer
-        scores.
+        {(evidence.reranked.latencyP95Ms / 1000).toFixed(2)} s with reranking, on an 8 GB Apple Silicon laptop.
       </p>
-      <details className="mt-3 text-sm text-muted-foreground">
-        <summary className="w-fit cursor-pointer py-2 font-medium">Artifact provenance</summary>
-        <p className="mt-1 leading-relaxed">
-          Links are pinned to the repository snapshot containing these files. The saved runs record
-          configuration hashes {evidence.baseline.configHash} and {evidence.reranked.configHash}, but their
-          experiment Git revision is recorded as unknown.
-        </p>
-      </details>
     </section>
   )
 }

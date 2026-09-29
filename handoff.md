@@ -39,15 +39,15 @@ Complete the portfolio refactor, evidence/content improvements, charcoal theme, 
 - Latest artifacts: `/private/tmp/portfolio-final-polish-{before,after}/`; script `/private/tmp/portfolio-final-polish-qa.mjs`. Earlier comprehensive artifacts: `/private/tmp/portfolio-visual-evidence/`; dialog animation proof `/private/tmp/portfolio-dialog-animation-qa.mjs --verify`.
 - Preview: **http://127.0.0.1:3000**, exec session **66663**, `npm run start -- --hostname 127.0.0.1 --port 3000`. Stop before rebuilding because `.next` is shared.
 
-## ClearWeb added (2026-09-29, uncommitted)
+## ClearWeb + case-study rewrite (2026-09-30, on local `main`, not pushed)
 
-- Source: `~/Desktop/ABC/LangChain/clearweb/` (solo project; no git commits or remote yet, so no `github` link). Facts come from its `handoff.md`, `README.md`, and `docs/model-rates.json` (Nemotron-3.5 Lightning ×3 + Nemotron-3 Ultra on Nebius).
-- New `clearweb` entry in `lib/project-content.ts` (aiml, `postedAt` 2026-09-29). Its caveats are stated in the entry: the corpus is synthetic (7 pages, 60/60 facts, 0 leaks), $0.03 / 24 s / 13 amounts come from one live Flipkart run, the extension is unpacked (not on the Web Store), and the backend is self-hosted. Tests: 81 backend + 6 unit + 24 Playwright.
-- Step diagram in `components/project-preview.tsx`. Compact cards now also use the diagram for `clearweb` (it has no illustration).
-- `featuredPostIds` is now `["ai-askaps", "clearweb", "rag-bench", "reconcile"]` (4 featured).
-- `tests/portfolio.spec.ts` updated: 4 featured, 11 articles, 4 in the AI/ML filter, and the trophy walk goes askaps → clearweb → reconcile (the "More projects" links are the first 2 other entries in file order).
-- Verified: lint, build (`/projects/clearweb` generated), e2e 38 passed / 4 skipped. Card and article screenshots checked at 390 and 1440 px (dark).
-- Next: commit on this branch when asked; add a `github` link once ClearWeb is pushed; replace the diagram with real workspace captures once they exist (the existing `artifacts/e2e/overlay.png` shows an outdated UI and should not be used).
+- PR #7 was already squash-merged into main as `32c7d19`. Local `main` was fast-forwarded to `dc9f1b8` (ClearWeb entry, cherry-picked onto `origin/main`), and the rewrite is committed on top, so history stays linear. The branches `clearweb-on-main` and `codex/portfolio-refresh` on origin are now redundant.
+- **User direction:** portfolio copy must *sell* the project. Use Overview → Features → How it works → Tech stack → (My contribution for team work) → Engineering highlights. **No disclaimers**, no "not claimed" or "synthetic" or "single run" caveats, no test-count trivia. Keep facts true; omit weaknesses rather than invent strengths.
+- All 11 active entries in `lib/project-content.ts` were rewritten. The AskAPS title is unchanged because tests key on it. ClearWeb is sourced from `~/Desktop/ABC/LangChain/clearweb/` (Nemotron 3.5 Lightning + Nemotron 3 Ultra on Nebius).
+- Caveat copy was also removed from `project-preview.tsx` captions, the `project-illustration.tsx` "Concept illustration" tag, and the `benchmark-evidence.tsx` caveat sentence and "Artifact provenance" block.
+- Featured: `["ai-askaps", "clearweb", "rag-bench", "reconcile"]`. Tests were updated for 4 featured projects, 11 articles, and 4 in AI/ML.
+- Verified: lint, tsc, build, e2e 38 passed / 4 skipped; articles checked at 1440 and 390 px.
+- Next: push `main` when the user approves (the GitHub API is sandbox-blocked; plain `git push` works). Then delete the redundant remote branches. Multicity Routing is thin, and the user needs to supply its stack and details. ClearWeb has no GitHub link until its repo is pushed.
 
 ## Resolved failures and next steps
 

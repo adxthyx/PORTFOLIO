@@ -13,7 +13,6 @@ import {
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-// Concept illustrations, not screenshots or measured project data.
 const illustrations: Record<string, { label: string; visual: ReactNode }> = {
   "chart-climber": {
     label: "A price curve you can ride",
@@ -193,7 +192,6 @@ export function ProjectIllustration({ postId, className }: { postId: string; cla
     >
       <figcaption className="mb-3 text-xs font-medium sm:text-sm">{illustration.label}</figcaption>
       <div aria-hidden="true">{illustration.visual}</div>
-      <p className="mt-3 text-xs">Concept illustration</p>
     </figure>
   )
 }

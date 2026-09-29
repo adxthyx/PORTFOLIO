@@ -13,7 +13,7 @@ const previews: Record<string, Preview> = {
       ["AskAPS", "Find answers · follow up"],
       ["HPE services", "Documents · tickets · data"],
     ],
-    caption: "I own the application and integrations. Existing services provide retrieval and analytics.",
+    caption: "Teams and the web share one FastAPI backend connected to HPE's retrieval and analytics services.",
   },
   clearweb: {
     label: "From checkout page to checked findings",
@@ -58,25 +58,25 @@ const previews: Record<string, Preview> = {
       ["One portal", "Results · notes · timetable"],
       ["Ask Rasa", "Attendance + grades"],
     ],
-    caption: "A solo project used by students, later retired as source-site maintenance grew.",
+    caption: "Refreshed at every login, with a Rasa chatbot for attendance and grades.",
   },
   "web-ngo": {
-    label: "My pitch-generation workflow",
+    label: "AI pitch-generation workflow",
     steps: [
       ["Donor context", "Interests + past work"],
       ["Generate pitch", "OpenAI content"],
       ["PowerPoint", "python-pptx output"],
     ],
-    caption: "My work covered pitch generation and the dashboard within a team hackathon prototype.",
+    caption: "A donor's interests become an editable, tailored PowerPoint pitch.",
   },
   "ai-vlm": {
-    label: "Assistive prototype workflow",
+    label: "Assistive device workflow",
     steps: [
       ["Camera", "Capture the scene"],
       ["Vision model", "Generate a description"],
       ["Audio", "Speak through earphone"],
     ],
-    caption: "Camera → vision-language model → text-to-speech in an assistive prototype.",
+    caption: "Camera → fine-tuned vision-language model → speech, in a wearable design.",
   },
   "ai-kannada": {
     label: "Handwriting recognition workflow",
@@ -85,7 +85,7 @@ const previews: Record<string, Preview> = {
       ["Recognize", "Handwriting model"],
       ["Learn", "Display feedback"],
     ],
-    caption: "An earlier learning project, built with classmates.",
+    caption: "Handwriting recognition paired with a gamified learning site.",
   },
   "ai-attendance": {
     label: "Attendance workflow",
@@ -94,7 +94,7 @@ const previews: Record<string, Preview> = {
       ["Identify", "Face detection + matching"],
       ["Register", "Update attendance"],
     ],
-    caption: "An earlier computer-vision project.",
+    caption: "One class photo marks attendance for everyone.",
   },
 }
 const surface = "overflow-hidden rounded-xl border border-border bg-secondary text-foreground"
