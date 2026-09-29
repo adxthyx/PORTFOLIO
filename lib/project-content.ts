@@ -56,6 +56,52 @@ Usage and feedback are tracked. Published production KPIs are not yet available.
     tags: ["FastAPI", "React", "Redis", "MySQL", "Microsoft Teams", "Kubernetes"],
   },
   {
+    id: "clearweb",
+    title: "ClearWeb — Evidence-Checked Dark-Pattern Detector for Checkout Pages",
+    content:
+      "Checkout pages hide fees, pre-tick add-ons, and blur what you are agreeing to. ClearWeb reads the page and shows only findings it can point to.",
+    projectDetails: {
+      context: "Solo project · Chrome extension, self-hosted",
+      contribution:
+        "Built the extension, the privacy-first page capture, the multi-agent backend, and the deterministic verifier.",
+      outcome:
+        "All 60 required facts captured with no private data sent, across a 7-page synthetic test corpus.",
+    },
+    fullContent: `## Problem
+Online checkouts hide costs and nudge people toward choices they did not intend: protection plans that are already ticked, fees that appear only at the last step, trials that renew automatically, cashback presented as a discount, EMI plans with extra charges, and cookie banners where “accept all” is the easy path.
+
+An LLM can read a checkout page, but it can also invent a fee or misread an amount. For a tool that tells people what they will pay, an unsupported claim is worse than no claim.
+
+## My contribution
+I built ClearWeb on my own: a Chrome Manifest V3 extension in TypeScript and React, and a FastAPI backend that runs NVIDIA Nemotron models on Nebius.
+
+- **Extension:** a movable, resizable workspace over the page with Page, Compare (up to four tabs), and Activity views; follow-up chat; a Ctrl/Cmd+K command palette; “Show on page” highlighting; light and dark themes; and reduced-motion support.
+- **Page capture:** a redacted outline of every visible row and control, followed by model triage and packing into a small snapshot.
+- **Backend:** three Nemotron Lightning workers (page, official terms, prices) running in parallel, a Nemotron Ultra orchestrator, streamed NDJSON progress, and a deterministic verifier.
+- **Operations:** API-key authentication, per-client rate limiting, request size limits, a result cache, per-page locks, a spending ledger, and a Cloudflare Tunnel to a self-hosted backend.
+
+## Key decisions
+**Verify every claim in code.** The model proposes findings; deterministic code decides what is shown. Each amount or quote must match text captured from the page at word and number boundaries. A negative amount cannot prove a charge, and both 1,234.56 and 1.234,56 formats are parsed with Decimal arithmetic. Anything unsupported is marked unverified or removed.
+
+**Never let model output act on the page.** The extension never runs code or selectors that come from the model. Actions come from a fixed allowlist and may only switch something off, such as an optional add-on or a marketing cookie. Each result is checked after it runs, and Undo is available. Observe mode is read-only, Assist mode waits for a click, and Auto-fix is enabled per site. ClearWeb never pays, places orders, accepts contracts, or deletes anything.
+
+**Keep private data in the browser.** Emails, UPI IDs, card and payment fields, addresses, long digit sequences, tokens, form values, and cookies are redacted before anything leaves the browser. Raw HTML is never sent, and URLs lose their query strings. Triage returns block IDs only, so it cannot introduce text. Totals, fees, and preselected options are always kept, and rule-based packing takes over if triage fails.
+
+**Cap the cost before each call.** A SQLite ledger reserves the cost of every model call before dispatch, under a hard lifetime cap. Page changes are hashed and debounced, so cosmetic updates trigger no model calls.
+
+## Outcome
+- **Capture:** 60 of 60 required facts captured with no private data sent, across a 7-page synthetic corpus modeled on real cart, order, payment, subscription, consent, and add-on pages. The previous scanner failed 2 of those pages: it dropped a pre-ticked protection upsell and leaked an address and UPI ID.
+- **Live run:** one analysis of a real Flipkart payment page verified 13 amounts in 24 seconds for about $0.03. Seven live triage calls cost about $0.001 in total.
+- **Tests:** 81 backend tests, 6 extension unit tests, and 24 Playwright tests.
+
+ClearWeb runs as an unpacked extension against my self-hosted backend; it is not published on the Chrome Web Store. The capture corpus is synthetic, and the cost and latency figures come from single measured runs, not averages. It reads only the top-level page, not cross-origin frames or closed shadow roots.`,
+    postedAt: "2026-09-29T00:00:00+05:30",
+    type: "project",
+    category: "aiml",
+    flair: "AI/ML",
+    tags: ["TypeScript", "React", "Chrome MV3", "FastAPI", "Nemotron", "SQLite", "Playwright"],
+  },
+  {
     id: "reconcile",
     title: "Reconcile — Offline Expense Tracker for Android",
     content:
