@@ -122,6 +122,7 @@ It is built for online shoppers, with first-class support for Indian e-commerce 
     category: "aiml",
     flair: "AI/ML",
     tags: ["TypeScript", "React", "Chrome MV3", "FastAPI", "NVIDIA Nemotron", "SQLite"],
+    github: "https://github.com/adxthyx/Clearweb",
   },
   {
     id: "reconcile",

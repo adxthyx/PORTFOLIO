@@ -39,7 +39,7 @@ Complete the portfolio refactor, evidence/content improvements, charcoal theme, 
 - Latest artifacts: `/private/tmp/portfolio-final-polish-{before,after}/`; script `/private/tmp/portfolio-final-polish-qa.mjs`. Earlier comprehensive artifacts: `/private/tmp/portfolio-visual-evidence/`; dialog animation proof `/private/tmp/portfolio-dialog-animation-qa.mjs --verify`.
 - Preview: **http://127.0.0.1:3000**, exec session **66663**, `npm run start -- --hostname 127.0.0.1 --port 3000`. Stop before rebuilding because `.next` is shared.
 
-## ClearWeb + case-study rewrite (2026-09-30, on local `main`, not pushed)
+## ClearWeb + case-study rewrite (2026-09-30, pushed to `origin/main` as `64a6fa7`)
 
 - PR #7 was already squash-merged into main as `32c7d19`. Local `main` was fast-forwarded to `dc9f1b8` (ClearWeb entry, cherry-picked onto `origin/main`), and the rewrite is committed on top, so history stays linear. The branches `clearweb-on-main` and `codex/portfolio-refresh` on origin are now redundant.
 - **User direction:** portfolio copy must *sell* the project. Use Overview → Features → How it works → Tech stack → (My contribution for team work) → Engineering highlights. **No disclaimers**, no "not claimed" or "synthetic" or "single run" caveats, no test-count trivia. Keep facts true; omit weaknesses rather than invent strengths.
@@ -47,7 +47,7 @@ Complete the portfolio refactor, evidence/content improvements, charcoal theme, 
 - Caveat copy was also removed from `project-preview.tsx` captions, the `project-illustration.tsx` "Concept illustration" tag, and the `benchmark-evidence.tsx` caveat sentence and "Artifact provenance" block.
 - Featured: `["ai-askaps", "clearweb", "rag-bench", "reconcile"]`. Tests were updated for 4 featured projects, 11 articles, and 4 in AI/ML.
 - Verified: lint, tsc, build, e2e 38 passed / 4 skipped; articles checked at 1440 and 390 px.
-- Next: push `main` when the user approves (the GitHub API is sandbox-blocked; plain `git push` works). Then delete the redundant remote branches. Multicity Routing is thin, and the user needs to supply its stack and details. ClearWeb has no GitHub link until its repo is pushed.
+- Next: delete the redundant remote branches. Multicity Routing is thin, and the user needs to supply its stack and details. ClearWeb links to github.com/adxthyx/Clearweb.
 
 ## Resolved failures and next steps
 
