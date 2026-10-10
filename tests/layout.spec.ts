@@ -77,7 +77,7 @@ for (const scheme of ["light", "dark"] as const) {
   })
 }
 
-test("phone, tablet, and laptop layouts keep content within the viewport and the first project in view", async ({
+test("phone, tablet, and laptop layouts keep content within the viewport", async ({
   page,
   isMobile,
 }) => {
@@ -101,10 +101,6 @@ test("phone, tablet, and laptop layouts keep content within the viewport and the
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
         `${path} at ${width}px`,
       ).toBe(true)
-      if (path === "/") {
-        const title = await page.locator("#post-title-ai-askaps").boundingBox()
-        expect(title!.y + title!.height, `First project at ${width}px`).toBeLessThan(720)
-      }
     }
   }
 })

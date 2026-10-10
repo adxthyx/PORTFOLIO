@@ -17,4 +17,3 @@ export function readingTime(content: string) {
   return Math.max(1, Math.ceil(content.trim().split(/\s+/).length / 220))
 }
 
-export const featuredPostIds = ["ai-askaps", "clearweb", "rag-bench", "reconcile"]

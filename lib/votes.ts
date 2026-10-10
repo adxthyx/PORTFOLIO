@@ -15,6 +15,9 @@ const vote = (postId: string, dir: VoteDir) =>
     else next[postId] = dir
     return next
   })
+// One shared store: every caller (feed, cards, sidebar karma) sees the same votes.
 export function useVotes() {
-  return { votes: votesStore.useValue(), vote }
+  const votes = votesStore.useValue()
+  const karmaDelta = Object.values(votes).reduce<number>((sum, v) => sum + v, 0)
+  return { votes, vote, karmaDelta }
 }

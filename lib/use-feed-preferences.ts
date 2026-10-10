@@ -8,9 +8,9 @@ interface Preferences {
   query: string
   sort: SortMode
 }
-const defaults: Preferences = { filter: "all", query: "", sort: "featured" }
-const filters: FilterKey[] = ["all", "aiml", "webdev", "mobile", "saved"]
-const sorts: SortMode[] = ["featured", "new"]
+const defaults: Preferences = { filter: "all", query: "", sort: "hot" }
+const filters: FilterKey[] = ["all", "main", "aiml", "webdev", "mobile", "saved"]
+const sorts: SortMode[] = ["hot", "new", "top"]
 
 export function useFeedPreferences() {
   const [preferences, setPreferences] = useState(defaults)
@@ -23,7 +23,7 @@ export function useFeedPreferences() {
       const sort = params.get("sort") as SortMode
       const next = {
         filter: filters.includes(filter) ? filter : ("all" as const),
-        sort: sorts.includes(sort) ? sort : ("featured" as const),
+        sort: sorts.includes(sort) ? sort : ("hot" as const),
         query: (params.get("q") || "").slice(0, 500),
       }
       current.current = next
@@ -38,7 +38,7 @@ export function useFeedPreferences() {
     const params = new URLSearchParams(window.location.search)
     for (const [key, value] of [
       ["filter", next.filter === "all" ? "" : next.filter],
-      ["sort", next.sort === "featured" ? "" : next.sort],
+      ["sort", next.sort === "hot" ? "" : next.sort],
       ["q", next.query],
     ]) {
       if (value) params.set(key, value)

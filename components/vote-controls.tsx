@@ -7,10 +7,12 @@ export function VoteControls({
   value,
   onVote,
   title,
+  count,
 }: {
   value?: VoteDir
   onVote: (dir: VoteDir) => void
   title: string
+  count: number
 }) {
   return (
     <div
@@ -27,8 +29,11 @@ export function VoteControls({
       >
         <ArrowBigUp className={`h-5 w-5 ${value === 1 ? "fill-current" : ""}`} />
       </button>
-      <span className="min-w-8 text-center text-xs font-semibold tabular-nums" aria-live="polite">
-        {value === 1 ? "+1" : value === -1 ? "−1" : "Vote"}
+      <span
+        className={`min-w-8 text-center text-xs font-bold tabular-nums ${value === 1 ? "text-brand" : value === -1 ? "text-downvote" : ""}`}
+        aria-live="polite"
+      >
+        {count + (value ?? 0)}
       </span>
       <button
         type="button"

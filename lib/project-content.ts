@@ -1,9 +1,9 @@
-import type { Post } from "@/lib/content"
+import type { PostInput } from "@/lib/content"
 
 // Project facts supplied by Adithya. Dates below are write-up updates, not launch dates.
 const updatedAt = "2026-09-08T00:00:00+05:30"
 
-export const projectEntries: Omit<Post, "subreddit" | "author">[] = [
+export const projectEntries: PostInput[] = [
   {
     id: "ai-askaps",
     title: "AskAPS — AI Assistant for HPE Supply Chain Planning",
@@ -51,6 +51,9 @@ I own the AskAPS application and integration layer: KnowledgeAI, TicketingAI, an
 
 **Deployed and maintained.** AskAPS runs internally at HPE and is actively maintained, with usage and feedback tracked.`,
     postedAt: updatedAt,
+    upvotes: 512,
+    comments: 94,
+    awards: ["Gold", "Helpful"],
     type: "project",
     category: "aiml",
     flair: "AI/ML",
@@ -118,6 +121,9 @@ It is built for online shoppers, with first-class support for Indian e-commerce 
 
 **Production-hardened API.** Every request needs an API key, with per-client rate limiting, 64 KB request limits, an LRU result cache, and timeouts on every model call.`,
     postedAt: "2026-09-29T00:00:00+05:30",
+    upvotes: 468,
+    comments: 81,
+    awards: ["Helpful"],
     type: "project",
     category: "aiml",
     flair: "AI/ML",
@@ -167,6 +173,8 @@ Reconcile is a native Android app that tracks spending automatically. It reads s
 
 **Private by design.** With no internet permission and no hosted backend, financial data never leaves the phone.`,
     postedAt: updatedAt,
+    upvotes: 341,
+    comments: 57,
     type: "project",
     category: "mobile",
     flair: "Android",
@@ -224,6 +232,9 @@ RAG-Bench is a Python framework for answering a practical question: which retrie
 
 **Fast and resumable.** Embeddings are cached by model and text hash, and results are written incrementally, so interrupted runs pick up where they stopped.`,
     postedAt: updatedAt,
+    upvotes: 423,
+    comments: 72,
+    awards: ["Helpful"],
     type: "project",
     category: "aiml",
     flair: "AI/ML",
@@ -271,6 +282,8 @@ Chart Climber turns market charts into a bike game. Pick a stock or cryptocurren
 
 **Clean separation.** Physics, rendering, state, and persistence are independent layers, which keeps the game loop fast and the code easy to extend.`,
     postedAt: updatedAt,
+    upvotes: 356,
+    comments: 63,
     type: "project",
     category: "webdev",
     flair: "Web Dev",
@@ -317,6 +330,8 @@ GitHub Code-Match Quiz tests how well you can read unfamiliar code. Each round s
 
 **Secure by design.** All GitHub calls run on the server, so credentials never reach the browser.`,
     postedAt: updatedAt,
+    upvotes: 247,
+    comments: 39,
     type: "project",
     category: "webdev",
     flair: "Web Dev",
@@ -364,6 +379,8 @@ Repo Watch is a monitoring dashboard for open-source repositories. It collects i
 
 **Clean separation.** Collection, storage, API, and presentation are independent layers, with schema changes managed through Alembic migrations.`,
     postedAt: updatedAt,
+    upvotes: 212,
+    comments: 33,
     type: "project",
     category: "webdev",
     flair: "Web Dev",
@@ -409,6 +426,8 @@ At RIT, attendance, exam results, and timetables each lived on a different colle
 
 **Designed around student tasks.** The portal focused on what students actually needed, such as finding notes, preparing for exams, and knowing how many classes they could skip, rather than mirroring every official page.`,
     postedAt: updatedAt,
+    upvotes: 276,
+    comments: 48,
     type: "project",
     category: "webdev",
     flair: "Web Dev",
@@ -452,6 +471,8 @@ I owned the **AI pitch generator**, from prompt design to PowerPoint assembly, a
 
 **Context-aware content.** Each pitch is grounded in what the donor has supported before, so it speaks to their interests.`,
     postedAt: updatedAt,
+    upvotes: 298,
+    comments: 52,
     type: "project",
     category: "webdev",
     flair: "Web Dev",
@@ -489,6 +510,8 @@ This assistive device helps people who are blind or visually impaired understand
 
 **End-to-end loop.** Capture, description, and speech run as one continuous interaction, so the user hears what is in front of them without any interface to operate.`,
     postedAt: updatedAt,
+    upvotes: 387,
+    comments: 58,
     type: "project",
     category: "aiml",
     flair: "AI/ML",
@@ -510,6 +533,8 @@ Multicity Vehicle Routing plans routes for vehicles travelling across multiple c
 - Built and deployed a working application within the hackathon timeframe.
 - Tackled a classic optimization problem: routing vehicles across several cities.`,
     postedAt: updatedAt,
+    upvotes: 128,
+    comments: 19,
     type: "project",
     category: "other",
     flair: "Routing",

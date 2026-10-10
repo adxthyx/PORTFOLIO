@@ -1,3 +1,4 @@
+import { formatDistanceToNowStrict, parseISO } from "date-fns"
 import { projectEntries } from "@/lib/project-content"
 
 export interface Post {
@@ -5,6 +6,8 @@ export interface Post {
   title: string
   content: string
   fullContent: string
+  upvotes: number
+  comments: number
   subreddit: string
   author: string
   postedAt: string
@@ -31,6 +34,7 @@ export interface Profile {
   role: string
   subreddit: string
   cakeDay: string
+  baseKarma: number
   avatar: string
   resumePath: string
   links: {
@@ -47,6 +51,7 @@ export const profile: Profile = {
   role: "Software Engineer @ HPE · AI/ML",
   subreddit: "r/adithya",
   cakeDay: "2025-09-01",
+  baseKarma: 2847,
   avatar: "/a.jpeg",
   resumePath: "/resume.pdf",
   links: {
@@ -57,7 +62,38 @@ export const profile: Profile = {
   },
 }
 
-type PostInput = Omit<Post, "subreddit" | "author">
+// Sidebar extras: the community blurb, subreddits I read, and quick highlights.
+export const communityTagline = "The official community for everything I build, break, and occasionally fix."
+
+export const communities = [
+  { name: "webdev", members: "3.2M members", url: "https://reddit.com/r/webdev" },
+  { name: "reactjs", members: "1.9M members", url: "https://reddit.com/r/reactjs" },
+  { name: "MachineLearning", members: "3.0M members", url: "https://reddit.com/r/MachineLearning" },
+]
+
+export const highlights = [
+  {
+    label: "Now",
+    title: "Software Engineer at Hewlett Packard Enterprise, building AI assistants",
+    meta: "Sept 2025 - Present",
+  },
+  {
+    label: "Flagship project",
+    title: "AskAPS: AI assistant for HPE supply chain planners",
+    meta: "FastAPI · React · Teams · Kubernetes",
+  },
+  {
+    label: "Latest build",
+    title: "ClearWeb: AI dark-pattern detector for checkout pages",
+    meta: "Nemotron · Nebius",
+  },
+]
+
+export function timeAgo(postedAt: string): string {
+  return formatDistanceToNowStrict(parseISO(postedAt), { addSuffix: true })
+}
+
+export type PostInput = Omit<Post, "subreddit" | "author">
 
 function definePost(input: PostInput): Post {
   return {
@@ -142,6 +178,8 @@ Generally trying to go from "it works" to "it works well"
 I'm active on GitHub, LinkedIn, and here on Reddit. Always down to discuss tech, swap project ideas, or debate why RDR2 has the best story in gaming history.
 If you're working on something cool or need help with AI/web dev stuff, hit me up. Still learning, but happy to figure things out together.`,
   postedAt: "2026-05-01T10:00:00+05:30",
+  upvotes: 342,
+  comments: 67,
   type: "about",
   category: "main",
   flair: "AMA",
@@ -175,6 +213,8 @@ Started my professional journey building dashboards, Agentic AI solutions, and P
 **Technologies Used:**
 Python, NextJS, FastAPI, Streamlit, SQL, LangChain`,
   postedAt: "2026-06-12T09:00:00+05:30",
+  upvotes: 189,
+  comments: 34,
   type: "experience",
   category: "main",
   flair: "Experience",
@@ -192,6 +232,8 @@ const education = definePost({
 - **Relevant Coursework:** Data Structures, Algorithms, Database Systems, Software Engineering, Machine Learning
 - **Senior Project:** LLM Powered Solution for Supply and Demand Planners and AI Powered CLI System`,
   postedAt: "2026-06-12T07:00:00+05:30",
+  upvotes: 156,
+  comments: 28,
   type: "education",
   category: "main",
   flair: "Education",
@@ -246,6 +288,8 @@ const skills = definePost({
 - **Vercel** - Frontend deployment and edge functions
 - **Agile** - Sprints, standups, the whole HPE workflow`,
   postedAt: "2026-06-11T14:00:00+05:30",
+  upvotes: 234,
+  comments: 45,
   type: "skills",
   category: "main",
   flair: "Skills",
@@ -276,6 +320,8 @@ A team project to recognize handwritten **Kannada** characters and turn it into 
 ## 💡 Why it matters
 Regional Indian scripts are underrepresented in handwriting datasets and tooling. Pairing recognition with a kids' learning game makes the tech useful for language preservation, not just a benchmark.`,
     postedAt: "2026-06-06T12:00:00+05:30",
+    upvotes: 264,
+    comments: 41,
     type: "project",
     category: "aiml",
     flair: "AI/ML",
@@ -305,6 +351,8 @@ An automated attendance system that recognizes every student in a single classro
 ## 💡 Why it matters
 Manual attendance for a full class is slow and error-prone. One photo and a detection + recognition pipeline turns it into a few seconds of work.`,
     postedAt: "2026-06-04T10:00:00+05:30",
+    upvotes: 231,
+    comments: 37,
     type: "project",
     category: "aiml",
     flair: "AI/ML",
