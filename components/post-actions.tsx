@@ -34,6 +34,7 @@ export function PostActions({ post }: { post: Post }) {
           unlock("first-vote")
         }}
         title={post.title}
+        count={post.upvotes}
       />
       <button
         type="button"

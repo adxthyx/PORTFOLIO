@@ -58,7 +58,7 @@ Tests use installed Chrome on macOS. Elsewhere, install the test browser with `p
 - `components/project-preview.tsx` owns workflow and results visuals; `project-illustration.tsx` contains clearly labeled concept illustrations. `reconcile-preview.tsx` displays the actual Activity and Insights captures, copied unchanged from the Reconcile project's `artifacts/reconcile-revamp/` into `public/projects/reconcile/`. Next.js optimizes their delivery; full-resolution images are linked from the case study.
 - `lib/blog.ts` owns writing. Only items in `publishedPosts` receive article pages; planned ideas stay labeled as upcoming.
 - `components/post-article.tsx`, `post-body.tsx`, and `post-actions.tsx` keep full pages and the desktop reader consistent.
-- `components/header.tsx`, `community-header.tsx`, `sidebar.tsx`, and `site-footer.tsx` define the shared navigation and community identity.
+- `components/header.tsx`, `sidebar.tsx`, and `site-footer.tsx` define the shared navigation and community identity.
 - `app/globals.css` and `tailwind.config.ts` define the theme, typography, focus styles, and motion preferences.
 - Dark surfaces use `#0E1113`, `#181C1F`, and `#22272B`; borders use `#30363B`. Bright `#FF4500` accents include the header logo and “Say hello” button, paired with charcoal text for 5.51:1 contrast. Small orange text uses `#FF5A1F` on dark surfaces, and other white-text primary buttons use `#C93600` (5.24:1 contrast). Project illustrations stay neutral; the retrieval chart keeps blue data bars and app screenshots retain their actual colors.
 - The supplied `public/image.png` is linked unchanged as the browser-tab icon in `app/layout.tsx`. `components/theme-provider.tsx` synchronizes the toolbar color with the selected theme.

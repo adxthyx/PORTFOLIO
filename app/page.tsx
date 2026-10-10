@@ -4,12 +4,11 @@ import { useCallback, useState, useEffect, useRef } from "react"
 import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { Feed } from "@/components/feed"
-import { Sidebar } from "@/components/sidebar"
-import { CommunityHeader } from "@/components/community-header"
+import { Sidebar, ProfileCard } from "@/components/sidebar"
 import { SiteFooter } from "@/components/site-footer"
 import { RecruiterView } from "@/components/recruiter-view"
 import type { ModalId } from "@/components/command-palette"
-import { allPosts, projects } from "@/lib/content"
+import { allPosts, projects, profile } from "@/lib/content"
 import { useSaved } from "@/lib/saved"
 import { useAchievements } from "@/lib/achievements"
 import { usePortfolioNavigation } from "@/lib/use-portfolio-navigation"
@@ -119,7 +118,7 @@ export default function Portfolio() {
           top: 0,
           behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
         })
-        updateFeed({ filter: "all", query: "", sort: "featured" })
+        updateFeed({ filter: "all", query: "", sort: "hot" })
         setRecruiterMode(false)
         break
       case "achievements":
@@ -131,6 +130,12 @@ export default function Portfolio() {
         setActiveModal(action)
         break
     }
+  }
+
+  const profileActions = {
+    onJoin: () => setActiveModal("contact"),
+    onResume: () => setActiveModal("resume"),
+    onAskAI: () => setSelectedPost(allPosts[0]),
   }
 
   const modalProps = (id: ModalId) => ({
@@ -169,12 +174,16 @@ export default function Portfolio() {
         </main>
       ) : (
         <>
-          <div id="main-content" className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 sm:pt-5">
-            <CommunityHeader />
+          {/* Mobile profile card — shown before posts on small screens */}
+          <div className="px-3 pt-3 sm:px-4 sm:pt-4 lg:hidden">
+            <ProfileCard {...profileActions} />
           </div>
 
-          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 pt-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-            <main className="min-w-0">
+          <div className="mx-auto flex max-w-7xl flex-col gap-4 p-3 sm:gap-6 sm:p-4 lg:flex-row">
+            <main id="main-content" className="min-w-0 flex-1">
+              <h1 className="sr-only">
+                {profile.displayName}, {profile.role}
+              </h1>
               <Feed
                 posts={allPosts}
                 searchQuery={searchQuery}
@@ -190,10 +199,15 @@ export default function Portfolio() {
                 keyboardEnabled={!selectedPost && !activeModal && !paletteOpen}
               />
             </main>
-            <aside aria-label="About Adithya and useful links">
-              <Sidebar unlockedAchievements={unlockedIds} />
+            <aside className="hidden w-80 shrink-0 lg:block" aria-label="Community info">
+              <Sidebar {...profileActions} unlockedAchievements={unlockedIds} />
             </aside>
           </div>
+
+          {/* Mobile sidebar — communities, highlights and trophies after the feed */}
+          <aside className="px-3 pb-3 sm:px-4 sm:pb-4 lg:hidden" aria-label="Community info">
+            <Sidebar showProfile={false} unlockedAchievements={unlockedIds} />
+          </aside>
         </>
       )}
 

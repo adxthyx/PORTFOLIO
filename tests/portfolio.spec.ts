@@ -4,28 +4,28 @@ import AxeBuilder from "@axe-core/playwright"
 const projectTitle = "AskAPS — AI Assistant for HPE Supply Chain Planning"
 const projectPath = "/projects/ai-askaps"
 
+const feedPostCount = 15
+
 async function showSaved(page: Page) {
-  await page.getByRole("button", { name: "Project options", exact: true }).click()
-  await page.getByRole("menuitemcheckbox", { name: "Saved projects", exact: true }).click()
+  await page.getByRole("group", { name: "Filter posts" }).getByRole("button", { name: /^Saved/ }).click()
 }
 
-test("the featured path leads to four projects, with the rest in the collection", async ({
+test("the feed shows every post with pinned posts first, and the collection lists all projects", async ({
   page,
   request,
 }) => {
   await page.goto("/")
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Adithya Narayana Holla")
-  await expect(page.locator("[data-post-id]")).toHaveCount(4)
-  expect(
-    await page
-      .locator("[data-post-id]")
-      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-post-id"))),
-  ).toEqual(["ai-askaps", "clearweb", "rag-bench", "reconcile"])
-  await expect(page.getByRole("button", { name: `Upvote ${projectTitle}` })).toHaveCount(0)
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1)
+  await expect(page.locator("[data-post-id]")).toHaveCount(feedPostCount)
+  const order = await page
+    .locator("[data-post-id]")
+    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-post-id")))
+  expect(order.slice(0, 2).sort()).toEqual(["about", "ai-askaps"])
+  await expect(page.getByRole("button", { name: `Upvote ${projectTitle}` })).toHaveCount(1)
   await page.getByRole("button", { name: "Android", exact: true }).click()
   await expect(page.locator("[data-post-id]")).toHaveCount(1)
   await expect(page.locator('[data-post-id="reconcile"]')).toBeVisible()
-  await page.getByRole("link", { name: "View all projects", exact: true }).click()
+  await page.getByRole("link", { name: "Browse the full project collection", exact: true }).click()
   await expect(page).toHaveURL("/projects")
   await expect(page.getByRole("article")).toHaveCount(11)
   await expect(page.getByRole("link", { name: /Kannada|Attendance Tracker/ })).toHaveCount(0)
@@ -58,20 +58,15 @@ test("feed filters, search, sort and saved posts survive reloads", async ({ page
   if (!(await search.isVisible()))
     await page.getByRole("button", { name: "Search projects", exact: true }).click()
   await search.fill("no-such-project-xyz")
-  await expect(page.getByText("Nothing here just yet", { exact: true })).toBeVisible()
-  await page.getByRole("button", { name: "Back to featured projects" }).click()
-  await expect(page.locator("[data-post-id]")).toHaveCount(4)
-  await page.getByRole("button", { name: "Web", exact: true }).click()
+  await expect(page.getByText("No results found", { exact: true })).toBeVisible()
+  await page.getByRole("button", { name: "Back to all posts" }).click()
+  await expect(page.locator("[data-post-id]")).toHaveCount(feedPostCount)
+  await page.getByRole("button", { name: "Web Dev", exact: true }).click()
   await expect(page.locator("[data-post-id]")).toHaveCount(5)
-  await page.getByRole("button", { name: "Project options", exact: true }).click()
-  await page.getByRole("menuitemradio", { name: "Recently updated", exact: true }).click()
+  await page.getByRole("button", { name: "New", exact: true }).click()
   await page.reload()
-  await expect(page.getByRole("button", { name: "Web", exact: true })).toHaveAttribute("aria-pressed", "true")
-  await page.getByRole("button", { name: "Project options", exact: true }).click()
-  await expect(page.getByRole("menuitemradio", { name: "Recently updated", exact: true })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  )
+  await expect(page.getByRole("button", { name: "Web Dev", exact: true })).toHaveAttribute("aria-pressed", "true")
+  await expect(page.getByRole("button", { name: "New", exact: true })).toHaveAttribute("aria-pressed", "true")
 })
 
 test("desktop reader preserves votes, synchronizes saves, and supports history and focus", async ({
@@ -112,7 +107,7 @@ test("mobile cards navigate to a complete article and preserve feed filters on B
 }) => {
   test.skip(!isMobile, "Desktop uses an inline reader")
   await page.goto("/")
-  await page.getByRole("button", { name: "AI / ML", exact: true }).click()
+  await page.getByRole("button", { name: "AI/ML", exact: true }).click()
   await page
     .locator('[data-post-id="ai-askaps"]')
     .getByRole("link", { name: projectTitle, exact: true })
@@ -121,7 +116,7 @@ test("mobile cards navigate to a complete article and preserve feed filters on B
   await expect(page.getByRole("heading", { name: projectTitle, level: 1 })).toBeVisible()
   await expect(page.getByRole("heading", { name: "Let's talk about it" })).toBeVisible()
   await page.goBack()
-  await expect(page.getByRole("button", { name: "AI / ML", exact: true })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: "AI/ML", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",
   )
@@ -155,7 +150,7 @@ test("invalid persisted data cannot crash the feed", async ({ page }) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
   await page.goto("/")
-  await expect(page.locator("[data-post-id]")).toHaveCount(4)
+  await expect(page.locator("[data-post-id]")).toHaveCount(feedPostCount)
   await page
     .locator('[data-post-id="ai-askaps"]')
     .getByRole("button", { name: `Save ${projectTitle}`, exact: true })
@@ -248,9 +243,7 @@ test("full article visits, votes, and saves earn the same visitor trophies as th
   await page.locator('a[href="/projects/clearweb"]').click()
   await page.locator('a[href="/projects/reconcile"]').click()
   await page.getByRole("link", { name: "r/adithya home", exact: true }).click()
-  const trophies = page.getByRole("complementary", { name: "About Adithya and useful links" })
-  await expect(trophies.getByText("Karma Dealer", { exact: true })).toBeHidden()
-  await trophies.getByText("Just for fun: visitor trophies", { exact: true }).click()
+  const trophies = page.getByRole("complementary", { name: "Community info" })
   await expect(trophies.getByText("Karma Dealer", { exact: true })).toBeVisible()
   await expect(trophies.getByText("Curator", { exact: true })).toBeVisible()
   await expect(trophies.getByText("Explorer", { exact: true })).toBeVisible()

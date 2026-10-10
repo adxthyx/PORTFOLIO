@@ -126,7 +126,7 @@ export function Header({
               <Input
                 id="portfolio-search"
                 type="search"
-                placeholder="Search projects…"
+                placeholder="Search r/adithya…"
                 value={searchQuery}
                 onChange={(event) => onSearch(event.target.value)}
                 className="h-10 rounded-full border-transparent bg-secondary pl-10 text-base sm:text-sm"
